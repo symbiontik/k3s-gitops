@@ -20,18 +20,17 @@ In order to complete this guide, you will need the following:
 - Visual Studio Code
 - [Homebrew](https://brew.sh/)
 - A GitHub Account
-- A Cloudflare Account
+- A Cloudflare Account with a domain
 - At least 2 PCs/VMs with at least 6GB RAM
 
 ## Deployment overview
 
 This guide will walk you through the following steps:
 
-1. Clone this repo
+1. Fork this repo
 1. OS Installation
 1. Connect to your Kubernetes cluster
-1. Create your GitHub resources
-1. Generate a Cloudflare token
+1. Generate a Cloudflare API key
 1. Configure SOPS
 1. Configure Flux
 1. Deploy some apps
@@ -43,12 +42,13 @@ This guide will walk you through the following steps:
 1. (advanced) Add SSO to your apps
 1. (advanced) Integrate zero-trust security
 
-### Clone this repo
+### Fork this repo
 
-This repository will contain all the resources you will use throughout this guide.
+In addition to this repository containing all the resources you will use throughout this guide, your GitHub repository will be the single source of truth for your Kubernetes infrastructure definitions. 
 
-1. Clone this [k3s-gitops](https://github.com/symbiontik/k3s-gitops) repository.
-1. Open this repo in Visual Studio Code.
+When new code is merged into your GitHub repository, Flux (which we will setup in a later step) will ensure your environment reflects the state of your GitHub repository. This is the essense of Infrastructure as code (IaC) - the practice of keeping all your infrastructure configuration stored as code. 
+
+1. [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the `k3s-gitops` repo into your own GitHub repo.
 
 ### OS Installation
 
@@ -86,11 +86,11 @@ The majority of interaction with your Kubernetes cluster will occur from a remot
 1. Copy the complete contents of `kubeconfig.yaml` to your clipboard.
 1. On your Mac, open (or create) the file `/Users/YOURUSERNAME/.kube/config`
 1. Paste the contents of `kubeconfig.yaml` into `/Users/YOURUSERNAME/.kube/config` and save the file.
-1. Install `kubectl` by running `brew install kubectl`
+1. Install `kubectl`
 ```sh
 brew install kubectl
 ```
-1. Open a terminal and run `kubectl get nodes`
+1. List your available Kubernetes nodes
 ```sh
 kubectl get nodes
 #NAME        STATUS     ROLES                  AGE    VERSION
@@ -100,18 +100,20 @@ kubectl get nodes
 
 You are now able to securely access your Kubernetes cluster from your remote development system.
 
-### Create your GitHub resources
+### Generate a Cloudflare API key
 
-Description
+Cloudflare is used for several reasons: 
+- Enables `cert-manager` to utilize the Cloudflare DNS challenge for automating TLS certificate creation in your Kubernetes cluster
+- Enables accessibility of your apps from anywhere
+- Secures access to your apps with Cloudflare Access 
+- Provide DNS security, detailed traffic metrics, and logging with Cloudflare Gateway
+- (optional) Provide you with an SSO portal for your apps
+- (optional) Provide you with zero-trust security capabilities
 
-1. Create your own GitHub repository.
-2. Copy all code from the `k3s-gitops` repo you cloned earlier into your own repo folder.
-3. 
-
-### Generate a Cloudflare token
-
-Description
-
+1. Login to your Cloudflare account.
+1. Create an API key by going to [this page](https://dash.cloudflare.com/profile/api-tokens) in your Cloudflare profile.
+1. Copy the API key to your clipboard.
+1. Paste your API key as the value for `BOOTSTRAP_CLOUDFLARE_APIKEY` in your `.config.sample.env` file, then save the file. 
 1. [Generate Cloudflare API Key](https://github.com/k8s-at-home/template-cluster-k3s#cloud-global-cloudflare-api-key)
 
 ### Configure SOPS
@@ -128,14 +130,7 @@ Description
 1. [Flux initialization](https://fluxcd.io/docs/get-started/)
 1. 
 1. 
-1. Commit your secure repo:
-```sh
-git add -A
-git commit -m "initial commit"
-git push
-```
-
-
+1. 
 
 ### Deploy some apps
 
@@ -261,3 +256,4 @@ I have major appreciation for the people and organizations of the open-source co
 - [Flux](https://github.com/fluxcd/flux2)
 - [RenovateBot](https://github.com/renovatebot/github-action)
 - [Template-cluster-k3s](https://github.com/k8s-at-home/template-cluster-k3s)
+- [HomeOps](https://github.com/onedr0p/home-ops)
