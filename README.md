@@ -63,16 +63,23 @@ k3OS is a stripped-down, streamlined, easy-to-maintain operating system for runn
 1. Select the "k3os Installer" option on the boot menu.
 1. 
 1. 
+1. Reboot to complete the installation.
+1. Login to your K3OS installation as `rancher` with the password `rancher`
+1. You will need to interact with these three files:
+```log
+# This is the core k3os configuration file
+/k3os/system/config.yaml
+# This controls the hostname of your system and kubernetes node name
+/k3s/system/hostname
+# This is the secure kubeconfig file you will use to remotely access this node
+/etc/rancher/k3s/k3s.yaml
+```
 1. In your `k3os-gitops` repo, open the `/k3os/server-init.yaml` file.
 1. 
-1. 
+1. Set a static IP on the nodes OS itself and **NOT** by using DHCP. Using DHCP to assign IPs injects a search domain into your nodes `/etc/resolv.conf` and this could potentially break DNS in containers.
+1. Configure DNS on your nodes to use an upstream provider (e.g. `1.1.1.1`, `9.9.9.9`), or your router's IP if you have DNS configured there and it's not pointing to a local Ad-blocker DNS. Ad-blockers should only be used on devices with a web browser.
 1. Copy the contents of `kubeconfig.yaml` to your clipboard.
 1. Create a file on your Mac with the same name `kubeconfig.yaml`, paste in the contents, then save the file.
-1. 
-1. On your router, add a static DHCP entry with your node's IP and MAC address (search Google with your unique router if you need help here).
-1. Configure DNS on your nodes to use an upstream provider (e.g. `1.1.1.1`, `9.9.9.9`), or your router's IP if you have DNS configured there and it's not pointing to a local Ad-blocker DNS. Ad-blockers should only be used on devices with a web browser.
-1. Set a static IP on the nodes OS itself and **NOT** by using DHCP. Using DHCP to assign IPs injects a search domain into your nodes `/etc/resolv.conf` and this could potentially break DNS in containers.
-1. 
 1. 
  
 You now have 2 active Kubernetes nodes on your network that are ready for operation.
