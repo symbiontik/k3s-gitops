@@ -54,17 +54,92 @@ When new code is merged into your GitHub repository, Flux (which we will setup i
 
 k3OS is a stripped-down, streamlined, easy-to-maintain operating system for running Kubernetes nodes.
 
-1. Download the respective ISO (within the latest release assets) in the [k3os repo](https://github.com/rancher/k3os/releases).
+1. Download the respective ISO (within the latest release assets) in the [k3OS repo](https://github.com/rancher/k3os/releases).
 1. For dedicated PC users:
     1. Create a bootable USB stick from the ISO (search Google for options here).
 1. For VM users:
     1. Mount the ISO to your VM.
 1. Boot to the ISO on your respective device.
-1. Select the "k3os Installer" option on the boot menu.
-1. 
-1. 
-1. Reboot to complete the installation.
-1. Login to your K3OS installation as `rancher` with the password `rancher`
+1. Select the "k3OS LiveCD and Installer" option on the boot menu.
+1. Login with `rancher/rancher`
+1. Run `lsblk` to identify your desired destination drive for k3OS.
+```sh
+lsblk
+#NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
+#loop1    7:1    0  47.1M  1 loop /usr
+#loop2    7:2    0 302.2M  0 loop /usr/src
+#sda      8:0    0 238.5G  0 disk 
+#├─sda1   8:1    0    47M  0 part 
+#└─sda2   8:2    0 238.4G  0 part /var/lib/kubelet/pods/2d4b1a97-6659-436d-abb1-
+#sdb      8:16    0   7.6G  0 disk 
+#├─sdb1   8:17    0   190K  0 part 
+#└─sdb2   8:18    0   2.8M  0 part 
+#├─sdb3   8:19    0 513.5M  0 part /k3os/system
+#└─sdb4   8:20    0   300K  0 part
+```
+1. Begin the installation process.
+```sh
+sudo k3os install
+```
+1. Choose to install to disk.
+```log
+Running k3OS configuration
+Choose operation
+1. Install to disk
+2. Configure server or agent
+Select Number [1]:
+```
+1. Choose the desired destination drive you identified earlier.
+```log
+Installation target. Device will be formatted
+1. sda
+2. sdb
+Select Number [0]: 1
+```
+1. Choose NOT to configure the system with `cloud-init`.
+```log
+Config system with cloud-init file? [y/N]: N
+```
+1. Choose NOT to authorize GitHub users for SSH.
+```log
+Authorize GitHub users to SSH [y/N]: N
+```
+1. Choose to keep the default password for the `rancher` account (feel free to change it later).
+```log
+Please enter password for [rancher]:
+Confirm password for [rancher]:
+```
+1. Choose whether you'd like to configure WiFi.
+```log
+Configure WiFi? [y/N]: 
+...
+```
+1. Choose to run your node as a server.
+```log
+Run as a server or agent?
+1. server
+2. agent
+Select Number [1]:
+```
+1. Set your cluster secret/token as `cluster-secret` (this can be changed later as desired).
+```log
+Token or cluster secret (optional): cluster-secret
+```
+1. Confirm your configuration details and enter `y` to continue.
+```log
+Configuration
+_____________
+device: /dev/sda
+Your disk will be formatted and k3OS will be installed with the above configuration.
+Continue? [y/N]: y
+```
+**Note:** If you receive install errors using the LiveCD option, reboot and proceed with the same options using the "k3OS installer" option instead of the "k3OS LiveCD & Installer" option.
+1. After the system completes the installation and reboots, select the `k3OS Current` bootloader option (or just wait a few moments and it will boot it by default).
+1. Login to your new K3OS installation as `rancher` with the password `rancher`
+1. By default, k3OS allows SSH connections only using certificates. This is a much safer method than using passwords, however, for the sake of simplicity in this guide, we will set `PasswordAuthentication` to yes. Feel free to come back later and lock this down.
+```sh
+sudo vim /etc/ssh/sshd_config -c "%s/PasswordAuthentication  no/PasswordAuthentication  yes/g | write | quit" && sudo service sshd restart
+```
 1. You will need to interact with these three files:
 ```log
 # This is the core k3os configuration file
