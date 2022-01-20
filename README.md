@@ -136,10 +136,36 @@ Continue? [y/N]: y
 **Note:** If you receive install errors using the LiveCD option, reboot and proceed with the same options using the "k3OS installer" option instead of the "k3OS LiveCD & Installer" option.
 1. After the system completes the installation and reboots, select the `k3OS Current` bootloader option (or just wait a few moments and it will boot it by default).
 1. Login to your new K3OS installation as `rancher` with the password `rancher`
+1. Set a static IP on the nodes OS itself and NOT by using DHCP. Using DHCP to assign IPs injects a search domain into your nodes `/etc/resolv.conf` and this could potentially break DNS in containers. (If you already have a DHCP address assigned, remove any `search domain.com` lines from `/etc/resolv.conf` and save the file).
+1.
+1. Configure DNS on your nodes to use an upstream provider (e.g. `1.1.1.1`, `9.9.9.9`), or your router's IP if you have DNS configured there and it's not pointing to a local Ad-blocker DNS. Ad-blockers should only be used on devices with a web browser.
+1. 
+- Reference: [K3OS Networking](https://www.centlinux.com/2019/05/configure-network-on-k3os-machine.html)
+1. 
 1. By default, k3OS allows SSH connections only using certificates. This is a much safer method than using passwords, however, for the sake of simplicity in this guide, we will set `PasswordAuthentication` to yes. Feel free to come back later and lock this down.
+    1. Open the SSHD configuration file
+    ```sh
+    sudo vim /etc/ssh/sshd_config
+    ```
+    1. Change the value of `PasswordAuthentication` from `no` to `yes` and save this file.
+    1. Restart the `sshd` service.
+    ```sh
+    sudo service sshd restart
+    ```
+1. Log out of the console and grab your Mac.
 ```sh
-sudo vim /etc/ssh/sshd_config -c "%s/PasswordAuthentication  no/PasswordAuthentication  yes/g | write | quit" && sudo service sshd restart
+exit
 ```
+
+You now have a k3OS server node ready for remote configuration.
+
+### Connect to your Kubernetes cluster
+
+The majority of interaction with your Kubernetes cluster will occur from a remote development system - in this case, the same system where you cloned this repo.
+
+1. Connect to your new k3os node via SSH:
+```
+
 1. You will need to interact with these three files:
 ```log
 # This is the core k3os configuration file
@@ -151,17 +177,11 @@ sudo vim /etc/ssh/sshd_config -c "%s/PasswordAuthentication  no/PasswordAuthenti
 ```
 1. In your `k3os-gitops` repo, open the `/k3os/server-init.yaml` file.
 1. 
-1. Set a static IP on the nodes OS itself and **NOT** by using DHCP. Using DHCP to assign IPs injects a search domain into your nodes `/etc/resolv.conf` and this could potentially break DNS in containers.
-1. Configure DNS on your nodes to use an upstream provider (e.g. `1.1.1.1`, `9.9.9.9`), or your router's IP if you have DNS configured there and it's not pointing to a local Ad-blocker DNS. Ad-blockers should only be used on devices with a web browser.
 1. Copy the contents of `kubeconfig.yaml` to your clipboard.
 1. Create a file on your Mac with the same name `kubeconfig.yaml`, paste in the contents, then save the file.
 1. 
  
-You now have 2 active Kubernetes nodes on your network that are ready for operation.
-
-### Connect to your Kubernetes cluster
-
-The majority of interaction with your Kubernetes cluster will occur from a remote development system - in this case, the same system where you cloned this repo.
+You now have an active Kubernetes node on your network that are ready for operation.
 
 1. Open the `kubeconfig.yaml` file you saved on your Mac in the previous section.
 1. Replace _localhost_ in the line with `server: https://localhost:6443` with the IP address of your Kubernetes node (for example, `server: https://192.168.1.150:6443`) 
