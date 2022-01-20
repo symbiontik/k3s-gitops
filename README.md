@@ -21,7 +21,7 @@ In order to complete this guide, you will need the following:
 - [Homebrew](https://brew.sh/)
 - A GitHub Account
 - A Cloudflare Account with a domain
-- At least 2 PCs/VMs with at least 6GB RAM
+- At least 1 PCs/VMs with at least 6GB RAM
 
 ## Deployment overview
 
@@ -109,10 +109,9 @@ Authorize GitHub users to SSH [y/N]: N
 Please enter password for [rancher]:
 Confirm password for [rancher]:
 ```
-1. Choose whether you'd like to configure WiFi.
+1. Choose NOT to configure WiFi (WiFi does not support manual static IP assignment, which is necessary for a later step).
 ```log
-Configure WiFi? [y/N]: 
-...
+Configure WiFi? [y/N]: N
 ```
 1. Choose to run your node as a server.
 ```log
@@ -161,31 +160,47 @@ You now have a k3OS server node ready for remote configuration.
 
 ### Connect to your Kubernetes cluster
 
-The majority of interaction with your Kubernetes cluster will occur from a remote development system - in this case, the same system where you cloned this repo.
+The majority of interaction with your Kubernetes cluster will occur from a remote development system - in this case, the Mac where you cloned this repo.
 
-1. Connect to your new k3os node via SSH:
+1. Connect to your new k3os node via SSH.
+```log
+ssh rancher@192.168.1.183
+The authenticity of host '192.168.1.183 (192.168.1.183)' can't be established.
+ECDSA key fingerprint is SHA256:/KPEdx6D56R9/ByhJr/4gGSP7DJdtkFun+fFgCtdl/Q.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '192.168.1.183' (ECDSA) to the list of known hosts.
+rancher@192.168.1.183's password: rancher
+
+Welcome to k3OS!
+...
 ```
-
+1. In your `k3os-gitops` repo, copy the contents of `/k3os/server-init.yaml` to your clipboard.
+1. On your k3os node, replace the contents of the `/k3os/system/config.yaml` file with your clipboard contents.
+```sh
+vim /k3os/system/config.yaml
+```
+1. 
 1. You will need to interact with these three files:
 ```log
 # This is the core k3os configuration file
 /k3os/system/config.yaml
-# This controls the hostname of your system and kubernetes node name
-/k3s/system/hostname
 # This is the secure kubeconfig file you will use to remotely access this node
 /etc/rancher/k3s/k3s.yaml
 ```
-1. In your `k3os-gitops` repo, open the `/k3os/server-init.yaml` file.
-1. 
-1. Copy the contents of `kubeconfig.yaml` to your clipboard.
-1. Create a file on your Mac with the same name `kubeconfig.yaml`, paste in the contents, then save the file.
-1. 
- 
-You now have an active Kubernetes node on your network that are ready for operation.
-
-1. Open the `kubeconfig.yaml` file you saved on your Mac in the previous section.
-1. Replace _localhost_ in the line with `server: https://localhost:6443` with the IP address of your Kubernetes node (for example, `server: https://192.168.1.150:6443`) 
-1. Copy the complete contents of `kubeconfig.yaml` to your clipboard.
+1. In k3OS, the `/etc` automatically reverts any changes after reboot. Therefore, to persistently change Hostname of k3OS machine, we have to change it in k3OS configuration files. 
+    1. ```sh
+       sudo vim /var/lib/rancher/k3os/hostname
+       ```
+    1. Replace the current contents with your desired hostname and save the file.
+1. Reboot your system for the system modules and hostname changes to take effect.
+1. On your Mac terminal, retrieve the kube config file from your k3OS node.
+```sh
+scp rancher@192.168.1.183:/etc/rancher/k3s/k3s.yaml .
+rancher@192.168.1.183's password: 
+```
+1. Open the `k3s.yaml` file you downloaded on your Mac.
+1. Replace _127.0.0.1_ in the line with `server: https://127.0.0.1:6443` with the IP address of your Kubernetes node (for example, `server: https://192.168.1.183:6443`) 
+1. Copy the complete contents of `k3s.yaml` to your clipboard.
 1. On your Mac, open (or create) the file `/Users/YOURUSERNAME/.kube/config`
 1. Paste the contents of `kubeconfig.yaml` into `/Users/YOURUSERNAME/.kube/config` and save the file.
 1. Install `kubectl`
@@ -199,7 +214,7 @@ kubectl get nodes
 #k3s-node2   NotReady   <none>                 109d   v1.21.1+k3s1
 #k3s-node1   Ready      control-plane,master   115d   v1.21.1+k3s1
 ```
-
+You now have an active Kubernetes node on your network that are ready for operation.
 You are now able to securely access your Kubernetes cluster from your remote development system.
 
 ### Generate a Cloudflare API key
