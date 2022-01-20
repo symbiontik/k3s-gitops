@@ -121,23 +121,98 @@ Cloudflare is used for several reasons:
 1. Create an API key by going to [this page](https://dash.cloudflare.com/profile/api-tokens) in your Cloudflare profile.
 1. Copy the API key to your clipboard.
 1. Paste your API key as the value for `BOOTSTRAP_CLOUDFLARE_APIKEY` in your `.config.sample.env` file, then save the file. 
-1. [Generate Cloudflare API Key](https://github.com/k8s-at-home/template-cluster-k3s#cloud-global-cloudflare-api-key)
 
-### Configure SOPS
+- Reference: [Generate Cloudflare API Key](https://github.com/k8s-at-home/template-cluster-k3s#cloud-global-cloudflare-api-key)
 
-Description
+### Configure Secrets Encryption
 
-1. [Age and SOPS](https://github.com/k8s-at-home/template-cluster-k3s#closed_lock_with_key-setting-up-age)
+Secrets encryption allows you to safely store secrets in a public or private Git repository. To accomplish this, Age is a tool that will encrypt your YAML files and/or secrets using Mozilla SOPS (Secrets Operations) encryption. In a later step, you will configure Flux with this SOPs encryption key - this will allow your Kubernetes cluster to decrypt and utilize those secrets for operations.
+
+1. Begin by installing `age`
+```sh
+brew install age
+```
+1. Create a Age Private / Public Key
+```sh
+age-keygen -o age.agekey
+```
+1. Set up the directory for the Age key and move the Age file to it
+```sh
+mkdir -p ~/.config/sops/age
+mv age.agekey ~/.config/sops/age/keys.txt
+```
+1. Export the `SOPS_AGE_KEY_FILE` variable in your `bashrc`, `zshrc` or `config.fish` and source it, e.g.
+```sh
+export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
+source ~/.bashrc
+```
+1. Fill out the `age` public key in the `.config.sample.env` under `BOOTSTRAP_AGE_PUBLIC_KEY`.
+**Note:** The public key should start with `age`...
+
+- Reference: [Age and SOPS](https://github.com/k8s-at-home/template-cluster-k3s#closed_lock_with_key-setting-up-age)
 
 ### Configure Flux
 
-Description
+Flux is the essential GitOps enablement component that keeps your Kubernetes cluster in sync with your GitHub repository. Once your Flux instance is bootstrapped, it will begin driving the state of your Kubernetes cluster. In order to update or make changes to your cluster, it is recommended to create merge requests for your GitHub repository - this grants you a simple rollback method, change logging, and single point of change for your environment.
 
-1. [GitOps with Flux](https://github.com/k8s-at-home/template-cluster-k3s#small_blue_diamond-gitops-with-flux)
-1. [Flux initialization](https://fluxcd.io/docs/get-started/)
-1. 
-1. 
-1. 
+1. Begin by installing flux.
+```sh
+brew install fluxcd/tap/flux
+```
+1. Verify Flux can be installed
+```sh
+flux --kubeconfig=./provision/kubeconfig check --pre
+# ► checking prerequisites
+# ✔ kubectl 1.21.5 >=1.18.0-0
+# ✔ Kubernetes 1.21.5+k3s1 >=1.16.0-0
+# ✔ prerequisites checks passed
+```
+1. Pre-create the `flux-system` namespace
+```sh
+kubectl --kubeconfig=./provision/kubeconfig create namespace flux-system --dry-run=client -o yaml | kubectl --kubeconfig=./provision/kubeconfig apply -f -
+```
+1. Add the Age key in-order for Flux to decrypt SOPS secrets
+```sh
+cat ~/.config/sops/age/keys.txt |
+    kubectl --kubeconfig=./provision/kubeconfig \
+    -n flux-system create secret generic sops-age \
+    --from-file=age.agekey=/dev/stdin
+```
+**Note:** Variables defined in `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/base/cluster-settings.yaml` will be usable anywhere in your YAML manifests under `./cluster`
+1. Verify the `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/core/cert-manager/secret.sops.yaml` files are encrypted with SOPS
+1. If you verified all the secrets are encrypted, you can delete the `tmpl` directory now
+1. Push your changes to git
+```sh
+git add -A
+git commit -m "initial commit"
+git push
+```
+1. Install Flux
+**Note:** Due to race conditions with the Flux CRDs you will have to run the below command twice. There should be no errors after your second run.
+```sh
+kubectl --kubeconfig=./provision/kubeconfig apply --kustomize=./cluster/base/flux-system
+# namespace/flux-system configured
+# customresourcedefinition.apiextensions.k8s.io/alerts.notification.toolkit.fluxcd.io created
+# ...
+# unable to recognize "./cluster/base/flux-system": no matches for kind "Kustomization" in version "kustomize.toolkit.fluxcd.io/v1beta1"
+# unable to recognize "./cluster/base/flux-system": no matches for kind "GitRepository" in version "source.toolkit.fluxcd.io/v1beta1"
+# unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
+# unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
+# unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
+# unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
+```
+1. Verify Flux components are running in the cluster
+```sh
+kubectl --kubeconfig=./provision/kubeconfig get pods -n flux-system
+# NAME                                       READY   STATUS    RESTARTS   AGE
+# helm-controller-5bbd94c75-89sb4            1/1     Running   0          1h
+# kustomize-controller-7b67b6b77d-nqc67      1/1     Running   0          1h
+# notification-controller-7c46575844-k4bvr   1/1     Running   0          1h
+# source-controller-7d6875bcb4-zqw9f         1/1     Running   0          1h
+```
+
+- Reference: [GitOps with Flux](https://github.com/k8s-at-home/template-cluster-k3s#small_blue_diamond-gitops-with-flux)
+- Reference: [Flux initialization](https://fluxcd.io/docs/get-started/)
 
 ### Deploy some apps
 
