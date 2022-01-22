@@ -136,11 +136,19 @@ Continue? [y/N]: y
 1. After the system completes the installation and reboots, select the `k3OS Current` bootloader option (or just wait a few moments and it will boot it by default).
 1. Login to your new K3OS installation as `rancher` with the password `rancher`
 1. Set a static IP on the nodes OS itself and NOT by using DHCP. Using DHCP to assign IPs injects a search domain into your nodes `/etc/resolv.conf` and this could potentially break DNS in containers. (If you already have a DHCP address assigned, remove any `search domain.com` lines from `/etc/resolv.conf` and save the file).
-1.
-1. Configure DNS on your nodes to use an upstream provider (e.g. `1.1.1.1`, `9.9.9.9`), or your router's IP if you have DNS configured there and it's not pointing to a local Ad-blocker DNS. Ad-blockers should only be used on devices with a web browser.
-1. 
-- Reference: [K3OS Networking](https://www.centlinux.com/2019/05/configure-network-on-k3os-machine.html)
-1. 
+    1. First, identify the `connman` service bound to `eth0`
+    ```sh
+    sudo connmanctl services
+    # *AO Wired                ethernet_84470907c635_cable
+    ```
+    1. View the details of your connection.
+    ```sh
+    sudo connmanctl services ethernet_84470907c635_cable
+    ```
+    1. Set a static IP address and DNS nameserver for your connection.
+    ```sh
+    sudo connmanctl config ethernet_84470907c635_cable --ipv4 manual 192.168.1.151 255.255.255.0 192.168.1.1 --nameservers 192.168.1.1
+    ```
 1. By default, k3OS allows SSH connections only using certificates. This is a much safer method than using passwords, however, for the sake of simplicity in this guide, we will set `PasswordAuthentication` to yes. Feel free to come back later and lock this down.
     1. Open the SSHD configuration file
     ```sh
