@@ -194,10 +194,13 @@ sudo vim /var/lib/rancher/k3os/config.yaml
        ```
     1. Replace the current contents with your desired hostname and save the file.
 1. Reboot your system for the system modules and hostname changes to take effect.
+```sh
+sudo reboot
+```
 1. On your Mac terminal, retrieve the kube config file from your k3OS node.
 ```sh
-scp rancher@192.168.1.183:/etc/rancher/k3s/k3s.yaml .
-rancher@192.168.1.183's password: 
+scp rancher@192.168.1.151:/etc/rancher/k3s/k3s.yaml .
+rancher@192.168.1.151's password: 
 ```
 1. Open the `k3s.yaml` file you downloaded on your Mac.
 1. Replace _127.0.0.1_ in the line with `server: https://127.0.0.1:6443` with the IP address of your Kubernetes node (for example, `server: https://192.168.1.151:6443`) 
