@@ -1,0 +1,22 @@
+# Editors
+.vscode/
+# Trash
+.DS_Store
+Thumbs.db
+# k8s
+kubeconfig
+# vscode-sops
+.decrypted~*.yaml
+# Secrets
+.secrets
+#secret file
+/cluster/apps/home-assistant-with-vscode/code-server.sops.yaml
+#legacy files
+/cluster/base_legacy
+/tmpl_legacy
+#sensitive file
+.config.sample.env
+# notes
+/notes
+# not ready yet
+.github

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudflare-api-key
+  namespace: cert-manager
+stringData:
+    api-key: ${BOOTSTRAP_CLOUDFLARE_APIKEY}

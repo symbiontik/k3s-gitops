@@ -1,0 +1,61 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: influxdb
+  namespace: apps
+spec:
+  releaseName: influxdb
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://helm.influxdata.com/
+      chart: influxdb
+      version: 4.10.0
+      sourceRef:
+        kind: HelmRepository
+        name: influxdata-charts
+        namespace: flux-system
+      interval: 5m
+  values:
+    image:
+      repository: "influxdb"
+      tag: "2.0.8"
+    #env:
+      #ENVIRONMENT_VARIABLE: 
+      #INFLUXDB_BUCKET_CREATE_THING: home_assistant
+    service:
+      type: ClusterIP
+      port: 80
+      targetPort: 8086
+      portName: http
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      annotations:
+        cert-manager.io/cluster-issuer: "letsencrypt-production"
+        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+      hostname: influxdb.${SECRET_DOMAIN}
+      path: /
+      tls: true
+      secretName: influxdb-tls
+    resources:
+      requests:
+        memory: 500Mi
+        cpu: 100m
+      limits:
+        memory: 800Mi
+    livenessProbe:
+      timeoutSeconds: 10
+    readinessProbe:
+      timeoutSeconds: 10
+    startupProbe:
+      enabled: true
+      failureThreshold: 10
+      periodSeconds: 10
+    persistence:
+      enabled: true
+      useExisting: true
+      name: influxdb-data
+    #nodeSelector:
+      #node-role.kubernetes.io/worker: "true"

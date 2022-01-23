@@ -1,0 +1,9 @@
+k3os:
+  k3s_args:
+  - --disable
+  - servicelb, traefik, metrics-server
+  password: rancher
+  token: cluster-secret
+  ntp_servers:
+  - 0.us.pool.ntp.org
+  - 1.us.pool.ntp.org
