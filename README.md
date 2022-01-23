@@ -200,13 +200,13 @@ sudo reboot
 1. On your Mac terminal, retrieve the kube config file from your k3OS node.
 ```sh
 scp rancher@192.168.1.151:/etc/rancher/k3s/k3s.yaml .
-rancher@192.168.1.151's password: 
+#rancher@192.168.1.151's password: 
 ```
 1. Open the `k3s.yaml` file you downloaded on your Mac.
 1. Replace _127.0.0.1_ in the line with `server: https://127.0.0.1:6443` with the IP address of your Kubernetes node (for example, `server: https://192.168.1.151:6443`) 
 1. Copy the complete contents of `k3s.yaml` to your clipboard.
 1. On your Mac, open (or create) the file `/Users/YOURUSERNAME/.kube/config`
-1. Paste the contents of `kubeconfig.yaml` into `/Users/YOURUSERNAME/.kube/config` and save the file.
+1. Paste the contents of `k3s.yaml` into `/Users/YOURUSERNAME/.kube/config` and save the file.
 1. Install `kubectl`.
 ```sh
 brew install kubectl
@@ -214,8 +214,8 @@ brew install kubectl
 1. Use `kubectl` to list your available Kubernetes nodes
 ```sh
 kubectl get nodes
-#NAME        STATUS     ROLES                  AGE    VERSION
-#k3s-node1   Ready      control-plane,master   115d   v1.21.1+k3s1
+#NAME        STATUS   ROLES                  AGE   VERSION
+#k3s-node2   Ready    control-plane,master   23h   v1.22.2+k3s2
 ```
 
 You are now able to securely access your active Kubernetes node from your remote development system.
