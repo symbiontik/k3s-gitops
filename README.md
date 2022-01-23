@@ -289,13 +289,6 @@ export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
         sops --encrypt --in-place "${PROJECT_DIR}/cluster/core/cert-manager/secret.sops.yaml"
 ```
 1. Since `.config.sample.env` contains so many sensitive values, either add this to your `.gitignore` or delete the file so you do not commit it to your public GitHub repository.
-1. Sync your completed project to your public GitHub repository.
-```sh
-git add .
-git commit -m "add encrypted deployment files"
-git push
-```
-
 
 ### Configure Flux
 
@@ -307,36 +300,37 @@ brew install fluxcd/tap/flux
 ```
 1. Verify Flux can be installed
 ```sh
-flux --kubeconfig=./provision/kubeconfig check --pre
-# ► checking prerequisites
-# ✔ kubectl 1.21.5 >=1.18.0-0
-# ✔ Kubernetes 1.21.5+k3s1 >=1.16.0-0
-# ✔ prerequisites checks passed
+flux check --pre
+#► checking prerequisites
+#✔ kubectl 1.21.3 >=1.18.0-0
+#✔ Kubernetes 1.22.2+k3s2 >=1.16.0-0
+#✔ prerequisites checks passed
 ```
 1. Pre-create the `flux-system` namespace
 ```sh
-kubectl --kubeconfig=./provision/kubeconfig create namespace flux-system --dry-run=client -o yaml | kubectl --kubeconfig=./provision/kubeconfig apply -f -
+kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply -f -
+# namespace/flux-system created
 ```
 1. Add the Age key in-order for Flux to decrypt SOPS secrets
 ```sh
 cat ~/.config/sops/age/keys.txt |
-    kubectl --kubeconfig=./provision/kubeconfig \
-    -n flux-system create secret generic sops-age \
+    kubectl -n flux-system create secret generic sops-age \
     --from-file=age.agekey=/dev/stdin
+# secret/sops-age created
 ```
 **Note:** Variables defined in `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/base/cluster-settings.yaml` will be usable anywhere in your YAML manifests under `./cluster`
 1. Verify the `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/core/cert-manager/secret.sops.yaml` files are encrypted with SOPS
 1. If you verified all the secrets are encrypted, you can delete the `tmpl` directory now
-1. Push your changes to git
+1. Sync your completed project to your public GitHub repository.
 ```sh
-git add -A
-git commit -m "initial commit"
+git add .
+git commit -m "add encrypted deployment files"
 git push
 ```
 1. Install Flux
 **Note:** Due to race conditions with the Flux CRDs you will have to run the below command twice. There should be no errors after your second run.
 ```sh
-kubectl --kubeconfig=./provision/kubeconfig apply --kustomize=./cluster/base/flux-system
+kubectl apply --kustomize=./cluster/base/flux-system
 # namespace/flux-system configured
 # customresourcedefinition.apiextensions.k8s.io/alerts.notification.toolkit.fluxcd.io created
 # ...
