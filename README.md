@@ -31,7 +31,8 @@ This guide will walk you through the following steps:
 1. OS Installation
 1. Connect to your Kubernetes cluster
 1. Generate a Cloudflare API key
-1. Configure SOPS
+1. Configure secrets encryption
+1. Prepare for deployment
 1. Configure Flux
 1. Deploy some apps
 1. (advanced) Add your own apps
@@ -288,7 +289,18 @@ export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
         sops --encrypt --in-place "${PROJECT_DIR}/cluster/base/cluster-secrets.sops.yaml"
         sops --encrypt --in-place "${PROJECT_DIR}/cluster/core/cert-manager/secret.sops.yaml"
 ```
-1. Since `.config.sample.env` contains so many sensitive values, either add this to your `.gitignore` or delete the file so you do not commit it to your public GitHub repository.
+**Note:** Variables defined in `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/base/cluster-settings.yaml` will be usable anywhere in your YAML manifests under `./cluster`
+
+1. Verify the `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/core/cert-manager/secret.sops.yaml` files are encrypted with SOPS.
+1. If you verified all the secrets are encrypted, you can delete the `tmpl` directory now.
+1. Since `.config.sample.env` contains so many sensitive values, be sure to either add this to your `.gitignore` or delete the file so you DO NOT commit it to your public GitHub repository.
+1. Sync your completed project to your public GitHub repository.
+```sh
+git add .
+git commit -m "add encrypted deployment files"
+git push
+```
+Your local terminal and GitHub repository are now ready to initialize Flux.
 
 ### Configure Flux
 
@@ -314,45 +326,12 @@ kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply -f
 1. Add the Age key in-order for Flux to decrypt SOPS secrets
 ```sh
 cat ~/.config/sops/age/keys.txt |
-    kubectl -n flux-system create secret generic sops-age \
-    --from-file=age.agekey=/dev/stdin
+kubectl -n flux-system create secret generic sops-age \
+--from-file=age.agekey=/dev/stdin
 # secret/sops-age created
 ```
-**Note:** Variables defined in `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/base/cluster-settings.yaml` will be usable anywhere in your YAML manifests under `./cluster`
-1. Verify the `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/core/cert-manager/secret.sops.yaml` files are encrypted with SOPS
-1. If you verified all the secrets are encrypted, you can delete the `tmpl` directory now
-1. Sync your completed project to your public GitHub repository.
-```sh
-git add .
-git commit -m "add encrypted deployment files"
-git push
-```
-1. Install Flux
-**Note:** Due to race conditions with the Flux CRDs you will have to run the below command twice. There should be no errors after your second run.
-```sh
-kubectl apply --kustomize=./cluster/base/flux-system
-# namespace/flux-system configured
-# customresourcedefinition.apiextensions.k8s.io/alerts.notification.toolkit.fluxcd.io created
-# ...
-# unable to recognize "./cluster/base/flux-system": no matches for kind "Kustomization" in version "kustomize.toolkit.fluxcd.io/v1beta1"
-# unable to recognize "./cluster/base/flux-system": no matches for kind "GitRepository" in version "source.toolkit.fluxcd.io/v1beta1"
-# unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
-# unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
-# unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
-# unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
-```
-1. Verify Flux components are running in the cluster
-```sh
-kubectl --kubeconfig=./provision/kubeconfig get pods -n flux-system
-# NAME                                       READY   STATUS    RESTARTS   AGE
-# helm-controller-5bbd94c75-89sb4            1/1     Running   0          1h
-# kustomize-controller-7b67b6b77d-nqc67      1/1     Running   0          1h
-# notification-controller-7c46575844-k4bvr   1/1     Running   0          1h
-# source-controller-7d6875bcb4-zqw9f         1/1     Running   0          1h
-```
 
-- Reference: [GitOps with Flux](https://github.com/k8s-at-home/template-cluster-k3s#small_blue_diamond-gitops-with-flux)
-- Reference: [Flux initialization](https://fluxcd.io/docs/get-started/)
+Your Kubernetes cluster is now ready to begin sycning with your GitHub repo to deploy apps with Flux.
 
 ### Deploy some apps
 
@@ -378,9 +357,11 @@ Here are the front-end apps we will deploy that utilize these enabling technolog
 - [vs-code]()
 - [grafana]()
 
-1. Install Flux onto your Kubernetes cluster (you'll need to run this command twice due to Kubernetes race conditions):
+
+1. Initialize Flux on your Kubernetes cluster.
+**Note:** Due to race conditions with the Flux CRDs you will have to run the below command twice. There should be no errors after your second run.
 ```sh
-kubectl --kubeconfig=./provision/kubeconfig apply --kustomize=./cluster/base/flux-system
+kubectl apply --kustomize=./cluster/base/flux-system
 # namespace/flux-system configured
 # customresourcedefinition.apiextensions.k8s.io/alerts.notification.toolkit.fluxcd.io created
 # ...
@@ -391,15 +372,39 @@ kubectl --kubeconfig=./provision/kubeconfig apply --kustomize=./cluster/base/flu
 # unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
 # unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
 ```
-1. Verify Flux components are running in the cluster
-
+1. Verify Flux components are running in the cluster.
 ```sh
-kubectl --kubeconfig=./provision/kubeconfig get pods -n flux-system
+kubectl get pods -n flux-system
 # NAME                                       READY   STATUS    RESTARTS   AGE
 # helm-controller-5bbd94c75-89sb4            1/1     Running   0          1h
 # kustomize-controller-7b67b6b77d-nqc67      1/1     Running   0          1h
 # notification-controller-7c46575844-k4bvr   1/1     Running   0          1h
 # source-controller-7d6875bcb4-zqw9f         1/1     Running   0          1h
+```
+1. Verify Flux is successfully syncing with your GitHub repository.
+```sh
+flux get sources git
+#NAME                  READY   MESSAGE                        REVISION          SUSPENDED 
+#traefik-crd-source    True    Fetched rev: v10.3.4/d9abd..   v10.3.4/d9abd9f.. False    
+#flux-system           True    Fetched rev: main/d452..       main/d4521a..     False 
+```
+1. Verify status of your Kustomization deployments.
+```sh
+kubectl get kustomization -A
+#NAMESPACE     NAME            READY   STATUS                                                               AGE
+#flux-system   traefik-crds    True    Applied revision: v10.9.1/5d97a2e30076302950c31fc9a98f267bdd624fe8   12m
+#flux-system   observability   True    Applied revision: main/ada165d6beee093726613a7818c950e0c31f5e21      39m
+#flux-system   networking      True    Applied revision: main/ada165d6beee093726613a7818c950e0c31f5e21      39m
+#...
+```
+1. Verify status of your Helm Chart deployments.
+```sh
+flux get helmrelease -A
+#NAMESPACE       NAME                    READY   MESSAGE                                 REVISION        SUSPENDED 
+#cert-manager    cert-manager            True    Release reconciliation succeeded        v1.5.3          False    
+#metallb  metallb                 True    Release reconciliation succeeded        0.10.2          False       
+#apps            home-assistant          True    Release reconciliation succeeded        11.0.3          False    
+#...
 ```
 
 Your Kubernetes cluster is now being managed by Flux; your Git repository is driving the state of your cluster!
@@ -408,9 +413,9 @@ Your Kubernetes cluster is now being managed by Flux; your Git repository is dri
 
 With this existing infrastructure in place, it's relatively simple to run your containerized apps in this cluster. In this guide, we'll deploy an app that can be easily installed and managed with a Helm chart.
 
-1. In your `k3os-gitops` repo, navigate into your `/cluster/apps/home` directory:
+1. In your `k3os-gitops` repo, navigate into your `/cluster/apps/` directory:
 ```sh
-cd /cluster/apps/home/
+cd /cluster/apps/
 ```
 1. Create a new directory called `esphome` and navigate into that directory
 ```sh
@@ -421,10 +426,6 @@ mkdir esphome && cd esphome
 touch config-pvc.yaml
 ```
 1. 
-1. 
-1. 
-
-
 
 Additional reading regarding container workload types:
 - [Stateless vs Stateful apps on Kubernetes](https://www.weka.io/blog/stateless-vs-stateful-kubernetes/)
@@ -432,28 +433,22 @@ Additional reading regarding container workload types:
 
 ### (advanced) Automate K3OS updates
 
-Description
+System Upgrade Controller automates the upgrade process for your Kubernetes nodes.
 
 1. [Automatic Upgrades](https://rancher.com/docs/k3s/latest/en/upgrades/automated/)
 
 ### (advanced) Automate your app updates
 
-Description
+Renovate watches your entire repository looking for dependency updates and automatically creates a PR when one is found. When you merge these PRs, Flux will automatically apply the changes to your cluster.
 
 1. [RenovateBot](https://github.com/renovatebot/github-action)
 
-### (advanced) Visualize your repo
-
-Description
-
-1. [Repo Visualizer](https://github.com/githubocto/repo-visualizer)
-1. [Repo Visualizer Blog](https://next.github.com/projects/repo-visualization)
-
 ### (advanced) Access your apps from anywhere
 
-Description
+A public DNS service grants you the ability to access your apps from anywhere in the world. Cloudflare provides this service as well as many advanced security related features that come at no additional cost.
 
 1. [Cloudflare DNS]()
+1. [Terraform provider for Cloudflare DNS Records](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/record)
 
 ### (advanced) Add SSO to your apps
 
@@ -461,6 +456,7 @@ Single-Sign-On (SSO) provides a simplified, one-time login experience for your u
 
 1. [Cloudflare Access]()
 1. [Cloudflare App Launcher]()
+1. [Terraform provider for Cloudflare Access Rules](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/access_rule)
 
 ### (advanced) Integrate zero-trust security
 
@@ -469,6 +465,13 @@ Integrating zero-trust security principles gives you the best of both worlds: si
 1. [Multifactor Authentication]()
 1. [Cloudflare Access Policies]()
 1. [Cloudflare Gateway]()
+
+### (advanced) Visualize your repo
+
+GitHub's repo visualizer provides you with the shape of your codebase, giving you a new perspective on your reposistory. It can be used as a baseline to detect large changes in structure, understand how your environment is structured, or as a visual tool to explain features to others.
+
+1. [Repo Visualizer](https://github.com/githubocto/repo-visualizer)
+1. [Repo Visualizer Blog](https://next.github.com/projects/repo-visualization)
 
 ## Gratitude
 
