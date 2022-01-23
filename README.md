@@ -254,15 +254,48 @@ age-keygen -o age.agekey
 mkdir -p ~/.config/sops/age
 mv age.agekey ~/.config/sops/age/keys.txt
 ```
-1. Export the `SOPS_AGE_KEY_FILE` variable in your `bashrc`, `zshrc` or `config.fish` and source it, e.g.
-```sh
-export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
-source ~/.bashrc
-```
 1. Fill out the `age` public key in the `.config.sample.env` under `BOOTSTRAP_AGE_PUBLIC_KEY`.
 **Note:** The public key should start with `age`...
 
-- Reference: [Age and SOPS](https://github.com/k8s-at-home/template-cluster-k3s#closed_lock_with_key-setting-up-age)
+Your environment is now prepared for encrypting all secrets in your cluster.
+
+### Prepare for deployment
+
+1. On your terminal, change directory to the root level of your Git repository then set the `PROJECT_DIR` environment variable.
+```sh
+export PROJECT_DIR=$(git rev-parse --show-toplevel)
+```
+1. Set the `SOPS_AGE_KEY_FILE` environment variable.
+```sh
+export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
+```
+1. Edit your `.config.sample.env` file to include all your respective unique values, then save the file.
+1. Copy all the completed contents from this file and run it in your terminal to set these environmental variables.
+1. Create your unique, encrypted deployment files using 
+```sh
+        # sops configuration file
+        envsubst < "${PROJECT_DIR}/tmpl/.sops.yaml" \
+            > "${PROJECT_DIR}/.sops.yaml"
+        # cluster
+        envsubst < "${PROJECT_DIR}/tmpl/cluster/cluster-settings.yaml" \
+            > "${PROJECT_DIR}/cluster/base/cluster-settings.yaml"
+        envsubst < "${PROJECT_DIR}/tmpl/cluster/gotk-sync.yaml" \
+            > "${PROJECT_DIR}/cluster/base/flux-system/gotk-sync.yaml"
+        envsubst < "${PROJECT_DIR}/tmpl/cluster/cluster-secrets.sops.yaml" \
+            > "${PROJECT_DIR}/cluster/base/cluster-secrets.sops.yaml"
+        envsubst < "${PROJECT_DIR}/tmpl/cluster/cert-manager-secret.sops.yaml" \
+            > "${PROJECT_DIR}/cluster/core/cert-manager/secret.sops.yaml"
+        sops --encrypt --in-place "${PROJECT_DIR}/cluster/base/cluster-secrets.sops.yaml"
+        sops --encrypt --in-place "${PROJECT_DIR}/cluster/core/cert-manager/secret.sops.yaml"
+```
+1. Since `.config.sample.env` contains so many sensitive values, either add this to your `.gitignore` or delete the file so you do not commit it to your public GitHub repository.
+1. Sync your completed project to your public GitHub repository.
+```sh
+git add .
+git commit -m "add encrypted deployment files"
+git push
+```
+
 
 ### Configure Flux
 
