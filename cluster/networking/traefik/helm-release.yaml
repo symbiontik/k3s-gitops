@@ -18,7 +18,7 @@ spec:
       interval: 5m
   dependsOn:
     - name: cert-manager
-      namespace: cert-manager
+      namespace: core
   values:
     image:
       name: ghcr.io/k8s-at-home/traefik
