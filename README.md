@@ -36,7 +36,7 @@ This guide will walk you through the following steps:
 1. Configure Flux
 1. Deploy some apps
 1. (advanced) Add your own apps
-1. (advanced) Automate K3OS updates
+1. (advanced) Automate K3S updates
 1. (advanced) Automate your app updates
 1. (advanced) Visualize your repo
 1. (advanced) Access your apps from anywhere
@@ -300,6 +300,7 @@ git add .
 git commit -m "add encrypted deployment files"
 git push
 ```
+
 Your local terminal and GitHub repository are now ready to initialize Flux.
 
 ### Configure Flux
@@ -339,24 +340,25 @@ Now that your infrastructure, security mechanisms, and deployment methodologies 
 
 Kubernetes clusters are made up of many unique (and interchangeable) components and applications. These include technologies that facilitate networking segmentation, perform CI/CD operations, automate security operations, gather metrics, load balance services, and run your applications. The Kubernetes universe is [gigantic](https://landscape.cncf.io/).
 
-These are the (well-known and robust) foundational apps that will be deployed with this repo:
+These are the components (organized by namespace) that will be deployed with this repo:
 
-- [flannel](https://github.com/flannel-io/flannel) - default CNI provided by k3s
-- [local-path-provisioner](https://github.com/rancher/local-path-provisioner) - default storage class provided by k3s
-- [flux](https://toolkit.fluxcd.io/) - GitOps tool for deploying manifests from the `cluster` directory
-- [metallb](https://metallb.universe.tf/) - bare metal load balancer
-- [cert-manager](https://cert-manager.io/) - SSL certificates - with Cloudflare DNS challenge
-- [traefik](https://traefik.io) - ingress controller
-- [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) - upgrade k3s
-- [reloader](https://github.com/stakater/Reloader) - restart pod when configmap or secret changes
-- [prometheus]()
-
-Here are the front-end apps we will deploy that utilize these enabling technologies:
-
-- [home-assistant]()
-- [vs-code]()
-- [grafana]()
-
+1. apps
+    1. [home-assistant]()
+    1. [vs-code]()
+    1. [influxdb]()
+1. core
+    1. [cert-manager](https://cert-manager.io/) - SSL certificates - with Cloudflare DNS challenge
+    1. [metrics-server]()
+    1. [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) - upgrade k3s
+1. flux-system
+    1. [flux](https://toolkit.fluxcd.io/) - GitOps tool for deploying manifests from the `cluster` directory
+1. networking
+    1. [metallb](https://metallb.universe.tf/) - bare metal load balancer
+    1. [traefik](https://traefik.io) - ingress controller
+1. observability
+    1. [prometheus]()
+    1. [grafana]()
+    1. [node-exporter]()
 
 1. Initialize Flux on your Kubernetes cluster.
 **Note:** Due to race conditions with the Flux CRDs you will have to run the below command twice. There should be no errors after your second run.
@@ -406,8 +408,9 @@ flux get helmrelease -A
 #apps            home-assistant          True    Release reconciliation succeeded        11.0.3          False    
 #...
 ```
+**Note**: Flux will check your GitHub repository for changes every 60 seconds. You can change this value in your `/base/flux-system/gotk-sync.yaml` file if desired.
 
-Your Kubernetes cluster is now being managed by Flux; your Git repository is driving the state of your cluster!
+Your Kubernetes cluster is now being managed by Flux - your Git repository is driving the state of your cluster!
 
 ### (advanced) Add your own apps
 
@@ -421,33 +424,86 @@ cd /cluster/apps/
 ```sh
 mkdir esphome && cd esphome
 ```
-1. Since this will be a stateful app, create a file `config-pvc.yaml`
+1. Since this will be a stateful app, create a persistent storage definition file `config-pvc.yaml`.
 ```sh
 touch config-pvc.yaml
 ```
-1. 
+1. Since this deployment will be defined and managed by a Helm chart, create the file `helm-release.yaml`.
+```sh
+touch helm-release.yaml
+```
+1. Since we use Kustomize as our configuration management took, create the file `kustomize.yaml`.
+```sh
+touch kustomization.yaml
+```
+1. Copy and paste each file's respective content from the `/extras/apps/esphome` folder to their respective files you just created in `/cluster/apps/esphome`, then save your files.
+1. Edit your `/cluster/apps/kustomization.yaml` file to include your `esphome` directory, then save the file.
+```log
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - esphome
+  - home-assistant
+  - influxdb
+```
+1. Push the changes to your GitHub repository. 
+```sh
+git add .
+git commit -m "add esphome app"
+git push
+```
+1. Your cluster will begin deploying the `esphome` app and resources on your next Flux sync.
+
+You have now successfully created a new app in your Kubernetes cluster.
 
 Additional reading regarding container workload types:
 - [Stateless vs Stateful apps on Kubernetes](https://www.weka.io/blog/stateless-vs-stateful-kubernetes/)
 - [Should I run a database on Kubernetes?](https://cloud.google.com/blog/products/databases/to-run-or-not-to-run-a-database-on-kubernetes-what-to-consider)
 
-### (advanced) Automate K3OS updates
+### (advanced) Automate K3S updates
 
-System Upgrade Controller automates the upgrade process for your Kubernetes nodes.
+System Upgrade Controller automates the upgrade process for your Kubernetes nodes. This is a Kubernetes-native approach to cluster upgrades. It leverages a custom resource definition (CRD), a plan, and a controller that schedules upgrades based on your configured plans.
 
-1. [Automatic Upgrades](https://rancher.com/docs/k3s/latest/en/upgrades/automated/)
+1. Navigate to the `/cluster/core/system-upgrade-controller` directory.
+1. Inspect the `server-plan.yaml` file.
+1. Notice these lines:
+```log
+  version: v1.23.1+k3s2
+  #channel: https://update.k3s.io/v1-release/channels/stable
+```
+1. You have the choice of either manually defining the desired k3s version OR continuously monitoring the stable release channel. Choose what makes the most sense for your desired upgrade plan.
+
+You now have an automated upgrade process for k3s that will begin as soon as the controller detects that a plan was created. Updating your plan will cause the controller to re-evaluate the plan and determine if another upgrade is needed.
 
 ### (advanced) Automate your app updates
 
 Renovate watches your entire repository looking for dependency updates and automatically creates a PR when one is found. When you merge these PRs, Flux will automatically apply the changes to your cluster.
 
+1. Navigate to the `/extras/github-actions` directory.
+1. 
+
+1. [GitHub Actions Quickstart](https://docs.github.com/en/actions/quickstart)
 1. [RenovateBot](https://github.com/renovatebot/github-action)
 
 ### (advanced) Access your apps from anywhere
 
 A public DNS service grants you the ability to access your apps from anywhere in the world. Cloudflare provides this service as well as many advanced security related features that come at no additional cost.
 
+Rather than utilize the Cloudflare web UI, a much more manageable and scalable pattern is to leverage Terraform (an infrastructure-as-code tool) for Cloudflare resource management.
+
+1. Begin by importing your current Cloudflare state into Terraform files.
+    1. 
+    ```sh
+    brew tap cloudflare/cloudflare
+    brew install --cask cloudflare/cloudflare/cf-terraforming
+    ```
+1. 
+1. Navigate to the `/extras/terraform/cloudflare-dns` directory.
+
 1. [Cloudflare DNS]()
+1. [cf-terraforming repo](https://github.com/cloudflare/cf-terraforming)
+1. [Import Cloudflare resources to Terraform](https://developers.cloudflare.com/terraform/advanced-topics/import-cloudflare-resources)
 1. [Terraform provider for Cloudflare DNS Records](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/record)
 
 ### (advanced) Add SSO to your apps
@@ -456,6 +512,7 @@ Single-Sign-On (SSO) provides a simplified, one-time login experience for your u
 
 1. [Cloudflare Access]()
 1. [Cloudflare App Launcher]()
+1. [Cloudflare IdP Integration](https://developers.cloudflare.com/cloudflare-one/identity/idp-integration)
 1. [Terraform provider for Cloudflare Access Rules](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/access_rule)
 
 ### (advanced) Integrate zero-trust security
@@ -469,6 +526,9 @@ Integrating zero-trust security principles gives you the best of both worlds: si
 ### (advanced) Visualize your repo
 
 GitHub's repo visualizer provides you with the shape of your codebase, giving you a new perspective on your reposistory. It can be used as a baseline to detect large changes in structure, understand how your environment is structured, or as a visual tool to explain features to others.
+
+1. Navigate to the `/extras/github-actions` directory.
+1. 
 
 1. [Repo Visualizer](https://github.com/githubocto/repo-visualizer)
 1. [Repo Visualizer Blog](https://next.github.com/projects/repo-visualization)

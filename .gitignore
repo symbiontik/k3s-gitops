@@ -20,3 +20,6 @@ kubeconfig
 /notes
 # not ready yet
 .github
+# esphome
+/cluster/apps/esphome
+/cluster/apps/kustomization.yaml
