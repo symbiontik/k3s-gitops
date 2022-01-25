@@ -490,14 +490,32 @@ Renovate watches your entire repository looking for dependency updates and autom
 
 A public DNS service grants you the ability to access your apps from anywhere in the world. Cloudflare provides this service as well as many advanced security related features that come at no additional cost.
 
-Rather than utilize the Cloudflare web UI, a much more manageable and scalable pattern is to leverage Terraform (an infrastructure-as-code tool) for Cloudflare resource management.
+Rather than utilize the Cloudflare web UI, a much more manageable and scalable pattern is to leverage Terraform (an infrastructure-as-code tool) for Cloudflare resource management. Once this is initialized, you should use Terraform as the authoritative management platform for your Cloudflare resources so they do not fall out of sync.
 
 1. Begin by importing your current Cloudflare state into Terraform files.
-    1. 
+    1. Navigate to the `/extras/terraform/cloudflare-import` directory.
+    1. Install the necessary packages.
     ```sh
+    brew install terraform
     brew tap cloudflare/cloudflare
     brew install --cask cloudflare/cloudflare/cf-terraforming
     ```
+    1. Set your environmental variables.
+    ```sh
+    export CLOUDFLARE_EMAIL='user@example.com'
+    export CLOUDFLARE_API_KEY='1150bed3f45247b99f7db9696fffa17cbx9'
+    export CLOUDFLARE_ZONE_ID='4c8964bacd8821df5315e5c0bf4eee50'
+    ```
+    1. Generate Terraform files from your Cloudflare DNS records.
+    ```sh
+    cf-terraforming generate \
+    --resource-type "cloudflare_record" \
+    --email $CLOUDFLARE_EMAIL \
+    --key $CLOUDFLARE_API_KEY \
+    --zone $CLOUDFLARE_ZONE_ID \
+    > records.tf
+    ```
+1. Copy the `records.tf` file to your `/extras/terraform/cloudflare-dns` directory.
 1. 
 1. Navigate to the `/extras/terraform/cloudflare-dns` directory.
 
@@ -517,7 +535,7 @@ Single-Sign-On (SSO) provides a simplified, one-time login experience for your u
 
 ### (advanced) Integrate zero-trust security
 
-Integrating zero-trust security principles gives you the best of both worlds: simplified, one-time login access for your users and fine-tuned security  
+Integrating zero-trust security principles gives you the best of both worlds: simplified, one-time login access for your users and fine-tuned security settings.
 
 1. [Multifactor Authentication]()
 1. [Cloudflare Access Policies]()
