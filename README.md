@@ -47,10 +47,10 @@ This guide will walk you through the following steps:
 
 **Note**: In order to stay focused on secure GitOps practices, these practices will not be covered within this guide:
 
--High availability for networking, storage, and Kubernetes components
--Hosted/Cloud deployments
--Load balancing
--Disaster recovery
+- High availability for networking, storage, and Kubernetes components
+- Hosted/Cloud deployments
+- Load balancing
+- Disaster recovery
 
 ### Fork this repo
 
