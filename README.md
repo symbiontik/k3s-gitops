@@ -8,7 +8,7 @@ To achieve these goals, the following methodologies will be utilized:
 - Bare metal Kubernetes deployment with [k3os](https://k3os.io/)
 - Multi-layer encryption using [SOPs](https://fluxcd.io/docs/guides/mozilla-sops/) & [Cert Manager](https://cert-manager.io/docs/)
 - Zero Trust security with [Cloudflare](https://www.cloudflare.com/what-is-cloudflare/) & [2FA](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication)
-- Automated system updates with [Renovate] & [System Upgrade Controller](https://rancher.com/docs/k3s/latest/en/upgrades/automated/)
+- Automated system updates with [Renovate](https://www.whitesourcesoftware.com/free-developer-tools/renovate/) & [System Upgrade Controller](https://rancher.com/docs/k3s/latest/en/upgrades/automated/)
 
 ## Architecture
 
