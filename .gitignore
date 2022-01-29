@@ -23,3 +23,6 @@ kubeconfig
 # esphome
 /cluster/apps/esphome
 /cluster/apps/kustomization.yaml
+# terraform files
+/extras/terraform/
+/extras/terraform/cloudflare-import/.terraform.locl.hcl

@@ -5,8 +5,10 @@ Deploy a local Kubernetes datacenter that features low maintenance, high securit
 To achieve these goals, the following methodologies will be utilized:
 
 - [GitOps](https://www.weave.works/technologies/gitops/) with [Flux](https://fluxcd.io/docs/concepts/)
-- Multi-node deployment with a light-weight OS, [k3os](https://k3os.io/)
-- Multi-point encryption using [Mozilla SOPS](https://fluxcd.io/docs/guides/mozilla-sops/) & [Cert Manager](https://cert-manager.io/docs/)
+- Bare metal Kubernetes deployment with [k3os](https://k3os.io/)
+- Multi-layer encryption using [SOPs](https://fluxcd.io/docs/guides/mozilla-sops/) & [Cert Manager](https://cert-manager.io/docs/)
+- Zero Trust security with [Cloudflare](https://www.cloudflare.com/what-is-cloudflare/) & [2FA](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication)
+- Automated system updates with [Renovate] & [System Upgrade Controller](https://rancher.com/docs/k3s/latest/en/upgrades/automated/)
 
 ## Architecture
 
@@ -21,7 +23,7 @@ In order to complete this guide, you will need the following:
 - [Homebrew](https://brew.sh/)
 - A GitHub Account
 - A Cloudflare Account with a domain
-- At least 1 PCs/VMs with at least 6GB RAM
+- A PC/VM with at least 4GB RAM
 
 ## Deployment overview
 
@@ -35,13 +37,20 @@ This guide will walk you through the following steps:
 1. Prepare for deployment
 1. Configure Flux
 1. Deploy some apps
-1. (advanced) Add your own apps
-1. (advanced) Automate K3S updates
-1. (advanced) Automate your app updates
-1. (advanced) Visualize your repo
-1. (advanced) Access your apps from anywhere
-1. (advanced) Add SSO to your apps
-1. (advanced) Integrate zero-trust security
+1. Add your own apps
+1. Automate k3s updates
+1. Automate your app updates
+1. Access your apps from anywhere
+1. Integrate Zero Trust security
+1. Add SSO to your apps
+1. Visualize your repo
+
+**Note**: In order to stay focused on secure GitOps practices, these practices will not be covered within this guide:
+
+-High availability for networking, storage, and Kubernetes components
+-Hosted/Cloud deployments
+-Load balancing
+-Disaster recovery
 
 ### Fork this repo
 
@@ -343,25 +352,25 @@ Kubernetes clusters are made up of many unique (and interchangeable) components 
 These are the components (organized by namespace) that will be deployed with this repo:
 
 1. apps
-    1. [home-assistant]()
-    1. [vs-code]()
-    1. [influxdb]()
+    1. [home-assistant](https://github.com/home-assistant/core) - Highly extensible home automation platform 
+    1. [vs-code](https://github.com/coder/code-server) - Browser-based Visual Studio Code instance for editing home-assistant configuration
+    1. [influxdb](https://github.com/influxdata/influxdb) - Persistent time-series database for home-assistant data
 1. core
-    1. [cert-manager](https://cert-manager.io/) - SSL certificates - with Cloudflare DNS challenge
-    1. [metrics-server]()
-    1. [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) - upgrade k3s
+    1. [cert-manager](https://github.com/jetstack/cert-manager) - Automatically provisions and manages TLS certificates in Kubernetes
+    1. [metrics-server](https://github.com/kubernetes-sigs/metrics-server) - Exports container resource metrics
+    1. [system-upgrade-controller](https://github.com/rancher/system-upgrade-controller) - Automated Kubernetes node upgrader
 1. flux-system
-    1. [flux](https://toolkit.fluxcd.io/) - GitOps tool for deploying manifests from the `cluster` directory
+    1. [flux](https://github.com/fluxcd/flux2) - GitOps toolkit for deploying manifests from the `cluster` directory
 1. networking
-    1. [metallb](https://metallb.universe.tf/) - bare metal load balancer
-    1. [traefik](https://traefik.io) - ingress controller
+    1. [metallb](https://github.com/metallb/metallb) - Bare metal network load balancer
+    1. [traefik](https://github.com/traefik/traefik) - Network ingress controller
 1. observability
-    1. [prometheus]()
-    1. [grafana]()
-    1. [node-exporter]()
+    1. [prometheus](https://github.com/prometheus/prometheus) - System and service metric collector
+    1. [grafana](https://github.com/grafana/grafana) - Metric and data visualization platform
+    1. [node-exporter](https://github.com/prometheus/node_exporter) - Exports node metrics
 
 1. Initialize Flux on your Kubernetes cluster.
-**Note:** Due to race conditions with the Flux CRDs you will have to run the below command twice. There should be no errors after your second run.
+**Note**: Due to race conditions with the Flux CRDs you will have to run the below command twice. There should be no errors after your second run.
 ```sh
 kubectl apply --kustomize=./cluster/base/flux-system
 # namespace/flux-system configured
@@ -412,7 +421,7 @@ flux get helmrelease -A
 
 Your Kubernetes cluster is now being managed by Flux - your Git repository is driving the state of your cluster!
 
-### (advanced) Add your own apps
+### Add your own apps
 
 With this existing infrastructure in place, it's relatively simple to run your containerized apps in this cluster. In this guide, we'll deploy an app that can be easily installed and managed with a Helm chart.
 
@@ -461,7 +470,7 @@ Additional reading regarding container workload types:
 - [Stateless vs Stateful apps on Kubernetes](https://www.weka.io/blog/stateless-vs-stateful-kubernetes/)
 - [Should I run a database on Kubernetes?](https://cloud.google.com/blog/products/databases/to-run-or-not-to-run-a-database-on-kubernetes-what-to-consider)
 
-### (advanced) Automate K3S updates
+### Automate K3S updates
 
 System Upgrade Controller automates the upgrade process for your Kubernetes nodes. This is a Kubernetes-native approach to cluster upgrades. It leverages a custom resource definition (CRD), a plan, and a controller that schedules upgrades based on your configured plans.
 
@@ -476,17 +485,17 @@ System Upgrade Controller automates the upgrade process for your Kubernetes node
 
 You now have an automated upgrade process for k3s that will begin as soon as the controller detects that a plan was created. Updating your plan will cause the controller to re-evaluate the plan and determine if another upgrade is needed.
 
-### (advanced) Automate your app updates
+### Automate your app updates
 
 Renovate watches your entire repository looking for dependency updates and automatically creates a PR when one is found. When you merge these PRs, Flux will automatically apply the changes to your cluster.
 
 1. Navigate to the `/extras/github-actions` directory.
 1. 
 
-1. [GitHub Actions Quickstart](https://docs.github.com/en/actions/quickstart)
-1. [RenovateBot](https://github.com/renovatebot/github-action)
+- Reference: [GitHub Actions Quickstart](https://docs.github.com/en/actions/quickstart)
+- Reference: [RenovateBot](https://github.com/renovatebot/github-action)
 
-### (advanced) Access your apps from anywhere
+### Access your apps from anywhere
 
 A public DNS service grants you the ability to access your apps from anywhere in the world. Cloudflare provides this service as well as many advanced security related features that come at no additional cost.
 
@@ -518,38 +527,52 @@ Rather than utilize the Cloudflare web UI, a much more manageable and scalable p
 1. Copy the `records.tf` file to your `/extras/terraform/cloudflare-dns` directory.
 1. 
 1. Navigate to the `/extras/terraform/cloudflare-dns` directory.
+1. 
+1. On your local router, configure port forwarding for port `443` to your Traefik Ingress IP (whatever IP you set for `BOOTSTRAP_METALLB_TRAEFIK_ADDR`).
+1. 
 
-1. [Cloudflare DNS]()
-1. [cf-terraforming repo](https://github.com/cloudflare/cf-terraforming)
-1. [Import Cloudflare resources to Terraform](https://developers.cloudflare.com/terraform/advanced-topics/import-cloudflare-resources)
-1. [Terraform provider for Cloudflare DNS Records](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/record)
 
-### (advanced) Add SSO to your apps
+- Reference: [Cloudflare DNS](https://www.cloudflare.com/dns/)
+- Reference: [cf-terraforming repo](https://github.com/cloudflare/cf-terraforming)
+- Reference: [Import Cloudflare resources to Terraform](https://developers.cloudflare.com/terraform/advanced-topics/import-cloudflare-resources)
+- Reference: [Terraform provider for Cloudflare DNS Records](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/record)
 
-Single-Sign-On (SSO) provides a simplified, one-time login experience for your users as well as fine-grained access control into which users have access to which apps.
 
-1. [Cloudflare Access]()
-1. [Cloudflare App Launcher]()
-1. [Cloudflare IdP Integration](https://developers.cloudflare.com/cloudflare-one/identity/idp-integration)
-1. [Terraform provider for Cloudflare Access Rules](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/access_rule)
+### Integrate Zero Trust security
 
-### (advanced) Integrate zero-trust security
+Integrating Zero Trust security principles throughout your infrastructure and application ecosystem ensures you reliability while protecting you from breaches. The fundamental difference from traditional security approaches is the shift of access controls from the network perimeter to individual users. To accomplish this, you will utilize features from Cloudflare, GitHub, and two-factor authentication (2FA) services.
 
-Integrating zero-trust security principles gives you the best of both worlds: simplified, one-time login access for your users and fine-tuned security settings.
+1. Choose which 2FA TOTP app you will use
+1. Configure your GitHub with 2FA: https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication
+1. 
+1. Configure Cloudflare Access policies with Terraform
+1. 
 
-1. [Multifactor Authentication]()
-1. [Cloudflare Access Policies]()
-1. [Cloudflare Gateway]()
 
-### (advanced) Visualize your repo
+- Reference: [Multifactor Authentication](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication)
+- Reference: [Terraform provider for Cloudflare Access Rules](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/access_rule)
+- Reference: [Cloudflare Access Policies]()
+- Reference: [Cloudflare Gateway]()
 
-GitHub's repo visualizer provides you with the shape of your codebase, giving you a new perspective on your reposistory. It can be used as a baseline to detect large changes in structure, understand how your environment is structured, or as a visual tool to explain features to others.
+### Add SSO to your apps
+
+Single-Sign-On (SSO) provides a simplified, one-time login experience for all your apps as well as fine-grained access control into which users have access to which apps. To create a SSO portal, you will utilize Cloudflare's App Launcher with GitHub as the Identity Provider (IdP).
+
+1. Single Sign On (SSO) with Cloudflare & GitHub
+1. Do this: https://developers.cloudflare.com/cloudflare-one/identity/idp-integration/github
+
+- Reference: [Cloudflare App Launcher](https://developers.cloudflare.com/cloudflare-one/applications/app-launcher)
+- Reference: [Cloudflare IdP Integration](https://developers.cloudflare.com/cloudflare-one/identity/idp-integration)
+
+### Visualize your repo
+
+GitHub's repo visualizer provides you with the shape of your codebase, giving you a different perspective on your reposistory. It can be used as a baseline to detect large changes in structure, understand how your environment is structured, or as a visual tool to explain features to others.
 
 1. Navigate to the `/extras/github-actions` directory.
 1. 
 
-1. [Repo Visualizer](https://github.com/githubocto/repo-visualizer)
-1. [Repo Visualizer Blog](https://next.github.com/projects/repo-visualization)
+- Reference: [Repo Visualizer](https://github.com/githubocto/repo-visualizer)
+- Reference: [Repo Visualizer Blog](https://next.github.com/projects/repo-visualization)
 
 ## Gratitude
 
