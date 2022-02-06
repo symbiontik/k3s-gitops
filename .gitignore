@@ -24,5 +24,8 @@ kubeconfig
 /cluster/apps/esphome
 /cluster/apps/kustomization.yaml
 # terraform files
-/extras/terraform/
-/extras/terraform/cloudflare-import/.terraform.locl.hcl
+/extras/terraform/cloudflare-access
+/extras/terraform/cloudflare-dns
+/extras/terraform/cloudflare-settings
+/extras/terraform/cloudflare-import
+/tmpl/terraform
