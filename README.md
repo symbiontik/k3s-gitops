@@ -4,21 +4,25 @@ Deploy a local Kubernetes datacenter that features low maintenance, high securit
 
 To achieve these goals, the following methodologies will be utilized:
 
-- [GitOps](https://www.weave.works/technologies/gitops/) with [Flux](https://fluxcd.io/docs/concepts/)
+- [GitOps](https://www.weave.works/technologies/gitops/) with [Flux](https://fluxcd.io/docs/concepts/) & [Terraform Cloud](https://cloud.hashicorp.com/products/terraform)
 - Bare metal Kubernetes deployment with [k3os](https://k3os.io/)
 - Multi-layer encryption using [SOPs](https://fluxcd.io/docs/guides/mozilla-sops/) & [Cert Manager](https://cert-manager.io/docs/)
-- Zero Trust security with [Cloudflare](https://www.cloudflare.com/what-is-cloudflare/) & [2FA](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication)
+- [Zero Trust security](https://www.cloudflare.com/learning/security/glossary/what-is-zero-trust/) with [Cloudflare](https://www.cloudflare.com/what-is-cloudflare/) & [2FA](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication)
 - Automated system updates with [Renovate](https://www.whitesourcesoftware.com/free-developer-tools/renovate/) & [System Upgrade Controller](https://rancher.com/docs/k3s/latest/en/upgrades/automated/)
 
-## Architecture
+## Diagrams
 
 ![Architecture Diagram](/img/architecture_diagram.png)
+
+![GitOps Workflow](/img/gitops_workflow.png)
+
+![Repository Structure Diagram](/img/repository_structure_diagram.png)
 
 ## Prerequisites
 
 In order to complete this guide, you will need the following:
 
-- MacOS
+- MacOS or Linux
 - Visual Studio Code
 - [Homebrew](https://brew.sh/)
 - A GitHub Account
@@ -302,8 +306,8 @@ Cloudflare is used throughout this guide for several reasons:
 - Enables accessibility of your apps from anywhere
 - Secures access to your apps with Cloudflare Access 
 - Provides DNS security, detailed traffic metrics, and logging with Cloudflare Gateway
-- Provides you with zero-trust security capabilities
-- Provides you with an SSO portal for your apps
+- Provides you with Zero Trust security capabilities
+- Provides you with an single-sign-on (SSO) portal for your apps
 
 1. Login to your [Cloudflare account](https://dash.cloudflare.com/login).
 
@@ -314,6 +318,8 @@ Cloudflare is used throughout this guide for several reasons:
 1. Paste your API key as the value for `BOOTSTRAP_CLOUDFLARE_APIKEY` in your `.config.sample.env` file, then save the file. 
 
 - Reference: [Generate Cloudflare API Key](https://github.com/k8s-at-home/template-cluster-k3s#cloud-global-cloudflare-api-key)
+
+You now have a Cloudflare API key that will enable you to programatically create Cloudflare and encryption resources with ease.
 
 ### Configure Secrets Encryption
 
@@ -640,6 +646,33 @@ Terraform Cloud is a tool that allows you to stay consistent with the philosophy
 1. Login to Terraform Cloud.
 
 1. Create a new Workspace.
+    1. Choose `Version control workflow`.
+    1. Connect your GitHub account.
+    1. Choose your `k3s-gitops` repository.
+    1. Set your workspace name as `Cloudflare`.
+    1. Finish creating the workspace.
+
+1. Within your workspace, go to Settings > General.
+
+1. Change your Terraform Working Directory to `terraform/cloudflare/`
+
+1. With your workspace, create these Variables with their respective values:
+    1. Key:`BOOTSTRAP_CLOUDFLARE_EMAIL`
+    1. Value: `your_cloudflare_email`
+    1. Category: `terraform`
+    1. Sensitive: `Yes`
+    1. Key: `BOOTSTRAP_CLOUDFLARE_APIKEY`
+    1. Value: `your_cloudflare_api_key`
+    1. Category: `terraform`
+    1. Sensitive: `Yes`
+
+1. 
+
+1. Run initial plan.
+
+1. 
+
+
 
 ### Access your apps from anywhere
 
@@ -682,9 +715,6 @@ Rather than utilize the Cloudflare web UI, a much more manageable and scalable p
 
 1. 
 
-1. 
-
-
 1. Navigate to the `/extras/terraform/cloudflare-dns` directory.
 
 1. 
@@ -704,13 +734,19 @@ Rather than utilize the Cloudflare web UI, a much more manageable and scalable p
 
 Integrating Zero Trust security principles throughout your infrastructure and application ecosystem ensures you reliability and protects you from breaches. The fundamental difference from traditional security approaches is the shift of access controls from the network perimeter to individual users. To accomplish this, you will utilize features from Cloudflare, GitHub, and two-factor authentication (2FA) services.
 
-1. Choose which 2FA TOTP app you will use
+1. Choose which 2FA TOTP app you will use.
 
-1. Configure your GitHub with 2FA: https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication
+1. [Configure your GitHub account with 2FA](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication)
 
 1. 
 
-1. Configure Cloudflare Access policies with Terraform
+1. [Configure your Cloudflare account with 2FA](https://support.cloudflare.com/hc/en-us/articles/200167906-Securing-user-access-with-two-factor-authentication-2FA-)
+
+1. 
+
+1. [Configure your Terraform Cloud account with 2FA](https://www.terraform.io/cloud-docs/users-teams-organizations/2fa)
+
+1. Configure Cloudflare Access policies with Terraform.
 
 1. 
 
@@ -724,9 +760,15 @@ Integrating Zero Trust security principles throughout your infrastructure and ap
 
 Single-Sign-On (SSO) provides a simplified, one-time login experience for all your apps as well as fine-grained access control into which users have access to which apps. To create a SSO portal, you will utilize Cloudflare's App Launcher with GitHub as the Identity Provider (IdP).
 
-1. Single Sign On (SSO) with Cloudflare & GitHub
+1. Login to your Cloudflare account.
 
 1. Do this: https://developers.cloudflare.com/cloudflare-one/identity/idp-integration/github
+
+1. 
+
+1. Add Cloudflare, GitHub, Terraform Cloud, and your Kubernetes apps to the Cloudflare App Launcher with Terraform.
+
+1. 
 
 - Reference: [Cloudflare App Launcher](https://developers.cloudflare.com/cloudflare-one/applications/app-launcher)
 - Reference: [Cloudflare IdP Integration](https://developers.cloudflare.com/cloudflare-one/identity/idp-integration)
@@ -740,6 +782,14 @@ GitHub's repo visualizer provides you with the shape of your codebase, giving yo
 
 - Reference: [Repo Visualizer](https://github.com/githubocto/repo-visualizer)
 - Reference: [Repo Visualizer Blog](https://next.github.com/projects/repo-visualization)
+
+### One place to rule them all
+
+1. Kubernetes application secrets: `/cluster/base/cluster-secrets.sops.yaml`
+1. Encryption secrets: `this_place.yaml`
+1. Environment variables: `Within Terraform Cloud`
+1. Cloudflare resources: `/terraform/cloudflare/files.tf`
+1. 
 
 ## Gratitude
 
