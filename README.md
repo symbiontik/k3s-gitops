@@ -23,6 +23,7 @@ In order to complete this guide, you will need the following:
 - [Homebrew](https://brew.sh/)
 - A GitHub Account
 - A Cloudflare Account with a domain
+- A Terraform Cloud Account
 - A PC/VM with at least 4GB RAM
 
 ## Deployment overview
@@ -40,6 +41,7 @@ This guide will walk you through the following steps:
 1. Add your own apps
 1. Automate k3s updates
 1. Automate your app updates
+1. Automate external resource creation
 1. Access your apps from anywhere
 1. Integrate Zero Trust security
 1. Add SSO to your apps
@@ -631,6 +633,14 @@ git push
 
 You now have an automated bot that will compare your cluster's application versions against the latest versions every 12 hours. Renovate bot will generate a pull request for you to review and merge whenever new versions are found.
 
+### Automate external resource creation
+
+Terraform Cloud is a tool that allows you to stay consistent with the philosophy of GitOps to easily create external resources for Cloudflare and hundreds of other cloud services. Rather than manage a consistent state in each cloud service UI, Terraform allows you to define and manage these resources in your GitHub repository.
+
+1. Login to Terraform Cloud.
+
+1. Create a new Workspace.
+
 ### Access your apps from anywhere
 
 A public DNS service grants you the ability to access your apps from anywhere in the world. Cloudflare provides this service as well as many advanced security related features that come at no additional cost.
@@ -671,6 +681,9 @@ Rather than utilize the Cloudflare web UI, a much more manageable and scalable p
 1. Copy the `records.tf` file to your `/extras/terraform/cloudflare-dns` directory.
 
 1. 
+
+1. 
+
 
 1. Navigate to the `/extras/terraform/cloudflare-dns` directory.
 
