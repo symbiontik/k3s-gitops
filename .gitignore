@@ -19,7 +19,7 @@ kubeconfig
 # notes
 /notes
 # not ready yet
-.github
+#.github
 /extras/config-files/
 # esphome
 /cluster/apps/esphome

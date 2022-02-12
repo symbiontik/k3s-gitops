@@ -1,0 +1,26 @@
+---
+name: Create repository structure diagram
+
+on: # yamllint disable-line rule:truthy
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+
+jobs:
+  get_data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+      - name: Update diagram
+        uses: githubocto/repo-visualizer@main
+        with:
+          excluded_paths: "ignore,.github"
+          output_file: "respository_diagram.svg"
+          artifact_name: "repository_diagram"
+      - name: Get artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: "repository_diagram"
+          path: "img"
