@@ -11,7 +11,7 @@ spec:
     spec:
       # renovate: registryUrl=https://helm.influxdata.com/
       chart: influxdb
-      version: 4.10.0
+      version: 4.10.6
       sourceRef:
         kind: HelmRepository
         name: influxdata-charts
@@ -20,10 +20,7 @@ spec:
   values:
     image:
       repository: "influxdb"
-      tag: "2.0.8"
-    #env:
-      #ENVIRONMENT_VARIABLE: 
-      #INFLUXDB_BUCKET_CREATE_THING: home_assistant
+      tag: "2.1.1-alpine"
     service:
       type: ClusterIP
       port: 80
@@ -39,6 +36,19 @@ spec:
       path: /
       tls: true
       secretName: influxdb-tls
+    adminUser:
+      organization: "influxdata"
+      bucket: "default"
+      user: "admin"
+      retention_policy: "0s"
+      ## Leave empty to generate a random password and token.
+      ## Or fill any of these values to use fixed values.
+      password: ""
+      token: ""
+      ## The password and token are obtained from an existing secret. The expected
+      ## keys are `admin-password` and `admin-token`.
+      ## If set, the password and token values above are ignored.
+      # existingSecret: influxdb-auth
     resources:
       requests:
         memory: 500Mi
@@ -55,6 +65,7 @@ spec:
       periodSeconds: 10
     persistence:
       enabled: true
-      existingClaim: influxdb-data
+      useExisting: true
+      name: influxdb-data
     #nodeSelector:
       #node-role.kubernetes.io/worker: "true"
