@@ -10,7 +10,7 @@ kubeconfig
 # Secrets
 .secrets
 #secret file
-/cluster/apps/home-assistant-with-vscode/code-server.sops.yaml
+#/cluster/apps/home-assistant-with-vscode/code-server.sops.yaml
 #legacy files
 /cluster/base_legacy
 /tmpl_legacy
