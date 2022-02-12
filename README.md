@@ -16,7 +16,7 @@ To achieve these goals, the following methodologies will be utilized:
 
 ![Architecture Diagram](/img/architecture_diagram.png)
 
-![Repository Structure Diagram](/img/repository_structure_diagram.png)
+![Repository Structure Diagram](/img/respository_diagram.svg)
 
 ## Prerequisites
 
