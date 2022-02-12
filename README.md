@@ -12,9 +12,9 @@ To achieve these goals, the following methodologies will be utilized:
 
 ## Diagrams
 
-![Architecture Diagram](/img/architecture_diagram.png)
-
 ![GitOps Workflow](/img/gitops_workflow.png)
+
+![Architecture Diagram](/img/architecture_diagram.png)
 
 ![Repository Structure Diagram](/img/repository_structure_diagram.png)
 
