@@ -10,7 +10,7 @@ resource "cloudflare_record" "ipv4" {
 
 # Add a record to the domain
 resource "cloudflare_record" "root" {
-  name    = data.sops_file.cloudflare_secrets.data["cloudflare_domain"]
+  name    = var.BOOTSTRAP_CLOUDFLARE_DOMAIN
   zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
   value   = "ipv4.${var.PUBLIC_IP_ADDRESS}"
   proxied = true
