@@ -8,7 +8,7 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://grafana.github.io/helm-charts
+      renovate: registryUrl=https://grafana.github.io/helm-charts
       chart: grafana
       version: 6.16.9
       sourceRef:
@@ -72,6 +72,7 @@ spec:
             access: proxy
             url: http://prometheus-prometheus.observability:9090
             isDefault: true
+            editable: true
           - name: InfluxDB
             type: influxdb
             access: proxy
@@ -84,6 +85,11 @@ spec:
               defaultBucket: home_assistant
             editable: true
             basicAuth: false
+          - name: Loki
+            type: loki
+            access: proxy
+            url: http://loki.observability:3100
+            editable: true
     dashboards:
       default:
         # # Ref: https://grafana.com/grafana/dashboards/12175

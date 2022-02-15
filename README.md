@@ -56,11 +56,12 @@ This guide will walk you through the following steps:
 - High availability for networking, storage, and Kubernetes components
 - Hosted/Cloud deployments
 - Load balancing
+- Automated secrets management
 - Disaster recovery
 
 ### Fork this repo
 
-In addition to this repository containing all the resources you will use throughout this guide, your GitHub repository will be the single source of truth for your Kubernetes infrastructure definitions. 
+In addition to this repository containing all the resources you will use throughout this guide, your GitHub repository will be the single source of truth for your Kubernetes & Cloudflare infrastructure definitions. 
 
 When new code is merged into your GitHub repository, Flux (which we will setup in a later step) will ensure your environment reflects the state of your GitHub repository. This is the essense of Infrastructure as code (IaC) - the practice of keeping all your infrastructure configuration stored as code. 
 
@@ -337,6 +338,10 @@ brew install age
 age-keygen -o age.agekey
 ```
 
+1. TODO: Create another Age Private / Public Key (for Disaster Recovery purposes) OR just create another Public Key?
+    1. Reference: https://github.com/FiloSottile/age#multiple-recipients
+    1. Reference: https://github.com/mozilla/sops#5encryption-protocol 
+
 1. Set up the directory for the Age key and move the Age file to it.
 
 ```sh
@@ -347,6 +352,13 @@ mv age.agekey ~/.config/sops/age/keys.txt
 1. Fill out the `age` public key in the `.config.sample.env` under `BOOTSTRAP_AGE_PUBLIC_KEY`.
 
 **Note:** The public key should start with `age`...
+
+1. 
+
+1. TODO: To provide HA for key management and secret rotation, investigate using:
+    1. Environment variables in Terraform Cloud (SOPS provider with env variable)
+    1. Hashicorp Vault pod with `sops --hc-vault-transit`
+    1. `sops --keyservice`
 
 Your environment is now prepared for encrypting all secrets in your cluster.
 
@@ -371,10 +383,10 @@ export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
 1. Create your unique, encrypted deployment files:
 
 ```sh
-        # sops configuration file
+        # create sops configuration file
         envsubst < "${PROJECT_DIR}/tmpl/.sops.yaml" \
             > "${PROJECT_DIR}/.sops.yaml"
-        # cluster
+        # create unique cluster resources
         envsubst < "${PROJECT_DIR}/tmpl/cluster/cluster-settings.yaml" \
             > "${PROJECT_DIR}/cluster/base/cluster-settings.yaml"
         envsubst < "${PROJECT_DIR}/tmpl/cluster/gotk-sync.yaml" \
@@ -383,6 +395,7 @@ export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
             > "${PROJECT_DIR}/cluster/base/cluster-secrets.sops.yaml"
         envsubst < "${PROJECT_DIR}/tmpl/cluster/cert-manager-secret.sops.yaml" \
             > "${PROJECT_DIR}/cluster/core/cert-manager/secret.sops.yaml"
+        # encrypt sensitive files
         sops --encrypt --in-place "${PROJECT_DIR}/cluster/base/cluster-secrets.sops.yaml"
         sops --encrypt --in-place "${PROJECT_DIR}/cluster/core/cert-manager/secret.sops.yaml"
 ```
@@ -532,70 +545,6 @@ flux get helmrelease -A
 
 Your Kubernetes cluster is now being managed by Flux - your Git repository is driving the state of your cluster!
 
-### Add your own apps
-
-With this existing infrastructure in place, it's relatively simple to run your containerized apps in this cluster. In this guide, we'll deploy an app that can be easily installed and managed with a Helm chart.
-
-1. In your `k3os-gitops` repo, navigate into your `/cluster/apps/` directory.
-
-```sh
-cd /cluster/apps/
-```
-
-1. Create a new directory called `esphome` and navigate into that directory.
-
-```sh
-mkdir esphome && cd esphome
-```
-
-1. Since this will be a stateful app, create a persistent storage definition file `config-pvc.yaml`.
-
-```sh
-touch config-pvc.yaml
-```
-
-1. Since this deployment will be defined and managed by a Helm chart, create the file `helm-release.yaml`.
-
-```sh
-touch helm-release.yaml
-```
-
-1. Since we use Kustomize as our configuration management took, create the file `kustomize.yaml`.
-
-```sh
-touch kustomization.yaml
-```
-
-1. Copy and paste each file's respective content from the `/extras/apps/esphome` folder to their respective files you just created in `/cluster/apps/esphome`, then save your files.
-
-1. Edit your `/cluster/apps/kustomization.yaml` file to include your `esphome` directory, then save the file.
-
-```log
----
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-resources:
-  - esphome
-  - home-assistant
-  - influxdb
-```
-
-1. Push the changes to your GitHub repository. 
-
-```sh
-git add .
-git commit -m "add esphome app"
-git push
-```
-
-1. Your cluster will begin deploying the `esphome` app and resources on your next Flux sync.
-
-You have now successfully created a new app in your Kubernetes cluster.
-
-Additional reading regarding container workload types:
-- [Stateless vs Stateful apps on Kubernetes](https://www.weka.io/blog/stateless-vs-stateful-kubernetes/)
-- [Should I run a database on Kubernetes?](https://cloud.google.com/blog/products/databases/to-run-or-not-to-run-a-database-on-kubernetes-what-to-consider)
-
 ### Automate K3S updates
 
 System Upgrade Controller automates the upgrade process for your Kubernetes nodes. This is a Kubernetes-native approach to cluster upgrades. It leverages a custom resource definition (CRD), a plan, and a controller that schedules upgrades based on your configured plans.
@@ -617,7 +566,7 @@ You now have an automated upgrade process for k3s that will begin as soon as the
 
 ### Automate your app updates
 
-Renovate is a bot that watches your entire repository looking for dependency updates and automatically creates pull requests when updates are found. When you merge these PRs, Flux will automatically apply the changes to your cluster. 
+Renovate is a bot that watches the contents of your repository looking for dependency updates and automatically creates pull requests when updates are found. When you merge these PRs, Flux will automatically apply the changes to your cluster. 
 
 Renovate runs via a scheduled Github Action workflow; GitHub Actions are used to automate, customize, and execute your software development workflows directly in your repository, similarly to how Flux does this for your Kubernetes cluster.
 
@@ -641,7 +590,7 @@ You now have an automated bot that will compare your cluster's application versi
 
 ### Automate external resource creation
 
-Terraform Cloud is a tool that allows you to stay consistent with the philosophy of GitOps to easily create external resources for Cloudflare and hundreds of other cloud services. Rather than manage a consistent state in each cloud service UI, Terraform allows you to define and manage these resources in your GitHub repository.
+Terraform Cloud is an infrastructure-as-code tool that allows you to easily create external resources for Cloudflare and hundreds of other cloud services. Rather than manage a consistent state in each cloud service UI, Terraform allows you to define and manage these resources in your GitHub repository. This enables you to stay consistent with the philosophy of GitOps and streamline your CI/CD workflow.
 
 1. Login to Terraform Cloud.
 
@@ -665,14 +614,38 @@ Terraform Cloud is a tool that allows you to stay consistent with the philosophy
     1. Value: `your_cloudflare_api_key`
     1. Category: `terraform`
     1. Sensitive: `Yes`
+    1. Key: `BOOTSTRAP_CLOUDFLARE_DOMAIN`
+    1. Value: `your_cloudflare_domain`
+    1. Category: `terraform`
+    1. Sensitive: `Yes`
+    1. Key: `PUBLIC_IP_ADDRESS`
+    1. Value: `your_public_ip_address`
+    1. Category: `terraform`
+    1. Sensitive: `Yes`
 
-1. 
+1. TODO: Test the `SOPS_AGE_KEY` pattern here, then add if it works correctly 
+    1. Reference: https://registry.terraform.io/providers/carlpett/sops/latest/docs/data-sources/external
+    1. Github issue and PR: https://www.giters.com/carlpett/terraform-provider-sops/issues/80 
+
+1. TODO: Add environment variable `YOUR_PUBLIC_IP_ADDRESS` to TF Cloud.
 
 1. Run initial plan.
 
+1. Review and verify the contents of the plan.
+
+```log
+some output
+```
+
+1. Click "Apply" to run Terraform.
+
 1. 
 
+1. Choose to automatically run and apply Terraform when your GitHub repo changes. 
 
+1. 
+
+Your Terraform Cloud workspace will now continuously monitor your GitHub repository for changes and automatically create any respective resources in your Cloudflare account.
 
 ### Access your apps from anywhere
 
@@ -716,6 +689,26 @@ Rather than utilize the Cloudflare web UI, a much more manageable and scalable p
 1. 
 
 1. Navigate to the `/extras/terraform/cloudflare-dns` directory.
+
+1. 
+
+1. TODO: See if there's a `traefik` or Kubernetes service Terraform provider that could dynamically add values to the Terraform files, rather than hard-cording service `name`. Another idea is to grep for the first part of these entries throughout the repo:
+
+```yaml
+tls:
+          - hosts:
+              - hass.${SECRET_DOMAIN}
+```
+```log
+resource "cloudflare_record" "traefik" {
+  name    = "traefik"
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = "ipv4.${var.BOOTSTRAP_CLOUDFLARE_EMAIL}"
+  proxied = true
+  type    = "CNAME"
+  ttl     = 1
+}
+```
 
 1. 
 
@@ -783,7 +776,77 @@ GitHub's repo visualizer provides you with the shape of your codebase, giving yo
 - Reference: [Repo Visualizer](https://github.com/githubocto/repo-visualizer)
 - Reference: [Repo Visualizer Blog](https://next.github.com/projects/repo-visualization)
 
+### Add your own apps
+
+With this existing infrastructure in place, it's relatively simple to run your containerized apps in your cluster. In this guide, we'll deploy an app that can be easily installed and managed with a Helm chart.
+
+1. In your `k3os-gitops` repo, navigate into your `/cluster/apps/` directory.
+
+```sh
+cd /cluster/apps/
+```
+
+1. Create a new directory called `esphome` and navigate into that directory.
+
+```sh
+mkdir esphome && cd esphome
+```
+
+1. Since this will be a stateful app, create a persistent storage definition file `config-pvc.yaml`.
+
+```sh
+touch config-pvc.yaml
+```
+
+1. Since this deployment will be defined and managed by a Helm chart, create the file `helm-release.yaml`.
+
+```sh
+touch helm-release.yaml
+```
+
+1. Since we use Kustomize as our configuration management tool, create the file `kustomize.yaml`.
+
+```sh
+touch kustomization.yaml
+```
+
+1. Copy and paste each file's respective content from the `/extras/apps/esphome` folder to their respective files you just created in `/cluster/apps/esphome`, then save your files.
+
+1. Edit your `/cluster/apps/kustomization.yaml` file to include your `esphome` directory, then save the file.
+
+```log
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - esphome
+  - home-assistant
+  - influxdb
+```
+
+1. Push the changes to your GitHub repository. 
+
+```sh
+git add .
+git commit -m "add esphome app"
+git push
+```
+
+1. Your cluster will begin deploying the `esphome` app and resources on your next Flux sync.
+
+1. TODO: Add Terraform Cloudflare resource stanzas
+
+1. 
+
+You have now successfully created a new app in your Kubernetes cluster.
+
+Additional reading regarding container workload types:
+- [Stateless vs Stateful apps on Kubernetes](https://www.weka.io/blog/stateless-vs-stateful-kubernetes/)
+- [Should I run a database on Kubernetes?](https://cloud.google.com/blog/products/databases/to-run-or-not-to-run-a-database-on-kubernetes-what-to-consider)
+
 ### One place to rule them all
+
+Cheat sheet for global resources.
 
 1. Kubernetes application secrets: `/cluster/base/cluster-secrets.sops.yaml`
 1. Encryption secrets: `this_place.yaml`

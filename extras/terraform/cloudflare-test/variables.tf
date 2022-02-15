@@ -10,8 +10,14 @@ variable "BOOTSTRAP_CLOUDFLARE_APIKEY" {
  default     = null
 }
 
-variable "BOOTSTRAP_CLOUDFLARE_ZONE_ID" {
+variable "BOOTSTRAP_CLOUDFLARE_DOMAIN" {
  type        = string
- description = "Zone ID for your Cloudflare domain"
+ description = "Your Cloudflare domain name"
+ default     = null
+}
+
+variable "PUBLIC_IP_ADDRESS" {
+ type        = string
+ description = "Your public IP address"
  default     = null
 }
