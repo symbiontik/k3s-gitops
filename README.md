@@ -14,7 +14,11 @@ To achieve these goals, the following methodologies will be utilized:
 
 ![GitOps Workflow](/img/gitops_workflow.png)
 
-![Architecture Diagram](/img/architecture_diagram.png)
+![Namespace Architecture Diagram](/img/namespace_architecture_diagram.png)
+
+![Network Architecture Diagram](/img/network_architecture_diagram.png)
+
+![Storage Architecture Diagram](/img/storage_architecture_diagram.png)
 
 ![Repository Structure Diagram](/img/respository_diagram.svg)
 
@@ -42,7 +46,6 @@ This guide will walk you through the following steps:
 1. Prepare for deployment
 1. Configure Flux
 1. Deploy some apps
-1. Add your own apps
 1. Automate k3s updates
 1. Automate your app updates
 1. Automate external resource creation
@@ -50,8 +53,10 @@ This guide will walk you through the following steps:
 1. Integrate Zero Trust security
 1. Add SSO to your apps
 1. Visualize your repo
+1. Observability, health-checking, and performance
+1. Add your own apps
 
-**Note**: In order to stay focused on secure GitOps practices, these practices will not be covered within this guide:
+**Note**: In order to stay focused on secure GitOps practices, these practices will not be covered in depth within this guide:
 
 - High availability for networking, storage, and Kubernetes components
 - Hosted/Cloud deployments
@@ -171,7 +176,7 @@ Your disk will be formatted and k3OS will be installed with the above configurat
 Continue? [y/N]: y
 ```
 
-**Note:** If you receive install errors using the LiveCD option, reboot and proceed with the same options using the "k3OS installer" option instead of the "k3OS LiveCD & Installer" option.
+**Note**: If you receive install errors using the LiveCD option, reboot and proceed with the same options using the "k3OS installer" option instead of the "k3OS LiveCD & Installer" option.
 
 1. After the system completes the installation and reboots, select the `k3OS Current` bootloader option (or just wait a few moments and it will boot it by default).
 
@@ -314,11 +319,11 @@ Cloudflare is used throughout this guide for several reasons:
 
 1. Create an API key by going to [this page](https://dash.cloudflare.com/profile/api-tokens) in your Cloudflare profile.
 
+**Note:** Your API key is a sensitive credential that allows programatic access to your Cloudflare account - ensure you take all precautions to protect this key.
+
 1. Copy the API key to your clipboard.
 
 1. Paste your API key as the value for `BOOTSTRAP_CLOUDFLARE_APIKEY` in your `.config.sample.env` file, then save the file. 
-
-- Reference: [Generate Cloudflare API Key](https://github.com/k8s-at-home/template-cluster-k3s#cloud-global-cloudflare-api-key)
 
 You now have a Cloudflare API key that will enable you to programatically create Cloudflare and encryption resources with ease.
 
@@ -364,6 +369,9 @@ Your environment is now prepared for encrypting all secrets in your cluster.
 
 ### Prepare for deployment
 
+TODO: Description
+TODO: Set these environment variables in the `.config.sample.env` file instead of in-line here. (to centralize and easily visualize/inspect all environment variables)
+
 1. On your terminal, change directory to the root level of your Git repository then set the `PROJECT_DIR` environment variable.
 
 ```sh
@@ -379,8 +387,9 @@ export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
 1. Edit your `.config.sample.env` file to include all your respective unique values, then save the file.
 
 1. Copy all the completed contents from this file and run it in your terminal to set these environmental variables.
+    1. Alternative: run the file from the terminal.
 
-1. Create your unique, encrypted deployment files:
+1. In the same terminal window where you set your environment variables, run the following commands to create your unique, encrypted deployment files.
 
 ```sh
         # create sops configuration file
@@ -403,10 +412,19 @@ export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
 **Note**: Variables defined in `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/base/cluster-settings.yaml` will be usable anywhere in your YAML manifests under `./cluster`. This gives you a central location to define and encrypt variables for your applications/infrastructure.
 
 1. Verify the `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/core/cert-manager/secret.sops.yaml` files are encrypted with SOPs.
+    1. Example:
+        ```yaml
+        ...
+        stringData:
+            SECRET_DOMAIN: ENC[AES256_GCM,data:Bo7jy7IUc+y1q/FJO+6M69I48Fki,iv:y5Hoso7vsi/zEVXLTJjXBpmRWD/EeGWL5a9/nn10qZM=,tag:AsFSV5/bbPTj7Qg2z7mhWA==,type:str]
+            SECRET_CLOUDFLARE_EMAIL: ENC[AES256_GCM,data:IgsmYgBrXl5OCm7EwmD6jYvU/GQ=,iv:Hggz5wPBXP7UT42tImV6GMXE77cV4oyqe3fVvVyjBQY=,tag:N7b2l+jrX/pwC5cBFMMC+Q==,type:str]
+        ...
+        ```
 
-1. If you verified all the secrets are encrypted, you can delete the `tmpl` directory now.
 
-1. Since `.config.sample.env` contains so many sensitive values, be sure to either add this to your `.gitignore` or delete the file so you DO NOT commit it to your public GitHub repository.
+1. If you verified all your secrets are encrypted, you can delete the `tmpl` directory now.
+
+1. Since `.config.sample.env` contains so many sensitive values, be sure it is included in your `.gitignore` or delete the file so you DO NOT commit it to your public GitHub repository.
 
 1. Sync your completed project to your public GitHub repository.
 
@@ -445,7 +463,7 @@ kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply -f
 # namespace/flux-system created
 ```
 
-1. Add the Age key in order for Flux to decrypt SOPs secrets.
+1. Add your Age key to your Kubernetes cluster as a secret. This enables Flux to decrypt SOPs secrets.
 
 ```sh
 cat ~/.config/sops/age/keys.txt |
@@ -481,6 +499,8 @@ These are the components (organized by namespace) that will be deployed with thi
     1. [prometheus](https://github.com/prometheus/prometheus) - System and service metric collector
     1. [grafana](https://github.com/grafana/grafana) - Metric and data visualization platform
     1. [node-exporter](https://github.com/prometheus/node_exporter) - Exports node metrics
+
+**Note**: The deployment parameters for each of these Kubernetes applications is controlled through its respective [Helm chart](). The Helm chart values that have been set in this repository are to enable essential functionality for the scope of this guide. Feel free to explore each respective Helm chart after completing this guide to expand and customize these applications.
 
 1. Initialize Flux on your Kubernetes cluster.
 
@@ -578,6 +598,20 @@ Renovate runs via a scheduled Github Action workflow; GitHub Actions are used to
 cp /extras/github-actions/renovate.yaml .github/workflows/renovate.yaml
 ```
 
+1. Within each of your `helm-release.yaml` files, ensure you create a respective `renovate:` line within your chart spec similar to the following stanza - this specifies the chart that Renovate will watch for version updates to your respective applications/resources.
+
+```yaml
+...
+spec:
+  interval: 5m
+  chart:
+    spec:
+      renovate: registryUrl=https://charts.jetstack.io/
+      chart: cert-manager
+      version: v1.5.3
+...
+```
+
 1. Push the changes to your GitHub repository. 
 
 ```sh
@@ -653,6 +687,8 @@ A public DNS service grants you the ability to access your apps from anywhere in
 
 Rather than utilize the Cloudflare web UI, a much more manageable and scalable pattern is to leverage [Terraform](https://www.terraform.io/) (an infrastructure-as-code tool) for Cloudflare resource management. Once this is initialized, you should use Terraform as the authoritative management platform for your Cloudflare resources so they do not fall out of sync.
 
+1. TODO: Skip the import section and just add a caveat here before creating? Could add a note somewhere about importing state too..
+
 1. Begin by importing your current Cloudflare state into Terraform files.
 
     1. Navigate to the `/extras/terraform/cloudflare-import` directory.
@@ -689,26 +725,6 @@ Rather than utilize the Cloudflare web UI, a much more manageable and scalable p
 1. 
 
 1. Navigate to the `/extras/terraform/cloudflare-dns` directory.
-
-1. 
-
-1. TODO: See if there's a `traefik` or Kubernetes service Terraform provider that could dynamically add values to the Terraform files, rather than hard-cording service `name`. Another idea is to grep for the first part of these entries throughout the repo:
-
-```yaml
-tls:
-          - hosts:
-              - hass.${SECRET_DOMAIN}
-```
-```log
-resource "cloudflare_record" "traefik" {
-  name    = "traefik"
-  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
-  value   = "ipv4.${var.BOOTSTRAP_CLOUDFLARE_EMAIL}"
-  proxied = true
-  type    = "CNAME"
-  ttl     = 1
-}
-```
 
 1. 
 
@@ -776,9 +792,19 @@ GitHub's repo visualizer provides you with the shape of your codebase, giving yo
 - Reference: [Repo Visualizer](https://github.com/githubocto/repo-visualizer)
 - Reference: [Repo Visualizer Blog](https://next.github.com/projects/repo-visualization)
 
+### Observability, health-checking, and performance
+
+Being able to easily visualize the various components of your Kubernetes environment allows you to monitor performance, setup alerting parameters, and troubleshoot challenges as they arise. The Grafana/Prometheus/Loki/Tempo stack empowers you with a total observability (metrics, logs, and distributed traces) platform that scales with your Kubernetes components and your applications.
+
+1. Login to your Grafana instance.
+
+1. 
+
+1. 
+
 ### Add your own apps
 
-With this existing infrastructure in place, it's relatively simple to run your containerized apps in your cluster. In this guide, we'll deploy an app that can be easily installed and managed with a Helm chart.
+With this existing infrastructure in place, it's relatively simple to run your containerized apps in your cluster. In this guide, we'll deploy an app that can be easily installed and managed with a Helm chart. This will also highlight each touch point for adding a new application to your cluster including Kubernetes definition components, secret encryption, automated updates, Cloudflare resources, and application observability integration.
 
 1. In your `k3os-gitops` repo, navigate into your `/cluster/apps/` directory.
 
