@@ -30,3 +30,4 @@ kubeconfig
 /extras/terraform/cloudflare-settings
 /extras/terraform/cloudflare-import
 /tmpl/terraform
+/extras/terraform/cloudflare-test/dev
