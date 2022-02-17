@@ -9,6 +9,7 @@ spec:
   chart:
     spec:
       renovate: registryUrl=https://metallb.github.io/metallb
+      # renovate: registryUrl=https://metallb.github.io/metallb
       chart: metallb
       version: 0.10.2
       sourceRef:
