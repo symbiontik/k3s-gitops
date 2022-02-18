@@ -33,23 +33,3 @@ spec:
       enabled: false
     query:
       enabled: false
-    ingress:
-      enabled: true
-      ingressClassName: "traefik"
-      annotations:
-        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
-      hosts:
-        - "jaeger.${SECRET_DOMAIN}"
-      tls:
-        - hosts:
-            - "jaeger.${SECRET_DOMAIN}"
-          secretName: "jaeger-tls"
-    #serviceAccount: 
-      #create: true
-    resources:
-      requests:
-        memory: 100Mi
-        cpu: 500m
-      limits:
-        memory: 500Mi
