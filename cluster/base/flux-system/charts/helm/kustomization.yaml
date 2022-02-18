@@ -10,6 +10,7 @@ resources:
   - hajimari-charts.yaml
   - influxdata-charts.yaml
   - infracloudio-charts.yaml
+  - jaeger-charts.yaml
   - jetstack-charts.yaml
   - k8s-at-home-charts.yaml
   - metallb-charts.yaml
