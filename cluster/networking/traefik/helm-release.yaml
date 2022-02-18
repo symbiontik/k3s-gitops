@@ -38,6 +38,9 @@ spec:
       access:
         enabled: true
         format: json
+    tracing:
+      jaeger:
+        samplingServerURL: http://jaeger-agent.default.svc:5778/sampling
     ingressClass:
       enabled: true
       isDefaultClass: true
@@ -55,6 +58,9 @@ spec:
       - "--providers.kubernetesingress.ingressendpoint.ip=${SVC_TRAEFIK_ADDR}"
       - "--providers.kubernetescrd.allowexternalnameservices=true"
       - "--providers.kubernetesingress.allowexternalnameservices=true"
+      #- "--tracing.jaeger=true"
+      #- "--tracing.jaeger.samplingServerURL=http://jaeger-agent.default.svc:5778/sampling"
+      #- "--tracing.jaeger.localAgentHostPort=jaeger-agent.default.svc:6831"
     ports:
       traefik:
         expose: true
