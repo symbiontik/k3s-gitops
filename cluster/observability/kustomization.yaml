@@ -5,3 +5,4 @@ resources:
   - prometheus-with-node-exporter
   - loki
   - promtail
+  - jaeger
