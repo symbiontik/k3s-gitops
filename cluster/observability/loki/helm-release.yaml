@@ -17,18 +17,6 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
-    ingress:
-      enabled: true
-      ingressClassName: "traefik"
-      annotations:
-        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
-      hosts:
-        - "loki.${SECRET_DOMAIN}"
-      tls:
-        - hosts:
-            - "loki.${SECRET_DOMAIN}"
-          secretName: "loki-tls"
     serviceMonitor:
       enabled: true
     # extraArgs:
