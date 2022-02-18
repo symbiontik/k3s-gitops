@@ -57,3 +57,13 @@ resource "cloudflare_record" "prometheus" {
   type    = "A"
   ttl     = 1
 }
+
+# Add a record for grafana to your domain
+resource "cloudflare_record" "jaeger" {
+  name    = "jaeger"
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = var.PUBLIC_IP_ADDRESS
+  proxied = true
+  type    = "A"
+  ttl     = 1
+}

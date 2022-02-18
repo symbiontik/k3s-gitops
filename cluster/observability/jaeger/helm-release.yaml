@@ -6,7 +6,6 @@ metadata:
   namespace: observability
 spec:
   interval: 5m
-
   chart:
     spec:
       # renovate: registryUrl=https://jaegertracing.github.io/helm-charts
@@ -18,12 +17,22 @@ spec:
         namespace: flux-system
       interval: 5m
   values:
+    replicas: 1
     allInOne:
       enabled: true
       image: jaegertracing/all-in-one
-      tag: 1.29.0
+      tag: 1.31.0
       pullPolicy: IfNotPresent
-    replicas: 1
+    provisionDataStore:
+      cassandra: false
+    storage:
+      type: none
+    agent:
+      enabled: false
+    collector:
+      enabled: false
+    query:
+      enabled: false
     ingress:
       enabled: true
       ingressClassName: "traefik"
@@ -36,5 +45,11 @@ spec:
         - hosts:
             - "jaeger.${SECRET_DOMAIN}"
           secretName: "jaeger-tls"
-    serviceAccount: 
-      create: true
+    #serviceAccount: 
+      #create: true
+    resources:
+      requests:
+        memory: 100Mi
+        cpu: 500m
+      limits:
+        memory: 500Mi

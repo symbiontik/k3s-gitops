@@ -38,9 +38,9 @@ spec:
       access:
         enabled: true
         format: json
-    tracing:
-      jaeger:
-        samplingServerURL: http://jaeger-agent.default.svc:5778/sampling
+    #tracing:
+      #jaeger:
+        #samplingServerURL: http://jaeger-agent.default.svc:5778/sampling
     ingressClass:
       enabled: true
       isDefaultClass: true
