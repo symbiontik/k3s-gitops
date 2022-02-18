@@ -10,6 +10,7 @@ spec:
   chart:
     spec:
       renovate: registryUrl=https://helm.influxdata.com/
+      # renovate: registryUrl=https://helm.influxdata.com/
       chart: influxdb
       version: 4.10.6
       sourceRef:
