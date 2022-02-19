@@ -97,7 +97,7 @@ spec:
               {{- toYaml .Values.config.snippets.common | nindent 4 }}
               {{- with .Values.config.snippets.extraRelabelConfigs }}
               {{- toYaml . | nindent 4 }}
-              {{- end }}     
+              {{- end }}=
         extraScrapeConfigs: |
           - job_name: journal
             journal:

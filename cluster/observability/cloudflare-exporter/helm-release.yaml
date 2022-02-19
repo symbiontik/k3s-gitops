@@ -23,7 +23,9 @@ spec:
     service:
       type: ClusterIP
       port: 8080
-      annotations: {}
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/scrape: "true"
       addPrometheusScrapeAnnotation: true
     env:
       - name: CF_API_EMAIL
