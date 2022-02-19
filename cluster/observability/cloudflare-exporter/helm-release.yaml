@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       # renovate: registryUrl=https://lablabs.github.io/cloudflare-exporter
-      chart: cloudflare-exporter
+      chart: cloudflare-exporter/cloudflare-exporter
       version: 0.1.8
       sourceRef:
         kind: HelmRepository
