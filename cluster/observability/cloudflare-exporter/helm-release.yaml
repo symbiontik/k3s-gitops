@@ -30,3 +30,5 @@ spec:
         value: "${SECRET_CLOUDFLARE_EMAIL}"
       - name: CF_API_KEY
         value: "${SECRET_CLOUDFLARE_APIKEY}"
+      - name: FREE_TIER
+        value: true
