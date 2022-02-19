@@ -13,6 +13,7 @@ resources:
   - jaeger-charts.yaml
   - jetstack-charts.yaml
   - k8s-at-home-charts.yaml
+  - lablabs-charts.yaml
   - metallb-charts.yaml
   - metrics-server-charts.yaml
   - minecraft-server-charts.yaml

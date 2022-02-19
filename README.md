@@ -418,6 +418,7 @@ export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
         stringData:
             SECRET_DOMAIN: ENC[AES256_GCM,data:Bo7jy7IUc+y1q/FJO+6M69I48Fki,iv:y5Hoso7vsi/zEVXLTJjXBpmRWD/EeGWL5a9/nn10qZM=,tag:AsFSV5/bbPTj7Qg2z7mhWA==,type:str]
             SECRET_CLOUDFLARE_EMAIL: ENC[AES256_GCM,data:IgsmYgBrXl5OCm7EwmD6jYvU/GQ=,iv:Hggz5wPBXP7UT42tImV6GMXE77cV4oyqe3fVvVyjBQY=,tag:N7b2l+jrX/pwC5cBFMMC+Q==,type:str]
+            SECRET_CLOUDFLARE_APIKEY: ENC[AES256_GCM,data:FQMGIfThD31Scw4gHHYqgxeW8OP8isnl1eGzr+pFOHyOFVtIjg==,iv:aijlt+P5a8w5YhwsMFbRjicMokoUQ=,tag:kJdMQ4I+AfsyS9lcr+NSGg==,type:str]
         ...
         ```
 

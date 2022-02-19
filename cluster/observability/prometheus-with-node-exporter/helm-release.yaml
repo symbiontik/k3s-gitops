@@ -145,3 +145,9 @@ spec:
             static_configs:
               - targets:
                   - "traefik.networking:8082"
+          - job_name: "cloudflare-exporter"
+            honor_timestamps: true
+            metrics_path: /metrics
+            static_configs:
+              - targets:
+                  - "cloudflare-exporter.observability:8080"
