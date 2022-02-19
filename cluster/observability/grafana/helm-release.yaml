@@ -133,11 +133,15 @@ spec:
         flux-control-plane:
           url: https://raw.githubusercontent.com/fluxcd/flux2/main/manifests/monitoring/grafana/dashboards/control-plane.json
           datasource: Prometheus
+        # Ref: https://grafana.com/grafana/dashboards/5851
         traefik:
-          url: https://grafana.com/grafana/dashboards/5851
+          gnetId: 5851
+          revision: 3
           datasource: Prometheus
+        # Ref: https://grafana.com/grafana/dashboards/13133
         cloudflare-zone-analytics:
-          url: https://grafana.com/grafana/dashboards/13133
+          gnetId: 13133
+          revision: 3
           datasource: Prometheus
         #apc-smart-ups-1500:
           #url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/apc-smart-ups-1500-snmp.json
