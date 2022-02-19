@@ -19,13 +19,13 @@ spec:
   values:
     image:
       repository: ghcr.io/lablabs/cloudflare_exporter
+      tag: 0.0.9
     replicas: 1
     service:
       type: ClusterIP
       port: 8080
       annotations:
-        prometheus.io/path: /metrics
-        prometheus.io/scrape: "true"
+        prometheus.io/probe: "true"
       addPrometheusScrapeAnnotation: true
     env:
       - name: CF_API_EMAIL
