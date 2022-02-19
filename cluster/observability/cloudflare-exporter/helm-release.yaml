@@ -32,5 +32,5 @@ spec:
         value: "${SECRET_CLOUDFLARE_APIKEY}"
       - name: FREE_TIER
         value: "true"
-      - name: CF_ZONES
-        value: "4c8964bcb8e7e3845315e5c0bf4eee50"
+      #- name: CF_ZONES
+      #  value: "4c8964bcb8e7e3845315e5c0bf4eee50"

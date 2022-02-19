@@ -97,14 +97,7 @@ spec:
               {{- toYaml .Values.config.snippets.common | nindent 4 }}
               {{- with .Values.config.snippets.extraRelabelConfigs }}
               {{- toYaml . | nindent 4 }}
-              {{- end }}
-          - job_name: cloudflare
-            cloudflare:
-              email: ${SECRET_CLOUDFLARE_EMAIL}
-              api_key: ${SECRET_CLOUDFLARE_APIKEY}
-              fields_type: all
-              labels:
-                job: cloudflare       
+              {{- end }}     
         extraScrapeConfigs: |
           - job_name: journal
             journal:
