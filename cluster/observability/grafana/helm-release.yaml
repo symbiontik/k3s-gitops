@@ -138,10 +138,10 @@ spec:
           gnetId: 5851
           revision: 3
           datasource: Prometheus
-        # Ref: https://grafana.com/grafana/dashboards/13133
-        cloudflare-zone-analytics:
-          gnetId: 13133
-          revision: 3
+        # Ref: https://grafana.com/grafana/dashboards/10001
+        jaeger:
+          gnetId: 10001
+          revision: 2
           datasource: Prometheus
         #apc-smart-ups-1500:
           #url: https://raw.githubusercontent.com/k8s-at-home/grafana-dashboards/main/apc-smart-ups-1500-snmp.json
@@ -163,7 +163,6 @@ spec:
       - vonage-status-panel
       - grafana-worldmap-panel
       - grafana-clock-panel
-      - cloudflare-app
     #serviceMonitor:
       #enabled: true
     ingress:
