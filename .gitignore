@@ -22,8 +22,8 @@ kubeconfig
 #.github
 /extras/config-files/
 # esphome
-/cluster/apps/esphome
-/cluster/apps/kustomization.yaml
+#/cluster/apps/esphome
+#/cluster/apps/kustomization.yaml
 # terraform files
 /extras/terraform/cloudflare-access
 /extras/terraform/cloudflare-dns
