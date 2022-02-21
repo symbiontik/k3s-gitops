@@ -8,7 +8,7 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://nichcode seolaswilde.github.io/helm-charts/
+      # renovate: registryUrl=https://nicholaswilde.github.io/helm-charts/
       chart: code-server
       version: 1.1.1
       sourceRef:
@@ -25,7 +25,7 @@ spec:
   values:
     image:
       repository: ghcr.io/linuxserver/code-server
-      tag: "version-v4.0.2"
+      tag: "version-v3.11.1"
     service:
       enabled: true
       type: ClusterIP
