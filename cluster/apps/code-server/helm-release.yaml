@@ -27,7 +27,7 @@ spec:
       #repository: codercom/code-server  
       repository: ghcr.io/linuxserver/code-server
       #tag: 4.0.2
-      tag: "version-v3.11.1"
+      tag: "version-v4.0.2"
     service:
       port:
         port: 8443
