@@ -6,5 +6,5 @@ metadata:
   namespace: flux-system
 spec:
   interval: 15m
-  url: https://nicholaswilde.github.io/helm-charts/
+  url: https://charts.pascaliske.dev
   timeout: 3m
