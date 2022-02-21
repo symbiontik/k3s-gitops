@@ -9,8 +9,8 @@ spec:
   chart:
     spec:
       # renovate: registryUrl=https://helm.coder.com
-      chart: code-server
-      version: 2.1.0
+      chart: coder
+      version: 1.28.0
       sourceRef:
         kind: HelmRepository
         name: code-server-charts
@@ -24,8 +24,8 @@ spec:
       remediateLastFailure: true
   values:
     image:
-      repository: codercom/code-server
-      tag: 4.0.2
+      repository: docker.io/coderenvs/coder-service
+      tag: 1.28.0
     service:
       type: ClusterIP
       port: 8080
