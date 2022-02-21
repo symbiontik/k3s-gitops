@@ -29,6 +29,11 @@ spec:
     service:
       port:
         port: 8443
+    env:
+      # TZ:
+      # PUID: 1000
+      # PGID: 1000
+      PROXY_DOMAIN: code-server.${SECRET_DOMAIN}
     ingress:
       enabled: true
       ingressClassName: "traefik"
@@ -48,3 +53,4 @@ spec:
       config:
         enabled: true
         existingClaim: code-data
+        mountPath: /config
