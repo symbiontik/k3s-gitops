@@ -1,0 +1,65 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: code-server
+  namespace: apps
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://nicholaswilde.github.io/helm-charts/
+      chart: code-server
+      version: 3.11.1
+      sourceRef:
+        kind: HelmRepository
+        name: code-server-charts
+        namespace: flux-system
+      interval: 5m
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      remediateLastFailure: true
+  values:
+    image:
+      #repository: codercom/code-server  
+      repository: ghcr.io/linuxserver/code-server
+      #tag: 4.0.2
+      tag: "version-v3.11.1"
+    service:
+      type: ClusterIP
+      port: 8443
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        hosts:
+          - host: code-server.${SECRET_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - code-server.${SECRET_DOMAIN}
+            secretName: "code-server-tls"
+    env: {}
+      TZ: "America/Chicago"
+      PUID: 1000
+      PGID: 1000
+      #PROXY_DOMAIN: code-server.my.domain
+    probes:
+      liveness:
+        enabled: false
+      readiness:
+        enabled: false
+      startup:
+        enabled: false
+    persistence:
+      config:
+        enabled: true
+        existingClaim: code-data
