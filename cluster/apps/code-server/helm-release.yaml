@@ -29,8 +29,8 @@ spec:
       #tag: 4.0.2
       tag: "version-v3.11.1"
     service:
-      type: ClusterIP
-      port: 8443
+      port:
+        port: 8443
     ingress:
       main:
         enabled: true
@@ -51,14 +51,6 @@ spec:
       TZ: "America/Chicago"
       PUID: 1000
       PGID: 1000
-      #PROXY_DOMAIN: code-server.my.domain
-    probes:
-      liveness:
-        enabled: false
-      readiness:
-        enabled: false
-      startup:
-        enabled: false
     persistence:
       config:
         enabled: true
