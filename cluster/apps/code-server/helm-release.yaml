@@ -8,9 +8,9 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://charts.pascaliske.dev
+      # renovate: registryUrl=https://nicholaswilde.github.io/helm-charts/
       chart: code-server
-      version: 0.1.1
+      version: 1.1.1
       sourceRef:
         kind: HelmRepository
         name: code-server-charts
@@ -24,20 +24,11 @@ spec:
       remediateLastFailure: true
   values:
     image:
-      repository: codercom/code-server
-      tag: 4.0.2
-    ports:
-      http:
-        enabled: true
-        port: 8080
-    configMap:
-      create: true
-      mountPath: /etc/code-server
-    securityContext:
-      fsGroup: 1000
-      runAsNonRoot: true
-      runAsGroup: 1000
-      runAsUser: 1000
+      repository: ghcr.io/linuxserver/code-server
+      tag: "version-v4.0.2"
+    service:
+      port:
+        port: 8443
     ingress:
       main:
         enabled: true
