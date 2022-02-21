@@ -8,7 +8,7 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://nicholaswilde.github.io/helm-charts/
+      # renovate: registryUrl=https://nichcode seolaswilde.github.io/helm-charts/
       chart: code-server
       version: 1.1.1
       sourceRef:
@@ -27,13 +27,14 @@ spec:
       repository: ghcr.io/linuxserver/code-server
       tag: "version-v4.0.2"
     service:
+      enabled: true
+      type: ClusterIP
       port:
         port: 8443
     env:
-      # TZ:
-      # PUID: 1000
-      # PGID: 1000
-      PROXY_DOMAIN: code-server.${SECRET_DOMAIN}
+      PUID: 1000
+      PGID: 1000
+      #PROXY_DOMAIN: ${SECRET_DOMAIN}
     ingress:
       enabled: true
       ingressClassName: "traefik"
