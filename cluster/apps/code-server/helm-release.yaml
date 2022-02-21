@@ -32,8 +32,8 @@ spec:
       port:
         port: 8443
     env:
-      PUID: 1000
-      PGID: 1000
+      PUID: "1000"
+      PGID: "1000"
       #PROXY_DOMAIN: ${SECRET_DOMAIN}
     ingress:
       enabled: true
