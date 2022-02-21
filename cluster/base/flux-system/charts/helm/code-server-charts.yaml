@@ -6,5 +6,5 @@ metadata:
   namespace: flux-system
 spec:
   interval: 15m
-  url: https://github.com/coder/code-server
+  url: https://helm.coder.com
   timeout: 3m

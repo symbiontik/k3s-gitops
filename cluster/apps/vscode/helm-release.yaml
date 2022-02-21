@@ -8,8 +8,8 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://github.com/coder/code-server
-      chart: vscode
+      # renovate: registryUrl=https://helm.coder.com
+      chart: code-server
       version: 2.1.0
       sourceRef:
         kind: HelmRepository
