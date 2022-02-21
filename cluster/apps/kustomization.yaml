@@ -5,4 +5,4 @@ resources:
   - esphome
   - home-assistant
   - influxdb
-  - vscode
+  - code-server
