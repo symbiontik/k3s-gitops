@@ -20,7 +20,8 @@ kubeconfig
 /notes
 # not ready yet
 #.github
-/extras/config-files/
+/extras/config-files/homegirls-den.yaml
+/extras/config-files/shroom-sense.yaml
 # esphome
 #/cluster/apps/esphome
 #/cluster/apps/kustomization.yaml
