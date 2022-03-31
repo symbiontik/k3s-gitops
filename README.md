@@ -487,6 +487,8 @@ These are the components (organized by namespace) that will be deployed with thi
     1. [home-assistant](https://github.com/home-assistant/core) - Highly extensible home automation platform 
     1. [vs-code](https://github.com/coder/code-server) - Browser-based Visual Studio Code instance for editing home-assistant configuration
     1. [influxdb](https://github.com/influxdata/influxdb) - Persistent time-series database for home-assistant data
+    1. [code-server](https://github.com/coder/code-server) - Browser-based Visual Studio Code instance for all your code development
+    1. [esphome](https://esphome.io/) - Development and management platform for IoT microcontrollers
 1. core
     1. [cert-manager](https://github.com/jetstack/cert-manager) - Automatically provisions and manages TLS certificates in Kubernetes
     1. [metrics-server](https://github.com/kubernetes-sigs/metrics-server) - Exports container resource metrics
@@ -500,6 +502,9 @@ These are the components (organized by namespace) that will be deployed with thi
     1. [prometheus](https://github.com/prometheus/prometheus) - System and service metric collector
     1. [grafana](https://github.com/grafana/grafana) - Metric and data visualization platform
     1. [node-exporter](https://github.com/prometheus/node_exporter) - Exports node metrics
+    1. [loki](https://github.com/grafana/loki) - Logging platform
+    1. [promtail](https://grafana.com/docs/loki/latest/clients/promtail/) - Collector agent that ships logs to Loki
+    1. [jaeger](https://github.com/jaegertracing/jaeger) - Distributed tracing platform
 
 **Note**: The deployment parameters for each of these Kubernetes applications is controlled through its respective [Helm chart](). The Helm chart values that have been set in this repository are to enable essential functionality for the scope of this guide. Feel free to explore each respective Helm chart after completing this guide to expand and customize these applications.
 
