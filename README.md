@@ -323,7 +323,7 @@ Cloudflare is used throughout this guide for several reasons:
 
 1. Copy the API key to your clipboard.
 
-1. Paste your API key as the value for `BOOTSTRAP_CLOUDFLARE_APIKEY` in your `.bootstrap.env` file, then save the file. 
+1. Paste your API key as the value for `BOOTSTRAP_CLOUDFLARE_APIKEY` in your `bootstrap.env` file, then save the file. 
 
 You now have a Cloudflare API key that will enable you to programatically create Cloudflare and encryption resources with ease.
 
@@ -619,6 +619,45 @@ You now have an automated bot that will compare your cluster's application versi
 ### Automate external resource creation
 
 Terraform Cloud is an infrastructure-as-code tool that allows you to easily create external resources for Cloudflare and hundreds of other cloud services. Rather than manage a consistent state in each cloud service UI, Terraform allows you to define and manage these resources in your GitHub repository. This enables you to stay consistent with the philosophy of GitOps and streamline your CI/CD workflow.
+
+1. Login to your [Terraform Cloud account](https://app.terraform.io/).
+
+1. Create an API key by going to [this page](https://app.terraform.io/app/settings/tokens) in your Terraform Cloud profile.
+
+**Note:** Your API key is a sensitive credential that allows programatic access to your Terraform Cloud account - ensure you take all precautions to protect this key.
+
+1. Copy the API key to your clipboard.
+
+1. Paste your API key as the value for `BOOTSTRAP_TERRAFORM_CLOUD_TOKEN` in your `bootstrap-tfc.env` file, then save the file. 
+
+1. Add these other things to the file:
+- 
+- 
+
+1. Source it.
+
+1. Run initial plan.
+
+```sh
+terraform init
+```
+
+1. Review and verify the contents of the plan.
+
+```log
+some output
+```
+
+1. Apply the plan.
+```sh
+terraform apply --auto-approve
+```
+
+
+
+#
+# REPLACE THIS LEGACY METHOD WITH THE PROGRAMATIC METHOD ABOVE:
+# 
 
 1. Login to Terraform Cloud.
 
