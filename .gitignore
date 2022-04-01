@@ -14,18 +14,14 @@ kubeconfig
 #legacy files
 /cluster/base_legacy
 /tmpl_legacy
-#sensitive file
+# sensitive file for development
 .config.sample.env
-# notes
+# notes for development
 /notes
-# not ready yet
-#.github
+# personal dev config files
 /extras/config-files/homegirls-den.yaml
 /extras/config-files/shroom-sense.yaml
-# esphome
-#/cluster/apps/esphome
-#/cluster/apps/kustomization.yaml
-# terraform files
+# terraform files still in development
 /extras/terraform/cloudflare-access
 /extras/terraform/cloudflare-dns
 /extras/terraform/cloudflare-settings

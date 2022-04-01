@@ -32,7 +32,7 @@ In order to complete this guide, you will need the following:
 - A GitHub Account
 - A Cloudflare Account with a domain
 - A Terraform Cloud Account
-- A PC/VM with at least 4GB RAM
+- A PC/VM with at least 6GB RAM
 
 ## Deployment overview
 
@@ -323,7 +323,7 @@ Cloudflare is used throughout this guide for several reasons:
 
 1. Copy the API key to your clipboard.
 
-1. Paste your API key as the value for `BOOTSTRAP_CLOUDFLARE_APIKEY` in your `.config.sample.env` file, then save the file. 
+1. Paste your API key as the value for `BOOTSTRAP_CLOUDFLARE_APIKEY` in your `.bootstrap.env` file, then save the file. 
 
 You now have a Cloudflare API key that will enable you to programatically create Cloudflare and encryption resources with ease.
 
@@ -343,10 +343,6 @@ brew install age
 age-keygen -o age.agekey
 ```
 
-1. TODO: Create another Age Private / Public Key (for Disaster Recovery purposes) OR just create another Public Key?
-    1. Reference: https://github.com/FiloSottile/age#multiple-recipients
-    1. Reference: https://github.com/mozilla/sops#5encryption-protocol 
-
 1. Set up the directory for the Age key and move the Age file to it.
 
 ```sh
@@ -354,40 +350,25 @@ mkdir -p ~/.config/sops/age
 mv age.agekey ~/.config/sops/age/keys.txt
 ```
 
-1. Fill out the `age` public key in the `.config.sample.env` under `BOOTSTRAP_AGE_PUBLIC_KEY`.
+1. Fill out the `age` public key in the `.bootstrap.env` under `BOOTSTRAP_AGE_PUBLIC_KEY`.
 
 **Note:** The public key should start with `age`...
 
-1. 
-
-1. TODO: To provide HA for key management and secret rotation, investigate using:
-    1. Environment variables in Terraform Cloud (SOPS provider with env variable)
-    1. Hashicorp Vault pod with `sops --hc-vault-transit`
-    1. `sops --keyservice`
+1. For disaster recovery purposes, copy the contents of your age private key to your (hopefully MFA-protected) password manager such as 1Password or LastPass. 
 
 Your environment is now prepared for encrypting all secrets in your cluster.
 
 ### Prepare for deployment
 
-TODO: Description
-TODO: Set these environment variables in the `.config.sample.env` file instead of in-line here. (to centralize and easily visualize/inspect all environment variables)
+To prepare for deployment, it's necessary to bootstrap your development environment with your custom values such as DNS information, API keys, and encryption secrets. You'll then encrypt all your sensitive values before pushing your project to your Github repository. It is important to follow these steps carefully to ensure no sensitive values are pushed to your public repository.
 
-1. On your terminal, change directory to the root level of your Git repository then set the `PROJECT_DIR` environment variable.
+1. Open and edit your `.bootstrap.env` file to ensure it includes all your respective unique values, then save the file.
 
-```sh
-export PROJECT_DIR=$(git rev-parse --show-toplevel)
-```
-
-1. Set the `SOPS_AGE_KEY_FILE` environment variable.
+1. Source the `bootstrap.env` file to set the respective environment variables in your terminal.
 
 ```sh
-export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
+source bootstrap.env
 ```
-
-1. Edit your `.config.sample.env` file to include all your respective unique values, then save the file.
-
-1. Copy all the completed contents from this file and run it in your terminal to set these environmental variables.
-    1. Alternative: run the file from the terminal.
 
 1. In the same terminal window where you set your environment variables, run the following commands to create your unique, encrypted deployment files.
 
@@ -422,10 +403,17 @@ export SOPS_AGE_KEY_FILE=~/.config/sops/age/keys.txt
         ...
         ```
 
+1. If you verified all your secrets are encrypted, you can delete the `tmpl` directory now since these files are only used for this bootstrapping process.
 
-1. If you verified all your secrets are encrypted, you can delete the `tmpl` directory now.
+```sh
+rm -rf ${PROJECT_DIR}/tmpl/
+```
 
-1. Since `.config.sample.env` contains so many sensitive values, be sure it is included in your `.gitignore` or delete the file so you DO NOT commit it to your public GitHub repository.
+1. Since `bootstrap.env` contains so many sensitive values, be sure it is included in your `.gitignore` or delete the file so you DO NOT commit it to your public GitHub repository. 
+
+```sh
+echo -e "\n#Sensitive Bootstrap Environment Variables\nbootstrap.env" >> .gitignore
+```
 
 1. Sync your completed project to your public GitHub repository.
 
@@ -479,7 +467,7 @@ Your Kubernetes cluster is now ready to begin sycning with your GitHub repo to d
 
 Now that your infrastructure, security mechanisms, and deployment methodologies are in place - it's time to start deploying resources in your Kubernetes cluster! 
 
-Kubernetes clusters are made up of many unique (and interchangeable) components and applications. These include technologies that facilitate networking segmentation, perform CI/CD operations, automate security operations, gather metrics, load balance services, and run your applications. The Kubernetes universe is [gigantic](https://landscape.cncf.io/).
+Kubernetes clusters are made up of many unique (and interchangeable) components and applications. These include technologies that facilitate networking segmentation, perform CI/CD operations, automate security operations, gather metrics, load balance services, and run your applications. The Kubernetes universe is [gigantic](https://landscape.cncf.io/) - there's plenty of room for experimentation and growth with this project as your foundation.
 
 These are the components (organized by namespace) that will be deployed with this repo:
 
@@ -506,7 +494,7 @@ These are the components (organized by namespace) that will be deployed with thi
     1. [promtail](https://grafana.com/docs/loki/latest/clients/promtail/) - Collector agent that ships logs to Loki
     1. [jaeger](https://github.com/jaegertracing/jaeger) - Distributed tracing platform
 
-**Note**: The deployment parameters for each of these Kubernetes applications is controlled through its respective [Helm chart](). The Helm chart values that have been set in this repository are to enable essential functionality for the scope of this guide. Feel free to explore each respective Helm chart after completing this guide to expand and customize these applications.
+**Note**: The deployment parameters for each of these Kubernetes applications is controlled through its respective [Helm chart](https://helm.sh/). The Helm chart values that have been set in this repository are to enable essential functionality for the scope of this guide. Feel free to explore each respective Helm chart after completing this guide to expand and customize these applications.
 
 1. Initialize Flux on your Kubernetes cluster.
 
@@ -612,7 +600,7 @@ spec:
   interval: 5m
   chart:
     spec:
-      renovate: registryUrl=https://charts.jetstack.io/
+      # renovate: registryUrl=https://charts.jetstack.io/
       chart: cert-manager
       version: v1.5.3
 ...
@@ -646,15 +634,15 @@ Terraform Cloud is an infrastructure-as-code tool that allows you to easily crea
 1. Change your Terraform Working Directory to `terraform/cloudflare/`
 
 1. With your workspace, create these Variables with their respective values:
-    1. Key:`BOOTSTRAP_CLOUDFLARE_EMAIL`
+    1. Key:`CLOUDFLARE_EMAIL`
     1. Value: `your_cloudflare_email`
     1. Category: `terraform`
     1. Sensitive: `Yes`
-    1. Key: `BOOTSTRAP_CLOUDFLARE_APIKEY`
+    1. Key: `CLOUDFLARE_APIKEY`
     1. Value: `your_cloudflare_api_key`
     1. Category: `terraform`
     1. Sensitive: `Yes`
-    1. Key: `BOOTSTRAP_CLOUDFLARE_DOMAIN`
+    1. Key: `CLOUDFLARE_DOMAIN`
     1. Value: `your_cloudflare_domain`
     1. Category: `terraform`
     1. Sensitive: `Yes`
@@ -666,8 +654,6 @@ Terraform Cloud is an infrastructure-as-code tool that allows you to easily crea
 1. TODO: Test the `SOPS_AGE_KEY` pattern here, then add if it works correctly 
     1. Reference: https://registry.terraform.io/providers/carlpett/sops/latest/docs/data-sources/external
     1. Github issue and PR: https://www.giters.com/carlpett/terraform-provider-sops/issues/80 
-
-1. TODO: Add environment variable `YOUR_PUBLIC_IP_ADDRESS` to TF Cloud.
 
 1. Run initial plan.
 
