@@ -9,6 +9,5 @@ terraform {
 }
 
 provider "tfe" {
-  hostname = var.TERRAFORM_CLOUD_HOSTNAME
   token    = var.TERRAFORM_CLOUD_TOKEN
 }

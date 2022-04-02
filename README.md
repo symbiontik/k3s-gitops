@@ -327,6 +327,24 @@ Cloudflare is used throughout this guide for several reasons:
 
 You now have a Cloudflare API key that will enable you to programatically create Cloudflare and encryption resources with ease.
 
+### Generate a Terraform API key
+
+Terraform is used throughout this guide for several reasons: 
+- content
+- content
+
+1. Login to your [Terraform Cloud account](https://app.terraform.io/).
+
+1. Create an API key by going to [this page](https://app.terraform.io/app/settings/tokens) in your Terraform Cloud profile.
+
+**Note:** Your API key is a sensitive credential that allows programatic access to your Terraform Cloud account - ensure you take all precautions to protect this key.
+
+1. Copy the API key to your clipboard.
+
+1. Paste your API key as the value for `BOOTSTRAP_TERRAFORM_CLOUD_TOKEN` in your `bootstrap.env` file, then save the file. 
+
+You now have a Terraform Cloud API key that will enable you to programatically configure your Terraform environment.
+
 ### Configure Secrets Encryption
 
 Secrets encryption allows you to safely store secrets in a public or private Git repository. To accomplish this, [Age](https://github.com/FiloSottile/age) is a tool that will encrypt your YAML files and/or secrets using Mozilla SOPs (Secrets Operations) encryption. In a later step, you will configure Flux with this SOPs encryption key - this will allow your Kubernetes cluster to decrypt and utilize those secrets for operations.
@@ -559,66 +577,33 @@ flux get helmrelease -A
 
 Your Kubernetes cluster is now being managed by Flux - your Git repository is driving the state of your cluster!
 
-### Automate K3S updates
-
-System Upgrade Controller automates the upgrade process for your Kubernetes nodes. This is a Kubernetes-native approach to cluster upgrades. It leverages a custom resource definition (CRD), a plan, and a controller that schedules upgrades based on your configured plans.
-
-1. Navigate to the `/cluster/core/system-upgrade-controller` directory.
-
-1. Inspect the `server-plan.yaml` file.
-
-1. Notice these lines:
-
-```log
-  version: v1.23.1+k3s2
-  #channel: https://update.k3s.io/v1-release/channels/stable
-```
-
-1. You have the choice of either manually defining the desired k3s version OR continuously monitoring the stable release channel. Choose what makes the most sense for your desired upgrade plan.
-
-You now have an automated upgrade process for k3s that will begin as soon as the controller detects that a plan was created. Updating your plan will cause the controller to re-evaluate the plan and determine if another upgrade is needed.
-
-### Automate your app updates
-
-Renovate is a bot that watches the contents of your repository looking for dependency updates and automatically creates pull requests when updates are found. When you merge these PRs, Flux will automatically apply the changes to your cluster. 
-
-Renovate runs via a scheduled Github Action workflow; GitHub Actions are used to automate, customize, and execute your software development workflows directly in your repository, similarly to how Flux does this for your Kubernetes cluster.
-
-1. Navigate to the root of your `k3os-gitops` repository.
-
-1. Copy the file `/extras/github-actions/renovate.yaml` to your `.github/workflows` directory.
-
-```sh
-cp /extras/github-actions/renovate.yaml .github/workflows/renovate.yaml
-```
-
-1. Within each of your `helm-release.yaml` files, ensure you create a respective `renovate:` line within your chart spec similar to the following stanza - this specifies the chart that Renovate will watch for version updates to your respective applications/resources.
-
-```yaml
-...
-spec:
-  interval: 5m
-  chart:
-    spec:
-      # renovate: registryUrl=https://charts.jetstack.io/
-      chart: cert-manager
-      version: v1.5.3
-...
-```
-
-1. Push the changes to your GitHub repository. 
-
-```sh
-git add .
-git commit -m "add github action - renovate bot"
-git push
-```
-
-You now have an automated bot that will compare your cluster's application versions against the latest versions every 12 hours. Renovate bot will generate a pull request for you to review and merge whenever new versions are found.
-
 ### Automate external resource creation
 
 Terraform Cloud is an infrastructure-as-code tool that allows you to easily create external resources for Cloudflare and hundreds of other cloud services. Rather than manage a consistent state in each cloud service UI, Terraform allows you to define and manage these resources in your GitHub repository. This enables you to stay consistent with the philosophy of GitOps and streamline your CI/CD workflow.
+
+#
+# Option 1: CLI-driven run workflow
+# 
+
+1. Install `terraform`. (v1.1.0+)
+
+```sh
+brew install terraform
+```
+
+1. Run `terraform login` to obtain an API token and save it in plain text in a local CLI configuration file called `credentials.tfrc.json`.
+
+```sh
+terraform login
+```
+
+1. Run terraform plan
+
+1. Run terraform apply
+
+#
+# Option 2: GUI-driven run workflow
+#
 
 1. Login to your [Terraform Cloud account](https://app.terraform.io/).
 
@@ -653,10 +638,8 @@ some output
 terraform apply --auto-approve
 ```
 
-
-
 #
-# REPLACE THIS LEGACY METHOD WITH THE PROGRAMATIC METHOD ABOVE:
+# Option 3: Configure it once in the GUI
 # 
 
 1. Login to Terraform Cloud.
@@ -709,6 +692,20 @@ some output
 1. Choose to automatically run and apply Terraform when your GitHub repo changes. 
 
 1. 
+
+#
+# Option 4: Bootstrap your TFC instance with the CLI
+# 
+
+1. Install terraform with brew
+
+1. Run terraform plan
+
+1. Run terraform apply
+
+1. Bootstrap your Terraform Cloud environment with the CLI.
+
+1. This will configure all variables and workplace settings. Any future variable additions can be added directly to your Terraform files and will automatically be created
 
 Your Terraform Cloud workspace will now continuously monitor your GitHub repository for changes and automatically create any respective resources in your Cloudflare account.
 
@@ -812,6 +809,63 @@ Single-Sign-On (SSO) provides a simplified, one-time login experience for all yo
 
 - Reference: [Cloudflare App Launcher](https://developers.cloudflare.com/cloudflare-one/applications/app-launcher)
 - Reference: [Cloudflare IdP Integration](https://developers.cloudflare.com/cloudflare-one/identity/idp-integration)
+
+### Automate K3S updates
+
+System Upgrade Controller automates the upgrade process for your Kubernetes nodes. This is a Kubernetes-native approach to cluster upgrades. It leverages a custom resource definition (CRD), a plan, and a controller that schedules upgrades based on your configured plans.
+
+1. Navigate to the `/cluster/core/system-upgrade-controller` directory.
+
+1. Inspect the `server-plan.yaml` file.
+
+1. Notice these lines:
+
+```log
+  version: v1.23.1+k3s2
+  #channel: https://update.k3s.io/v1-release/channels/stable
+```
+
+1. You have the choice of either manually defining the desired k3s version OR continuously monitoring the stable release channel. Choose what makes the most sense for your desired upgrade plan.
+
+You now have an automated upgrade process for k3s that will begin as soon as the controller detects that a plan was created. Updating your plan will cause the controller to re-evaluate the plan and determine if another upgrade is needed.
+
+### Automate your app updates
+
+Renovate is a bot that watches the contents of your repository looking for dependency updates and automatically creates pull requests when updates are found. When you merge these PRs, Flux will automatically apply the changes to your cluster. 
+
+Renovate runs via a scheduled Github Action workflow; GitHub Actions are used to automate, customize, and execute your software development workflows directly in your repository, similarly to how Flux does this for your Kubernetes cluster.
+
+1. Navigate to the root of your `k3os-gitops` repository.
+
+1. Copy the file `/extras/github-actions/renovate.yaml` to your `.github/workflows` directory.
+
+```sh
+cp /extras/github-actions/renovate.yaml .github/workflows/renovate.yaml
+```
+
+1. Within each of your `helm-release.yaml` files, ensure you create a respective `renovate:` line within your chart spec similar to the following stanza - this specifies the chart that Renovate will watch for version updates to your respective applications/resources.
+
+```yaml
+...
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://charts.jetstack.io/
+      chart: cert-manager
+      version: v1.5.3
+...
+```
+
+1. Push the changes to your GitHub repository. 
+
+```sh
+git add .
+git commit -m "add github action - renovate bot"
+git push
+```
+
+You now have an automated bot that will compare your cluster's application versions against the latest versions every 12 hours. Renovate bot will generate a pull request for you to review and merge whenever new versions are found.
 
 ### Visualize your repo
 
