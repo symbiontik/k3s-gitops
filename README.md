@@ -42,6 +42,7 @@ This guide will walk you through the following steps:
 1. OS Installation
 1. Connect to your Kubernetes cluster
 1. Generate a Cloudflare API key
+1. Generate a Terraform Cloud API token
 1. Configure secrets encryption
 1. Prepare for deployment
 1. Configure Flux
@@ -327,23 +328,21 @@ Cloudflare is used throughout this guide for several reasons:
 
 You now have a Cloudflare API key that will enable you to programatically create Cloudflare and encryption resources with ease.
 
-### Generate a Terraform API key
+### Generate a Terraform API token
 
-Terraform is used throughout this guide for several reasons: 
-- content
-- content
+Terraform Cloud is an infrastructure-as-code tool that allows you to easily create external resources for Cloudflare and hundreds of other cloud services. Rather than manage a consistent state in each cloud service UI, Terraform allows you to define and manage these resources in your GitHub repository. This enables you to stay consistent with the philosophy of GitOps and streamline your CI/CD workflow.
 
 1. Login to your [Terraform Cloud account](https://app.terraform.io/).
 
-1. Create an API key by going to [this page](https://app.terraform.io/app/settings/tokens) in your Terraform Cloud profile.
+1. Create an API token by going to [this page](https://app.terraform.io/app/settings/tokens) in your Terraform Cloud profile.
 
-**Note:** Your API key is a sensitive credential that allows programatic access to your Terraform Cloud account - ensure you take all precautions to protect this key.
+**Note:** Your API token is a sensitive credential that allows programatic access to your Terraform Cloud account - ensure you take all precautions to protect this key.
 
-1. Copy the API key to your clipboard.
+1. Copy the API token to your clipboard.
 
-1. Paste your API key as the value for `BOOTSTRAP_TERRAFORM_CLOUD_TOKEN` in your `bootstrap.env` file, then save the file. 
+1. Paste your API token as the value for `BOOTSTRAP_TERRAFORM_CLOUD_TOKEN` in your `bootstrap.env` file, then save the file. 
 
-You now have a Terraform Cloud API key that will enable you to programatically configure your Terraform environment.
+You now have a Terraform Cloud API token that will enable you to programatically configure your Terraform environment.
 
 ### Configure Secrets Encryption
 
@@ -578,6 +577,7 @@ flux get helmrelease -A
 Your Kubernetes cluster is now being managed by Flux - your Git repository is driving the state of your cluster!
 
 ### Automate external resource creation
+### Alternative title: Bootstrap Terraform Cloud
 
 Terraform Cloud is an infrastructure-as-code tool that allows you to easily create external resources for Cloudflare and hundreds of other cloud services. Rather than manage a consistent state in each cloud service UI, Terraform allows you to define and manage these resources in your GitHub repository. This enables you to stay consistent with the philosophy of GitOps and streamline your CI/CD workflow.
 
