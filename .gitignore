@@ -21,6 +21,7 @@ kubeconfig
 # personal dev config files
 /extras/config-files/homegirls-den.yaml
 /extras/config-files/shroom-sense.yaml
+/extras/config-files/esphome/
 # terraform files still in development
 /extras/terraform/cloudflare-access
 /extras/terraform/cloudflare-dns
