@@ -1,12 +1,9 @@
----
 name: Schedule - Renovate Helm Releases
-
-on: # yamllint disable-line rule:truthy
-  workflow_dispatch:
+on:
   schedule:
-    - cron: "0 */12 * * *"
-
+    - cron: '0/15 * * * *'
 jobs:
+
   renovate-helm-releases:
     runs-on: ubuntu-20.04
     steps:
@@ -15,10 +12,11 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           fetch-depth: 1
 
-      - name: Renovate Helm Releases
-        uses: k8s-at-home/renovate-helm-releases@v1
+      - name: Self-hosted Renovate for Helm Release Updates
+        uses: renovatebot/github-action@v32.0.1
         with:
-          cluster-path: "./cluster"
+          configurationFile: .github/renovate.json5
+          token: ${{ secrets.RENOVATE_TOKEN }}
 
       - name: Create pull request for renovatebot helm-release annotations
         uses: peter-evans/create-pull-request@v4
