@@ -1,4 +1,1 @@
-SERVICE_LIST = [
-    "test1",
-    "test2"
-]
+SERVICE_LIST = ["test1","test2"]

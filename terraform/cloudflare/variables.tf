@@ -23,7 +23,7 @@ variable "PUBLIC_IP_ADDRESS" {
 }
 
 variable "SERVICE_LIST" {
- type        = list
+ type        = list(string)
  description = "Your list of services"
  default     = null
 }
