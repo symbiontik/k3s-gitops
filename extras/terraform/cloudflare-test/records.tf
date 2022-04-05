@@ -67,3 +67,13 @@ resource "cloudflare_record" "jaeger" {
   type    = "A"
   ttl     = 1
 }
+
+# Add a record for grafana to your domain
+resource "cloudflare_record" "code-server" {
+  name    = "code-server"
+  zone_id = lookup(data.cloudflare_zones.domain.zones[0], "id")
+  value   = var.PUBLIC_IP_ADDRESS
+  proxied = true
+  type    = "A"
+  ttl     = 1
+}

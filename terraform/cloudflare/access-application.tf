@@ -7,3 +7,15 @@
 #  session_duration     = "12h"
 #  type                 = "self_hosted"
 #}
+
+# Create a module that just ingests the name 
+# The module would create those two resource types (access and dns resources)
+#
+# Check out the tutorial on foreach() with Terraform
+# Example: for_each(var.service_name)
+#{
+#    $TFVARS_FILE
+#}
+# Check out auto.tfvars file - must be in the same working directory as where you're running terraform
+# Once you have the modules and these files, 
+# You could either modularize it, or you could have foreach() on each type - access and dns records 

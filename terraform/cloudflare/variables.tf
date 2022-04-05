@@ -21,3 +21,9 @@ variable "PUBLIC_IP_ADDRESS" {
  description = "Your public IP address"
  default     = null
 }
+
+variable "SERVICE_LIST" {
+ type        = list
+ description = "Your list of services"
+ default     = null
+}

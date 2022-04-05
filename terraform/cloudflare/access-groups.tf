@@ -1,14 +1,13 @@
-# Allowing `admin1@example.com` and `admin2@example.com` to access but only when coming from a
-# specific domain.
-#resource "cloudflare_access_group" "group_example" {
+# Cloudflare Access Group defintion for administrators
+#resource "cloudflare_access_group" "administrators" {
 #  zone_id        = lookup(data.cloudflare_zones.domain.zones[0], "id")
-#  name           = "group_example"
+#  name           = "administrators"
 #
 #  include {
-#    email = ["admin1@example.com","admin2@example.com"]
+#    email = ["var.CLOUDFLARE_EMAIL"]
 #  }
 #
 #  require {
-#    email_domain = ["example.com"]
+#    email_domain = ["var.CLOUDFLARE_DOMAIN"]
 #  }
 #}
