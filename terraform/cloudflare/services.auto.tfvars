@@ -1,1 +1,11 @@
-#SERVICE_LIST = ["test1","test2"]
+SERVICE_LIST = [
+    "traefik",
+    "hass",
+    "vscode",
+    "influxdb",
+    "code-server",
+    "esphome",
+    "traefik",
+    "grafana",
+    "prometheus"
+    ]

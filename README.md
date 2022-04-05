@@ -960,10 +960,11 @@ Additional reading regarding container workload types:
 Cheat sheet for global resources.
 
 1. Kubernetes application secrets: `/cluster/base/cluster-secrets.sops.yaml`
+1. Helm charts: `/cluster/base/flux-system/charts/helm`
 1. Encryption secrets: `this_place.yaml`
-1. Environment variables: `Within Terraform Cloud`
-1. Cloudflare resources: `/terraform/cloudflare/files.tf`
-1. 
+1. Local Environment variables: `bootstrap.env`
+1. Global Environment variables: `/terraform/terraform-cloud/tfe-variables.tf`
+1. Cloudflare service list: `/terraform/cloudflare/services.auto.tfvars`
 
 ## Gratitude
 
