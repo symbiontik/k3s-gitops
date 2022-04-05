@@ -6,30 +6,17 @@ on:
 
 jobs:
   renovate-helm-releases:
+    name: Renovate
     runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Verify Renovate Configuration
+        uses: tj-actions/renovate-config-validator@v1.3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 1
-
+          config-file: .github/renovate.json5
       - name: Self-hosted Renovate for Helm Release Updates
-        uses: renovatebot/github-action@v32.0.1
+        uses: renovatebot/github-action@v32.11.3
         with:
           configurationFile: .github/renovate.json5
           token: ${{ secrets.RENOVATE_TOKEN }}
-
-      - name: Create pull request for renovatebot helm-release annotations
-        uses: peter-evans/create-pull-request@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: renovate-annotations
-          delete-branch: true
-          title: "chore(deps): update renovate annotations"
-          signoff: false
-          committer: GitHub <noreply@github.com>
-          author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
-          commit-message: "chore(deps): update renovate annotations"
-          body: |
-            Update HelmReleases inorder for Renovate to pick up new versions of Helm charts
-          labels: renovate/annotations
