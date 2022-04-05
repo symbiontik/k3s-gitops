@@ -1,8 +1,28 @@
 name: Schedule - Renovate Helm Releases
+
 on:
   workflow_dispatch:
+    inputs:
+      dryRun:
+        description: "Dry-Run"
+        default: "false"
+        required: false
+      logLevel:
+        description: "Log-Level"
+        default: "debug"
+        required: false
   schedule:
-    - cron: '0/15 * * * *'
+    - cron: "0 * * * *"
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/renovate.json5"
+      - ".github/renovate/**.json"
+
+env:
+  LOG_LEVEL: debug
+  DRY_RUN: false
 
 jobs:
   renovate-helm-releases:
