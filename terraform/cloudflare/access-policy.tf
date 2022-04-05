@@ -7,7 +7,8 @@ resource "cloudflare_access_policy" "administrator_policy" {
   # each value here is a value from var.SERVICE_LIST
   name   = "${each.key}-policy"
 
-  application_id = cloudflare_access_application.access_application.aud
+  application_id =cloudflare_access_application.access_application[each.key].aud
+  #application_id = cloudflare_access_application.access_application.aud
   zone_id        = lookup(data.cloudflare_zones.domain.zones[0], "id")
   precedence     = "1"
   decision       = "allow"
