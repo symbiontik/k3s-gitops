@@ -1,31 +1,11 @@
-# Editors
+# Editor artifacts
 .vscode/
-# Trash
+# MacOS artifacts
 .DS_Store
 Thumbs.db
-# k8s
-kubeconfig
 # vscode-sops
 .decrypted~*.yaml
 # Secrets
 .secrets
-#secret file
-#/cluster/apps/home-assistant-with-vscode/code-server.sops.yaml
-#legacy files
-/cluster/base_legacy
-/tmpl_legacy
-# sensitive file for development
-.config.sample.env
 # notes for development
 /notes
-# personal dev config files
-/extras/config-files/homegirls-den.yaml
-/extras/config-files/shroom-sense.yaml
-/extras/config-files/esphome/
-# terraform files still in development
-/extras/terraform/cloudflare-access
-/extras/terraform/cloudflare-dns
-/extras/terraform/cloudflare-settings
-/extras/terraform/cloudflare-import
-/tmpl/terraform
-/extras/terraform/cloudflare-test/dev

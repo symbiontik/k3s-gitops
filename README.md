@@ -957,7 +957,7 @@ Additional reading regarding container workload types:
 
 ### One place to rule them all
 
-Cheat sheet for global resources.
+Cheat sheet for managing important cluster and global resources.
 
 1. Kubernetes application secrets: `/cluster/base/cluster-secrets.sops.yaml`
 1. Helm charts: `/cluster/base/flux-system/charts/helm`
@@ -965,6 +965,7 @@ Cheat sheet for global resources.
 1. Local Environment variables: `bootstrap.env`
 1. Global Environment variables: `/terraform/terraform-cloud/tfe-variables.tf`
 1. Cloudflare service list: `/terraform/cloudflare/services.auto.tfvars`
+1. Configuration management files: `kustomization.yaml`
 
 ## Gratitude
 
