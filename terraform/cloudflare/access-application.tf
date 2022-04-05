@@ -1,5 +1,5 @@
 #Add an Access application for each item in var.SERVICE_LIST
-resource "cloudflare_access_application" "access-application" {
+resource "cloudflare_access_application" "access_application" {
 
   # One cloudflare_access_application for each element of var.SERVICE_LIST
   for_each = toset( var.SERVICE_LIST )
