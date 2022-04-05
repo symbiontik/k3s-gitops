@@ -1,8 +1,14 @@
-# Cloudflare Access Policy definition for administrators
+# Cloudflare Access Policy definition for each Access Application
 resource "cloudflare_access_policy" "administrator_policy" {
-  application_id = cloudflare_access_application.application_example.aud
+
+  # One cloudflare_access_policy for each element of var.SERVICE_LIST
+  for_each = toset( var.SERVICE_LIST )
+
+  # each value here is a value from var.SERVICE_LIST
+  name   = "${each.key}-policy"
+
+  application_id = cloudflare_access_application.access_application.aud
   zone_id        = lookup(data.cloudflare_zones.domain.zones[0], "id")
-  name           = "administrator_policy"
   precedence     = "1"
   decision       = "allow"
 
