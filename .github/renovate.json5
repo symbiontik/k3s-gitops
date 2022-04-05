@@ -1,21 +1,24 @@
+
+
 {
   "enabled": true,
+  "timezone": "America/Chicago",
   "semanticCommits": "enabled",
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard",
+  "commitBody": "Signed-off-by: symbiontik <symbiontik@users.noreply.github.com>",
+  // Do not notify on closed unmerged PRs
   "suppressNotifications": ["prIgnoreNotification"],
+  // Do not rebase PRs
   "rebaseWhen": "conflicted",
   "helm-values": {
-    "fileMatch": [
-      "cluster/.+/helm-release\\.yaml$"
-    ]
+    "fileMatch": ["./.+\\.yaml$"]
   },
   "kubernetes": {
-    "fileMatch": [
-      "cluster/.+\\.yaml$"
-    ],
+    "fileMatch": ["\\.yaml$"],
     "ignorePaths": [
-      "cluster/base/"
+      "cluster/base",
+      ".github"
     ],
   },
   "regexManagers": [
