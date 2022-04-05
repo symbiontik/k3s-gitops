@@ -3,6 +3,11 @@
 {
   "enabled": true,
   "timezone": "America/Chicago",
+  "platform": "github",
+  "username": "sym[bot]",
+  "repositories": ["symbiontik/k3s-gitops"],
+  "onboarding": false,
+  "requireConfig": false,
   "semanticCommits": "enabled",
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard",
