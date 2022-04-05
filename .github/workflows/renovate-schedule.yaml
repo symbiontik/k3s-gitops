@@ -1,9 +1,10 @@
 name: Schedule - Renovate Helm Releases
 on:
+  workflow_dispatch:
   schedule:
     - cron: '0/15 * * * *'
-jobs:
 
+jobs:
   renovate-helm-releases:
     runs-on: ubuntu-20.04
     steps:
