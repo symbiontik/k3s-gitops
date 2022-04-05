@@ -40,7 +40,7 @@ This guide will walk you through the following steps:
 
 1. Fork this repo
 1. OS Installation
-1. Connect to your Kubernetes cluster
+1. Connect to your Kubernetes node
 1. Generate a Cloudflare API key
 1. Generate a Terraform Cloud API token
 1. Configure secrets encryption
@@ -228,9 +228,9 @@ exit
 
 You now have a k3OS server node ready for remote configuration.
 
-### Connect to your Kubernetes cluster
+### Connect to your Kubernetes node
 
-The majority of interaction with your Kubernetes cluster will occur from a remote development system - in this case, the Mac where you cloned this repo.
+The majority of interaction with your Kubernetes node will occur from a remote development system - in this case, the Mac where you cloned this repo.
 
 1. Connect to your new k3os node via SSH.
 
@@ -379,7 +379,7 @@ Your environment is now prepared for encrypting all secrets in your cluster.
 
 To prepare for deployment, it's necessary to bootstrap your development environment with your custom values such as DNS information, API keys, and encryption secrets. You'll then encrypt all your sensitive values before pushing your project to your Github repository. It is important to follow these steps carefully to ensure no sensitive values are pushed to your public repository.
 
-1. Open and edit your `.bootstrap.env` file to ensure it includes all your respective unique values, then save the file.
+1. Open and edit your `bootstrap.env` file to ensure it includes all your respective unique values, then save the file.
 
 1. Source the `bootstrap.env` file to set the respective environment variables in your terminal.
 
@@ -835,6 +835,9 @@ Renovate is a bot that watches the contents of your repository looking for depen
 
 Renovate runs via a scheduled Github Action workflow; GitHub Actions are used to automate, customize, and execute your software development workflows directly in your repository, similarly to how Flux does this for your Kubernetes cluster.
 
+1. TODO: Replace the contents below with these instructions since the previous workflow action has been deprecated:
+https://github.com/renovatebot/github-action#configurationfile 
+
 1. Navigate to the root of your `k3os-gitops` repository.
 
 1. Copy the file `/extras/github-actions/renovate.yaml` to your `.github/workflows` directory.
@@ -966,6 +969,7 @@ Cheat sheet for managing important cluster and global resources.
 1. Global Environment variables: `/terraform/terraform-cloud/tfe-variables.tf`
 1. Cloudflare service list: `/terraform/cloudflare/services.auto.tfvars`
 1. Configuration management files: `kustomization.yaml`
+1. RenovateBot configuration file: `.github/renovate.json5`
 
 ## Gratitude
 
