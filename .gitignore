@@ -3,9 +3,18 @@
 # MacOS artifacts
 .DS_Store
 Thumbs.db
+# Local Terraform files
+/terraform/terraform-cloud/.terraform/
+/terraform/terraform-cloud/.terraform.lock.hcl
+/terraform/terraform-cloud/terraform.tfstate
+/terraform/terraform-cloud/*.json
+# Credentials
+*account.json
+sshkey*
+privkey*
+pubkey*
+id_rsa*
 # vscode-sops
 .decrypted~*.yaml
-# Secrets
-.secrets
 # notes for development
 /notes

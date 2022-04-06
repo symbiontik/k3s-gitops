@@ -311,10 +311,11 @@ Cloudflare is used throughout this guide for several reasons:
 
 - Enables `cert-manager` to utilize the Cloudflare DNS challenge for automating TLS certificate creation in your Kubernetes cluster
 - Enables accessibility of your apps from anywhere
-- Secures access to your apps with Cloudflare Access 
+- Secures access to your apps with Cloudflare Access
 - Provides DNS security, detailed traffic metrics, and logging with Cloudflare Gateway
 - Provides you with Zero Trust security capabilities
 - Provides you with an single-sign-on (SSO) portal for your apps
+- Integrates with Terraform Cloud for automated Cloudflare resource creation
 
 1. Login to your [Cloudflare account](https://dash.cloudflare.com/login).
 
@@ -426,7 +427,7 @@ source bootstrap.env
 rm -rf ${PROJECT_DIR}/tmpl/
 ```
 
-1. Since `bootstrap.env` contains so many sensitive values, be sure it is included in your `.gitignore` or delete the file so you DO NOT commit it to your public GitHub repository. 
+1. Since `bootstrap.env` contains so many sensitive values, be sure it is included in your `.gitignore` so you DO NOT commit it to your public GitHub repository. 
 
 ```sh
 echo -e "\n#Sensitive Bootstrap Environment Variables\nbootstrap.env" >> .gitignore
@@ -577,13 +578,16 @@ flux get helmrelease -A
 Your Kubernetes cluster is now being managed by Flux - your Git repository is driving the state of your cluster!
 
 ### Automate external resource creation
-### Alternative title: Bootstrap Terraform Cloud
 
 Terraform Cloud is an infrastructure-as-code tool that allows you to easily create external resources for Cloudflare and hundreds of other cloud services. Rather than manage a consistent state in each cloud service UI, Terraform allows you to define and manage these resources in your GitHub repository. This enables you to stay consistent with the philosophy of GitOps and streamline your CI/CD workflow.
 
-#
-# Option 1: CLI-driven run workflow
-# 
+In this section you will bootstrap Terraform Cloud, which will then monitor the resources in the `terraform/` subdirectories. True to the GitOps philosophy, when Terraform Cloud detects any changes within these directories, it will automatically trigger a workflow to create and maintain the desired state of your external resources. 
+
+1. Change directory to `terraform/terraform-cloud`
+
+```sh
+cd terraform/terraform-cloud
+```
 
 1. Install `terraform`. (v1.1.0+)
 
@@ -591,40 +595,28 @@ Terraform Cloud is an infrastructure-as-code tool that allows you to easily crea
 brew install terraform
 ```
 
+# OPTION 1: Terraform login
 1. Run `terraform login` to obtain an API token and save it in plain text in a local CLI configuration file called `credentials.tfrc.json`.
 
 ```sh
 terraform login
 ```
 
-1. Run terraform plan
+# OPTION 2: Use the Terraform API token
 
-1. Run terraform apply
 
-#
-# Option 2: GUI-driven run workflow
-#
+# EITHER WAY
 
-1. Login to your [Terraform Cloud account](https://app.terraform.io/).
-
-1. Create an API key by going to [this page](https://app.terraform.io/app/settings/tokens) in your Terraform Cloud profile.
-
-**Note:** Your API key is a sensitive credential that allows programatic access to your Terraform Cloud account - ensure you take all precautions to protect this key.
-
-1. Copy the API key to your clipboard.
-
-1. Paste your API key as the value for `BOOTSTRAP_TERRAFORM_CLOUD_TOKEN` in your `bootstrap-tfc.env` file, then save the file. 
-
-1. Add these other things to the file:
-- 
-- 
-
-1. Source it.
-
-1. Run initial plan.
+1. Initialize Terraform in your `terraform/terraform-cloud` directory.
 
 ```sh
 terraform init
+```
+
+1. Run terraform plan
+
+```sh
+terraform plan
 ```
 
 1. Review and verify the contents of the plan.
@@ -638,56 +630,9 @@ some output
 terraform apply --auto-approve
 ```
 
-#
-# Option 3: Configure it once in the GUI
-# 
+1. Verify Terraform Cloud has been bootstrapped.
 
-1. Login to Terraform Cloud.
-
-1. Create a new Workspace.
-    1. Choose `Version control workflow`.
-    1. Connect your GitHub account.
-    1. Choose your `k3s-gitops` repository.
-    1. Set your workspace name as `Cloudflare`.
-    1. Finish creating the workspace.
-
-1. Within your workspace, go to Settings > General.
-
-1. Change your Terraform Working Directory to `terraform/cloudflare/`
-
-1. With your workspace, create these Variables with their respective values:
-    1. Key:`CLOUDFLARE_EMAIL`
-    1. Value: `your_cloudflare_email`
-    1. Category: `terraform`
-    1. Sensitive: `Yes`
-    1. Key: `CLOUDFLARE_APIKEY`
-    1. Value: `your_cloudflare_api_key`
-    1. Category: `terraform`
-    1. Sensitive: `Yes`
-    1. Key: `CLOUDFLARE_DOMAIN`
-    1. Value: `your_cloudflare_domain`
-    1. Category: `terraform`
-    1. Sensitive: `Yes`
-    1. Key: `PUBLIC_IP_ADDRESS`
-    1. Value: `your_public_ip_address`
-    1. Category: `terraform`
-    1. Sensitive: `Yes`
-
-1. TODO: Test the `SOPS_AGE_KEY` pattern here, then add if it works correctly 
-    1. Reference: https://registry.terraform.io/providers/carlpett/sops/latest/docs/data-sources/external
-    1. Github issue and PR: https://www.giters.com/carlpett/terraform-provider-sops/issues/80 
-
-1. Run initial plan.
-
-1. Review and verify the contents of the plan.
-
-```log
-some output
-```
-
-1. Click "Apply" to run Terraform.
-
-1. 
+Note: You no longer need to run terraform locally since Terraform Cloud will manage all your workflows.
 
 1. Choose to automatically run and apply Terraform when your GitHub repo changes. 
 
@@ -710,6 +655,7 @@ some output
 Your Terraform Cloud workspace will now continuously monitor your GitHub repository for changes and automatically create any respective resources in your Cloudflare account.
 
 ### Access your apps from anywhere
+### Remove this section once previous ones have been completed
 
 A public DNS service grants you the ability to access your apps from anywhere in the world. Cloudflare provides this service as well as many advanced security related features that come at no additional cost.
 
