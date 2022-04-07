@@ -3,6 +3,6 @@ resource "tfe_oauth_client" "github_oauth" {
   organization     = "my-org-name"
   api_url          = "https://api.github.com"
   http_url         = "https://github.com"
-  oauth_token      = "my-vcs-provider-token"
+  oauth_token      = var.GITHUB_PERSONAL_ACCESS_TOKEN
   service_provider = "github"
 }

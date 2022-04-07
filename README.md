@@ -32,30 +32,39 @@ In order to complete this guide, you will need the following:
 - A GitHub Account
 - A Cloudflare Account with a domain
 - A Terraform Cloud Account
-- A PC/VM with at least 6GB RAM
+- A PC/VM with at least 8GB RAM
+- Humility, patience, and resilience
 
 ## Deployment overview
 
 This guide will walk you through the following steps:
 
-1. Fork this repo
-1. OS Installation
-1. Connect to your Kubernetes node
-1. Generate a Cloudflare API key
-1. Generate a Terraform Cloud API token
-1. Configure secrets encryption
-1. Prepare for deployment
-1. Configure Flux
-1. Deploy some apps
-1. Automate k3s updates
-1. Automate your app updates
-1. Automate external resource creation
-1. Access your apps from anywhere
-1. Integrate Zero Trust security
-1. Add SSO to your apps
-1. Visualize your repo
-1. Observability, health-checking, and performance
-1. Add your own apps
+1. Setup
+    1. Fork this repo
+    1. OS Installation
+    1. Connect to your Kubernetes node
+    1. Generate a Cloudflare API key
+    1. Generate a Terraform Cloud API token
+    1. Generate a GitHub OAuth token for Cloudflare
+    1. Generate a GitHub Personal Access Token for Terraform Cloud
+    1. Configure secrets encryption
+    1. Prepare for deployment
+1. Deployment
+    1. Configure and Deploy Flux
+    1. Deploy your Kubernetes cluster resources
+    1. Automate external resource creation
+    1. Access your apps from anywhere
+1. Security
+    1. Extend Zero Trust security
+1. Additional Automation
+    1. Automate k3s updates
+    1. Automate your app updates
+    1. Automate external resource creation
+1. Operations
+    1. Add your own apps
+    1. Observability, health-checking, and performance
+1. Extras 
+    1. Visualize your repo
 
 **Note**: In order to stay focused on secure GitOps practices, these practices will not be covered in depth within this guide:
 
@@ -69,7 +78,7 @@ This guide will walk you through the following steps:
 
 In addition to this repository containing all the resources you will use throughout this guide, your GitHub repository will be the single source of truth for your Kubernetes & Cloudflare infrastructure definitions. 
 
-When new code is merged into your GitHub repository, Flux (which we will setup in a later step) will ensure your environment reflects the state of your GitHub repository. This is the essense of Infrastructure as code (IaC) - the practice of keeping all your infrastructure configuration stored as code. 
+When new code is merged into your GitHub repository, Flux (which we will setup in a later step) will ensure your environment reflects the state of your GitHub repository. This is the essense of Infrastructure as code (IaC) - the practice of keeping all your declarative infrastructure configuration stored as code. 
 
 1. [Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) this `k3s-gitops` repo into your own GitHub repo.
 
@@ -329,6 +338,22 @@ Cloudflare is used throughout this guide for several reasons:
 
 You now have a Cloudflare API key that will enable you to programatically create Cloudflare and encryption resources with ease.
 
+### Activate Cloudflare Teams
+
+TODO:  Complete this section
+
+Cloudflare Teams is a free suite of Zero Trust security tools including Cloudflare Access and Cloudflare Gateway. 
+
+https://developers.cloudflare.com/cloudflare-one/faq/teams-getting-started-faq
+
+1. 
+
+1. Copy your team name to your clipboard.
+
+1. Paste your team name as the value for `CLOUDFLARE_TEAM_NAME` in your `bootstrap.env` file, then save the file. 
+
+You now have the foundation for integrating Cloudflare's Zero Trust tools into your environment.
+
 ### Generate a Terraform API token
 
 Terraform Cloud is an infrastructure-as-code tool that allows you to easily create external resources for Cloudflare and hundreds of other cloud services. Rather than manage a consistent state in each cloud service UI, Terraform allows you to define and manage these resources in your GitHub repository. This enables you to stay consistent with the philosophy of GitOps and streamline your CI/CD workflow.
@@ -344,6 +369,54 @@ Terraform Cloud is an infrastructure-as-code tool that allows you to easily crea
 1. Paste your API token as the value for `BOOTSTRAP_TERRAFORM_CLOUD_TOKEN` in your `bootstrap.env` file, then save the file. 
 
 You now have a Terraform Cloud API token that will enable you to programatically configure your Terraform environment.
+
+### Generate a GitHub OAuth token for Cloudflare
+
+TODO:  Complete this section
+
+GitHub integrates with Cloudflare to secure your environment using Zero Trust security methodologies.
+- Talk about OAuth
+- Talk about the extended functionality you get with Cloudflare (SSO and Zero Trust)
+
+1. Login to your [GitHub account](https://github.com/login).
+
+1. Go to the [OAuth token creation page](https://github.com/settings/developers), select "OAuth Apps", then click "Register a new application".
+
+**Note:** Your OAuth token is a sensitive credential - ensure you take all precautions to protect this key.
+
+1. Complete the "Register a new OAuth application" form using these values.
+    1. Application name: `Cloudflare`
+    1. Homepage URL: `https://<your-team-name>.cloudflareaccess.com`
+    1. Authorization callback URL: `https://<your-team-name>.cloudflareaccess.com/cdn-cgi/access/callback`
+
+Note: Replace `<your-team-name>` in these fields with the contents of `CLOUDFLARE_TEAM_NAME` in your `bootstrap.env` file.
+
+1. Click the "Register application" button once complete.
+
+1. Copy the OAuth Client ID to your clipboard.
+
+1. Paste your API token as the value for `CLOUDFLARE_OAUTH_CLIENT_ID` in your `bootstrap.env` file, then save the file. 
+
+1. Copy the OAuth Client Secret to your clipboard.
+
+1. Paste your API token as the value for `CLOUDFLARE_OAUTH_CLIENT_SECRET` in your `bootstrap.env` file, then save the file. 
+
+You now have a GitHub OAuth client and secret that will enable you to programatically configure your Cloudflare environment with Zero Trust security methodologies.
+
+### Generate a GitHub Personal Access Token for Terraform Cloud
+
+TODO:  Complete this section
+
+1.  Generate a personal access token (PAT) and get it done API style:
+https://registry.terraform.io/providers/hashicorp/tfe/latest/docs/resources/oauth_client#oauth_token
+
+1. Follow [this GitHub guide](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) to create a Personal Access Token (PAT).
+
+1. Copy the GitHub Personal Access token to your clipboard.
+
+1. Paste your API token as the value for `GITHUB_PERSONAL_ACCESS_TOKEN` in your `bootstrap.env` file, then save the file. 
+
+You now have a GitHub Personal Access Token (PAT) that will enable you to programatically integrate your Terraform Cloud and GitHub instances.
 
 ### Configure Secrets Encryption
 
@@ -368,7 +441,7 @@ mkdir -p ~/.config/sops/age
 mv age.agekey ~/.config/sops/age/keys.txt
 ```
 
-1. Fill out the `age` public key in the `.bootstrap.env` under `BOOTSTRAP_AGE_PUBLIC_KEY`.
+1. Fill out the `age` public key in the `bootstrap.env` under `BOOTSTRAP_AGE_PUBLIC_KEY`.
 
 **Note:** The public key should start with `age`...
 
@@ -443,7 +516,7 @@ git push
 
 Your local terminal and GitHub repository are now ready to initialize Flux.
 
-### Configure Flux
+### Configure and Deploy Flux
 
 Flux is the essential GitOps enablement component that keeps your Kubernetes cluster in sync with your GitHub repository. Once your Flux instance is bootstrapped, it will begin driving the state of your Kubernetes cluster. In order to update or make changes to your cluster, it is recommended to create merge requests for your GitHub repository - this grants you a simple rollback method, change logging, and single point of change for your environment.
 
@@ -481,7 +554,7 @@ kubectl -n flux-system create secret generic sops-age \
 
 Your Kubernetes cluster is now ready to begin sycning with your GitHub repo to deploy apps with Flux.
 
-### Deploy some apps
+### Deploy your Kubernetes cluster resources
 
 Now that your infrastructure, security mechanisms, and deployment methodologies are in place - it's time to start deploying resources in your Kubernetes cluster! 
 
@@ -589,23 +662,17 @@ In this section you will bootstrap Terraform Cloud, which will then monitor the 
 cd terraform/terraform-cloud
 ```
 
-1. Install `terraform`. (v1.1.0+)
+1. Install `terraform`. 
 
 ```sh
 brew install terraform
 ```
 
-# OPTION 1: Terraform login
-1. Run `terraform login` to obtain an API token and save it in plain text in a local CLI configuration file called `credentials.tfrc.json`.
+1. Ensure your bootstrapping environment variables are still set in your terminal.
 
 ```sh
-terraform login
+source bootstrap.env
 ```
-
-# OPTION 2: Use the Terraform API token
-
-
-# EITHER WAY
 
 1. Initialize Terraform in your `terraform/terraform-cloud` directory.
 
@@ -613,7 +680,7 @@ terraform login
 terraform init
 ```
 
-1. Run terraform plan
+1. Run terraform plan.
 
 ```sh
 terraform plan
@@ -630,90 +697,26 @@ some output
 terraform apply --auto-approve
 ```
 
-1. Verify Terraform Cloud has been bootstrapped.
+Note: You no longer need to run terraform locally after this since Terraform Cloud will now manage all your Terraform automation workflows.
 
-Note: You no longer need to run terraform locally since Terraform Cloud will manage all your workflows.
-
-1. Choose to automatically run and apply Terraform when your GitHub repo changes. 
-
-1. 
-
-#
-# Option 4: Bootstrap your TFC instance with the CLI
-# 
-
-1. Install terraform with brew
-
-1. Run terraform plan
-
-1. Run terraform apply
-
-1. Bootstrap your Terraform Cloud environment with the CLI.
-
-1. This will configure all variables and workplace settings. Any future variable additions can be added directly to your Terraform files and will automatically be created
+1. Verify Terraform Cloud has been bootstrapped by logging into your [Terraform Cloud UI](https://app.terraform.io/) and checking that the run status is `Applied` for both of your workspaces.
 
 Your Terraform Cloud workspace will now continuously monitor your GitHub repository for changes and automatically create any respective resources in your Cloudflare account.
 
 ### Access your apps from anywhere
-### Remove this section once previous ones have been completed
 
-A public DNS service grants you the ability to access your apps from anywhere in the world. Cloudflare provides this service as well as many advanced security related features that come at no additional cost.
+With your cloud infrastructure and Kubernetes infrastructure in place, the only remaining piece is to connect the two with a port-forwarding rule on your local networking equipment.
 
-Rather than utilize the Cloudflare web UI, a much more manageable and scalable pattern is to leverage [Terraform](https://www.terraform.io/) (an infrastructure-as-code tool) for Cloudflare resource management. Once this is initialized, you should use Terraform as the authoritative management platform for your Cloudflare resources so they do not fall out of sync.
+1. On your local router, configure port forwarding with the following attributes:
+- Source: `0.0.0.0/0`
+- Port: `443` 
+- Destination: Your Traefik Ingress IP (whatever IP you set for `BOOTSTRAP_METALLB_TRAEFIK_ADDR`). 
 
-1. TODO: Skip the import section and just add a caveat here before creating? Could add a note somewhere about importing state too..
+1. Test that this works by visiting one of your public-facing applications, for example, `grafana.<your-DNS-name>.com`
 
-1. Begin by importing your current Cloudflare state into Terraform files.
+Cloudflare will now encrypt and route all respective DNS requests to the Traefik Ingress controller in your Kubernetes cluster.
 
-    1. Navigate to the `/extras/terraform/cloudflare-import` directory.
-
-    1. Install the necessary packages.
-
-    ```sh
-    brew install terraform
-    brew tap cloudflare/cloudflare
-    brew install --cask cloudflare/cloudflare/cf-terraforming
-    ```
-
-    1. Set your environmental variables.
-
-    ```sh
-    export CLOUDFLARE_EMAIL='user@example.com'
-    export CLOUDFLARE_API_KEY='1150bed3f45247b99f7db9696fffa17cbx9'
-    export CLOUDFLARE_ZONE_ID='4c8964bacd8821df5315e5c0bf4eee50'
-    ```
-
-    1. Generate Terraform files from your Cloudflare DNS records.
-
-    ```sh
-    cf-terraforming generate \
-    --resource-type "cloudflare_record" \
-    --email $CLOUDFLARE_EMAIL \
-    --key $CLOUDFLARE_API_KEY \
-    --zone $CLOUDFLARE_ZONE_ID \
-    > records.tf
-    ```
-
-1. Copy the `records.tf` file to your `/extras/terraform/cloudflare-dns` directory.
-
-1. 
-
-1. Navigate to the `/extras/terraform/cloudflare-dns` directory.
-
-1. 
-
-1. On your local router, configure port forwarding for port `443` to your Traefik Ingress IP (whatever IP you set for `BOOTSTRAP_METALLB_TRAEFIK_ADDR`).
-
-1. 
-
-
-- Reference: [Cloudflare DNS](https://www.cloudflare.com/dns/)
-- Reference: [cf-terraforming repo](https://github.com/cloudflare/cf-terraforming)
-- Reference: [Import Cloudflare resources to Terraform](https://developers.cloudflare.com/terraform/advanced-topics/import-cloudflare-resources)
-- Reference: [Terraform provider for Cloudflare DNS Records](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/record)
-
-
-### Integrate Zero Trust security
+### Extend Zero Trust security
 
 Integrating Zero Trust security principles throughout your infrastructure and application ecosystem ensures you reliability and protects you from breaches. The fundamental difference from traditional security approaches is the shift of access controls from the network perimeter to individual users. To accomplish this, you will utilize features from Cloudflare, GitHub, and two-factor authentication (2FA) services.
 
@@ -729,32 +732,20 @@ Integrating Zero Trust security principles throughout your infrastructure and ap
 
 1. [Configure your Terraform Cloud account with 2FA](https://www.terraform.io/cloud-docs/users-teams-organizations/2fa)
 
-1. Configure Cloudflare Access policies with Terraform.
+1. 
+
+1. [Configure Cloudflare Gateway](https://www.cloudflare.com/products/zero-trust/gateway/)
 
 1. 
 
-
-- Reference: [Multifactor Authentication](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication)
-- Reference: [Terraform provider for Cloudflare Access Rules](https://registry.terraform.io/providers/cloudflare/cloudflare/latest/docs/resources/access_rule)
-- Reference: [Cloudflare Access Policies]()
-- Reference: [Cloudflare Gateway]()
-
-### Add SSO to your apps
-
-Single-Sign-On (SSO) provides a simplified, one-time login experience for all your apps as well as fine-grained access control into which users have access to which apps. To create a SSO portal, you will utilize Cloudflare's App Launcher with GitHub as the Identity Provider (IdP).
-
-1. Login to your Cloudflare account.
-
-1. Do this: https://developers.cloudflare.com/cloudflare-one/identity/idp-integration/github
+1. Use the Cloudflare App Launcher as the SSO portal with GitHub as the Identity Provider (IdP).
 
 1. 
 
-1. Add Cloudflare, GitHub, Terraform Cloud, and your Kubernetes apps to the Cloudflare App Launcher with Terraform.
+1. Optional: Add Cloudflare, GitHub, Terraform Cloud, and your Kubernetes apps to the Cloudflare App Launcher.
 
-1. 
 
 - Reference: [Cloudflare App Launcher](https://developers.cloudflare.com/cloudflare-one/applications/app-launcher)
-- Reference: [Cloudflare IdP Integration](https://developers.cloudflare.com/cloudflare-one/identity/idp-integration)
 
 ### Automate K3S updates
 
@@ -815,26 +806,6 @@ git push
 ```
 
 You now have an automated bot that will compare your cluster's application versions against the latest versions every 12 hours. Renovate bot will generate a pull request for you to review and merge whenever new versions are found.
-
-### Visualize your repo
-
-GitHub's repo visualizer provides you with the shape of your codebase, giving you a different perspective on your reposistory. It can be used as a baseline to detect large changes in structure, understand how your environment is structured, or as a visual tool to explain features to others.
-
-1. Navigate to the `/extras/github-actions` directory.
-1. 
-
-- Reference: [Repo Visualizer](https://github.com/githubocto/repo-visualizer)
-- Reference: [Repo Visualizer Blog](https://next.github.com/projects/repo-visualization)
-
-### Observability, health-checking, and performance
-
-Being able to easily visualize the various components of your Kubernetes environment allows you to monitor performance, setup alerting parameters, and troubleshoot challenges as they arise. The Grafana/Prometheus/Loki/Tempo stack empowers you with a total observability (metrics, logs, and distributed traces) platform that scales with your Kubernetes components and your applications.
-
-1. Login to your Grafana instance.
-
-1. 
-
-1. 
 
 ### Add your own apps
 
@@ -903,6 +874,27 @@ You have now successfully created a new app in your Kubernetes cluster.
 Additional reading regarding container workload types:
 - [Stateless vs Stateful apps on Kubernetes](https://www.weka.io/blog/stateless-vs-stateful-kubernetes/)
 - [Should I run a database on Kubernetes?](https://cloud.google.com/blog/products/databases/to-run-or-not-to-run-a-database-on-kubernetes-what-to-consider)
+
+### Observability, health-checking, and performance
+
+Being able to easily visualize the various components of your Kubernetes environment allows you to monitor performance, setup alerting parameters, and troubleshoot challenges as they arise. The Grafana/Prometheus/Loki/Tempo stack empowers you with a total observability (metrics, logs, and distributed traces) platform that scales with your Kubernetes components and your applications.
+
+1. Login to your Grafana instance.
+
+1. 
+
+1. 
+
+### Visualize your repo
+
+GitHub's repo visualizer provides you with the shape of your codebase, giving you a different perspective on your reposistory. It can be used as a baseline to detect large changes in structure, understand how your environment is structured, or as a visual tool to explain features to others.
+
+1. Navigate to the `/extras/github-actions` directory.
+1. 
+
+- Reference: [Repo Visualizer](https://github.com/githubocto/repo-visualizer)
+- Reference: [Repo Visualizer Blog](https://next.github.com/projects/repo-visualization)
+
 
 ### One place to rule them all
 
