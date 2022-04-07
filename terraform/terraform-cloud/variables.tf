@@ -33,3 +33,9 @@ variable "PUBLIC_IP_ADDRESS" {
  description = "Your public IP address"
  default     = null
 }
+
+variable "GITHUB_PERSONAL_ACCESS_TOKEN" {
+ type        = string
+ description = "Your GitHub Personal Access Token"
+ default     = null
+}
