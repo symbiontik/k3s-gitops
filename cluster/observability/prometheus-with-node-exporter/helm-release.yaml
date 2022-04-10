@@ -110,12 +110,12 @@ spec:
                   storage: 1Gi
               storageClassName: local-path
         additionalScrapeConfigs:
-          - job_name: 'influxdb'
+          - job_name: 'influxdb-influxdb2'
             honor_timestamps: true
             metrics_path: /metrics
             static_configs:
               - targets:
-                  - "influxdb.apps:8086"
+                  - "influxdb-influxdb2.apps:8086"
           - job_name: "node-exporter"
             honor_timestamps: true
             static_configs:
