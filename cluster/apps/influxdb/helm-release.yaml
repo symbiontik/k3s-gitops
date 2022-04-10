@@ -10,8 +10,8 @@ spec:
   chart:
     spec:
       # renovate: registryUrl=https://helm.influxdata.com/
-      chart: influxdb
-      version: 4.10.6
+      chart: influxdb2
+      version: 2.0.10
       sourceRef:
         kind: HelmRepository
         name: influxdata-charts
@@ -20,7 +20,7 @@ spec:
   values:
     image:
       repository: "influxdb"
-      tag: "2.1.1-alpine"
+      tag: "2.2.0-alpine"
     service:
       type: ClusterIP
       port: 80
@@ -44,18 +44,8 @@ spec:
       enabled: true
       failureThreshold: 10
       periodSeconds: 10
-    #persistence:
-      #enabled: false
-      #storageClassName: "local-path"
-      #mountPath: /var/lib/influxdb2
-      #subPath: ""
-      #accessMode: ReadWriteOnce
-      #size: 10Gi
     persistence:
       enabled: true
+      useExisting: true
       name: influxdb-data
-      storageClassName: "local-path"
       mountPath: /var/lib/influxdb2
-      #subPath: ""
-      accessMode: ReadWriteOnce
-      size: 12Gi
