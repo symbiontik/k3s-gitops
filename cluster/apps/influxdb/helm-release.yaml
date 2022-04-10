@@ -46,11 +46,9 @@ spec:
       periodSeconds: 10
     persistence:
       enabled: true
-      useExisting: true
       name: influxdb-data
-      storageClassName: ""
+      storageClassName: "local-path"
       mountPath: /var/lib/influxdb2
       subPath: ""
-      #storageClass: "-"
-      #accessMode: ReadWriteOnce
-      #size: 50Gi
+      accessMode: ReadWriteOnce
+      size: 10Gi
