@@ -49,3 +49,19 @@ spec:
       useExisting: true
       name: influxdb-data
       mountPath: /var/lib/influxdb2
+    ## Create default user through docker entrypoint
+    ## Defaults indicated below
+    ##
+    adminUser:
+      organization: "influxdata"
+      bucket: "home-assistant"
+      user: "admin"
+      retention_policy: "0s"
+      ## Leave empty to generate a random password and token.
+      ## Or fill any of these values to use fixed values.
+      password: "password"
+      token: "wgXSklpkhpbZXGEZvojQhwPH-l_bc1dipFksMbvVoePLzdZlKCZoMSgUwVV2UFACaQa0egMiGVwX58S2vcBm1A=="
+      ## The password and token are obtained from an existing secret. The expected
+      ## keys are `admin-password` and `admin-token`.
+      ## If set, the password and token values above are ignored.
+      # existingSecret: influxdb-auth
