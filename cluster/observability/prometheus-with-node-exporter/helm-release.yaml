@@ -27,8 +27,6 @@ spec:
             sourceLabels:
               - __meta_kubernetes_pod_node_name
             targetLabel: kubernetes_node
-    kube-state-metrics:
-      fullnameOverride: kube-state-metrics
     prometheus-node-exporter:
       fullnameOverride: node-exporter
     grafana:
@@ -86,10 +84,6 @@ spec:
           - hosts:
               - "prometheus.${SECRET_DOMAIN}"
             secretName: "prometheus-tls"
-      #thanosService:
-        #enabled: true
-      #thanosServiceMonitor:
-        #enabled: true
       prometheusSpec:
         replicas: 1
         replicaExternalLabelName: "replica"
