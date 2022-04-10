@@ -79,11 +79,11 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - "prometheus.${SECRET_DOMAIN}"
+          - prometheus.${SECRET_DOMAIN}
         tls:
           - hosts:
-              - "prometheus.${SECRET_DOMAIN}"
-            secretName: "prometheus-tls"
+              - prometheus.${SECRET_DOMAIN}
+            secretName: prometheus-tls
       prometheusSpec:
         replicas: 1
         replicaExternalLabelName: "replica"
@@ -94,6 +94,7 @@ spec:
         retention: 6h
         enableAdminAPI: true
         walCompression: true
+        externalUrl: prometheus.${SECRET_DOMAIN}
         storageSpec:
           volumeClaimTemplate:
             spec:
