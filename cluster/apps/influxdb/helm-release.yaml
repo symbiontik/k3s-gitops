@@ -48,5 +48,9 @@ spec:
       enabled: true
       useExisting: true
       name: influxdb-data
+      storageClassName: ""
       mountPath: /var/lib/influxdb2
       subPath: ""
+      #storageClass: "-"
+      #accessMode: ReadWriteOnce
+      #size: 50Gi
