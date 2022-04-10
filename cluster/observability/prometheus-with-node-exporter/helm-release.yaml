@@ -110,7 +110,7 @@ spec:
             metrics_path: /metrics
             static_configs:
               - targets:
-                  - "influxdb-influxdb2.apps:8086"
+                  - "influxdb-influxdb2.apps:80"
           - job_name: "node-exporter"
             honor_timestamps: true
             static_configs:
