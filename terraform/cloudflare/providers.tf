@@ -9,6 +9,6 @@ terraform {
 }
 
 provider "cloudflare" {
-  email   = var.CLOUDFLARE_EMAIL
-  api_key = var.CLOUDFLARE_APIKEY
+  email   = var.BOOTSTRAP_CLOUDFLARE_EMAIL
+  api_key = var.BOOTSTRAP_CLOUDFLARE_APIKEY
 }

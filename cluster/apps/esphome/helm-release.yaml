@@ -52,10 +52,4 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: esphome-data
-    resources:
-      requests:
-        cpu: 100m
-        memory: 100Mi
-      limits:
-        memory: 400Mi
+        existingClaim: esp-data
