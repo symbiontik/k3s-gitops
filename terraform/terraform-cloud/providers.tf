@@ -3,7 +3,7 @@ terraform {
   required_providers {
     tfe = {
       source  = "cloudflare/cloudflare"
-      version = "0.29.0"
+      version = "3.12.2"
     }
   }
 }
