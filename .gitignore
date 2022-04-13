@@ -16,5 +16,3 @@ pubkey*
 id_rsa*
 # vscode-sops
 .decrypted~*.yaml
-# notes for development
-/notes
