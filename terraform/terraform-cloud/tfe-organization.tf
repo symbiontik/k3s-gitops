@@ -1,4 +1,4 @@
-resource "tfe_organization" "k3s_gitops" {
-  name  = var.CLOUDFLARE_TEAM_NAME
+resource "tfe_organization" "tfe_organization" {
+  name  = var.TERRAFORM_ORGANIZATION_NAME
   email = var.TERRAFORM_CLOUD_EMAIL
 }

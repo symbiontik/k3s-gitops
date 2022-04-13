@@ -1,3 +1,5 @@
+# Terraform Cloud Workspace Variables
+
 resource "tfe_variable" "terraform_cloud_token" {
   key          = "TERRAFORM_CLOUD_TOKEN"
   value        = var.TERRAFORM_CLOUD_TOKEN
@@ -15,6 +17,17 @@ resource "tfe_variable" "terraform_cloud_email" {
   workspace_id = tfe_workspace.terraform_cloud.id
   description  = "a useful description"
 }
+
+resource "tfe_variable" "terraform_organization_name" {
+  key          = "TERRAFORM_ORGANIZATION_NAME"
+  value        = var.TERRAFORM_ORGANIZATION_NAME
+  sensitive    = true
+  category     = "terraform"
+  workspace_id = tfe_workspace.terraform_cloud.id
+  description  = "a useful description"
+}
+
+# Cloudflare Workspace Variables
 
 resource "tfe_variable" "cloudflare_email" {
   key          = "CLOUDFLARE_EMAIL"
