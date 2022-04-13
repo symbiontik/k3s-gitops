@@ -28,6 +28,12 @@ variable "CLOUDFLARE_DOMAIN" {
  default     = null
 }
 
+variable "CLOUDFLARE_TEAM_NAME" {
+ type        = string
+ description = "Your Cloudflare team name"
+ default     = null
+}
+
 variable "PUBLIC_IP_ADDRESS" {
  type        = string
  description = "Your public IP address"

@@ -7,6 +7,7 @@ Thumbs.db
 /terraform/terraform-cloud/.terraform/
 /terraform/terraform-cloud/.terraform.lock.hcl
 /terraform/terraform-cloud/terraform.tfstate
+/terraform/terraform-cloud/terraform.tfstate.backup
 /terraform/terraform-cloud/*.json
 # Credentials
 *account.json
