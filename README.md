@@ -769,6 +769,10 @@ TODO: Build out this section
 1. TODO: Replace the contents below with these instructions since the previous workflow action has been deprecated:
 https://github.com/renovatebot/github-action#configurationfile 
 
+1. Create a GitHub Personal Access Token for Renovate. 
+
+1. Create a GitHub secret called `RENOVATE_TOKEN` and paste in the Personal Access Token you just generated.
+
 1. Navigate to the root of your `k3os-gitops` repository.
 
 1. Copy the file `/extras/github-actions/renovate.yaml` to your `.github/workflows` directory.
@@ -776,6 +780,8 @@ https://github.com/renovatebot/github-action#configurationfile
 ```sh
 cp /extras/github-actions/renovate.yaml .github/workflows/renovate.yaml
 ```
+
+1. Replace the GitHub repository URL in the `.github/workflows/renovate.json5` file with your GitHub repository URL.
 
 1. Within each of your `helm-release.yaml` files, ensure you create a respective `renovate:` line within your chart spec similar to the following stanza - this specifies the chart that Renovate will watch for version updates to your respective applications/resources.
 
