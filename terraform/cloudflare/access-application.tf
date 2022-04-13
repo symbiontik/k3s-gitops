@@ -8,7 +8,7 @@ resource "cloudflare_access_application" "access_application" {
   name     = each.key 
 
   # each value here is a value from var.SERVICE_LIST
-  domain   = "${each.key}.${var.BOOTSTRAP_CLOUDFLARE_DOMAIN}"
+  domain   = "${each.key}.${var.CLOUDFLARE_DOMAIN}"
 
   zone_id              = lookup(data.cloudflare_zones.domain.zones[0], "id")
   app_launcher_visible = true

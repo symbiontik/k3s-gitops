@@ -17,6 +17,6 @@ resource "cloudflare_access_policy" "administrator_policy" {
   }
 
   require {
-    email_domain = ["var.BOOTSTRAP_CLOUDFLARE_DOMAIN"]
+    email_domain = ["var.CLOUDFLARE_DOMAIN"]
   }
 }

@@ -14,5 +14,6 @@ sshkey*
 privkey*
 pubkey*
 id_rsa*
+my.bootstrap.env
 # vscode-sops
 .decrypted~*.yaml

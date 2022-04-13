@@ -335,7 +335,7 @@ Cloudflare is used throughout this guide for several reasons:
 
 1. Copy the API key to your clipboard.
 
-1. Paste your API key as the value for `BOOTSTRAP_CLOUDFLARE_APIKEY` in your `bootstrap.env` file, then save the file. 
+1. Paste your API key as the value for `CLOUDFLARE_APIKEY` in your `bootstrap.env` file, then save the file. 
 
 You now have a Cloudflare API key that will enable you to programatically create Cloudflare and encryption resources with ease.
 
@@ -365,7 +365,7 @@ Terraform Cloud is an infrastructure-as-code tool that allows you to easily crea
 
 1. Copy the API token to your clipboard.
 
-1. Paste your API token as the value for `BOOTSTRAP_TERRAFORM_CLOUD_TOKEN` in your `bootstrap.env` file, then save the file. 
+1. Paste your API token as the value for `TERRAFORM_CLOUD_TOKEN` in your `bootstrap.env` file, then save the file. 
 
 You now have a Terraform Cloud API token that will enable you to programatically configure your Terraform environment.
 
@@ -433,7 +433,7 @@ mkdir -p ~/.config/sops/age
 mv age.agekey ~/.config/sops/age/keys.txt
 ```
 
-1. Fill out the `age` public key in the `bootstrap.env` under `BOOTSTRAP_AGE_PUBLIC_KEY`.
+1. Fill out the `age` public key in the `bootstrap.env` under `AGE_PUBLIC_KEY`.
 
 **Note**: The public key should start with `age`...
 
@@ -700,7 +700,7 @@ With your cloud infrastructure and Kubernetes infrastructure in place, the only 
 1. On your local router, configure port forwarding with the following attributes:
 - Source: `0.0.0.0/0`
 - Port: `443` 
-- Destination: Your Traefik Ingress IP (whatever IP you set for `BOOTSTRAP_METALLB_TRAEFIK_ADDR`). 
+- Destination: Your Traefik Ingress IP (whatever IP you set for `METALLB_TRAEFIK_ADDR`). 
 
 1. Test that this works by visiting one of your public-facing applications, for example, `grafana.<your-DNS-name>.com`
 

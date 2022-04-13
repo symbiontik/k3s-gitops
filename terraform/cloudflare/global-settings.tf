@@ -19,25 +19,24 @@ resource "cloudflare_zone_settings_override" "cloudflare_settings" {
     security_level = "medium"
     # /speed/optimization
     brotli = "on"
-    # my setings for all these: off
+    # Auto minify HTML, CSS and JavaScript to optimize a site
     minify {
       css  = "on"
       js   = "on"
       html = "on"
     }
-    #my setting for rocket_loader: off
+    # Rocket Loader prioritizes your website's content (text, images, fonts etc) by deferring the loading of all of your JavaScript until after rendering.
     rocket_loader = "on"
     # /caching/configuration
-    #my setting for always_online: on
+    # Always Online is a feature that caches a static version of your pages in case your server goes offline.
     always_online    = "off"
     development_mode = "off"
     #browser_cache_ttl           = 14400
     #browser_check               = "on"
     #cache_level                 = "aggressive"
     # /network
-    #my setting for http3: off
     http3               = "on"
-    #my setting for zero_rtt: off
+    # dramatically speeds up resumed connections
     zero_rtt            = "on"
     ipv6                = "on"
     websockets          = "on"

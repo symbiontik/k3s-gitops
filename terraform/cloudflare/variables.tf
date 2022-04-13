@@ -1,16 +1,16 @@
-variable "BOOTSTRAP_CLOUDFLARE_EMAIL" {
+variable "CLOUDFLARE_EMAIL" {
  type        = string
  description = "Email for your Cloudflare account"
  default     = null
 }
 
-variable "BOOTSTRAP_CLOUDFLARE_APIKEY" {
+variable "CLOUDFLARE_APIKEY" {
  type        = string
  description = "API Key for your Cloudflare account"
  default     = null
 }
 
-variable "BOOTSTRAP_CLOUDFLARE_DOMAIN" {
+variable "CLOUDFLARE_DOMAIN" {
  type        = string
  description = "Your Cloudflare domain name"
  default     = null

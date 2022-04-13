@@ -4,10 +4,10 @@ resource "cloudflare_access_group" "administrators" {
   name           = "administrators"
 
   include {
-    email = ["var.BOOTSTRAP_CLOUDFLARE_EMAIL"]
+    email = [var.CLOUDFLARE_EMAIL]
   }
 
   require {
-    email_domain = ["var.BOOTSTRAP_CLOUDFLARE_DOMAIN"]
+    email_domain = [var.CLOUDFLARE_DOMAIN]
   }
 }
