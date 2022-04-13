@@ -10,6 +10,12 @@ variable "TERRAFORM_CLOUD_TOKEN" {
  default     = null
 }
 
+variable "TERRAFORM_ORGANIZATION_NAME" {
+ type        = string
+ description = "Your Terraform organization name"
+ default     = null
+}
+
 variable "CLOUDFLARE_EMAIL" {
  type        = string
  description = "Email for your Cloudflare account"
