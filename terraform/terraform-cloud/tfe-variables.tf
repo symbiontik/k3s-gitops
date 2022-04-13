@@ -43,6 +43,15 @@ resource "tfe_variable" "cloudflare_domain" {
   description  = "a useful description"
 }
 
+resource "tfe_variable" "cloudflare_team_name" {
+  key          = "CLOUDFLARE_TEAM_NAME"
+  value        = var.CLOUDFLARE_TEAM_NAME
+  sensitive    = true
+  category     = "terraform"
+  workspace_id = tfe_workspace.cloudflare.id
+  description  = "a useful description"
+}
+
 resource "tfe_variable" "public_ip_address" {
   key          = "PUBLIC_IP_ADDRESS"
   value        = var.PUBLIC_IP_ADDRESS
