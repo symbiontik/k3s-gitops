@@ -73,3 +73,21 @@ resource "tfe_variable" "public_ip_address" {
   workspace_id = tfe_workspace.cloudflare.id
   description  = "a useful description"
 }
+
+resource "tfe_variable" "cloudflare_oauth_client_id" {
+  key          = "CLOUDFLARE_OAUTH_CLIENT_ID"
+  value        = var.CLOUDFLARE_OAUTH_CLIENT_ID
+  sensitive    = true
+  category     = "terraform"
+  workspace_id = tfe_workspace.cloudflare.id
+  description  = "a useful description"
+}
+
+resource "tfe_variable" "cloudflare_oauth_client_secret" {
+  key          = "CLOUDFLARE_OAUTH_CLIENT_SECRET"
+  value        = var.CLOUDFLARE_OAUTH_CLIENT_SECRET
+  sensitive    = true
+  category     = "terraform"
+  workspace_id = tfe_workspace.cloudflare.id
+  description  = "a useful description"
+}

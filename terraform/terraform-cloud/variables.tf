@@ -51,3 +51,15 @@ variable "GITHUB_PERSONAL_ACCESS_TOKEN" {
  description = "Your GitHub Personal Access Token"
  default     = null
 }
+
+variable "CLOUDFLARE_OAUTH_CLIENT_ID" {
+ type        = string
+ description = "Your Cloudflare OAuth Client ID"
+ default     = null
+}
+
+variable "CLOUDFLARE_OAUTH_CLIENT_SECRET" {
+ type        = string
+ description = "Your Cloudflare OAuth Client Secret"
+ default     = null
+}
