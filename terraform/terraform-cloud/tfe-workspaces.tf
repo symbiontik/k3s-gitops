@@ -12,7 +12,7 @@ resource "tfe_workspace" "cloudflare" {
 
 resource "tfe_workspace" "terraform_cloud" {
   name              = "terraform-cloud"
-  organization      = tfe_organization.tfe_organizaton.id
+  organization      = tfe_organization.tfe_organization.id
   auto_apply        = true
   working_directory = "terraform/terraform-cloud/"
   vcs_repo {
