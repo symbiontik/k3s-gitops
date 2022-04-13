@@ -1,6 +1,6 @@
 resource "tfe_workspace" "cloudflare" {
   name              = "cloudflare"
-  organization      = tfe_organization.k3s_gitops.id
+  organization      = tfe_organization.tfe_organization.id
   auto_apply        = true
   working_directory = "terraform/cloudflare/"
   vcs_repo {
@@ -12,7 +12,7 @@ resource "tfe_workspace" "cloudflare" {
 
 resource "tfe_workspace" "terraform_cloud" {
   name              = "terraform-cloud"
-  organization      = tfe_organization.k3s_gitops.id
+  organization      = tfe_organization.tfe_organizaton.id
   auto_apply        = true
   working_directory = "terraform/terraform-cloud/"
   vcs_repo {
