@@ -57,10 +57,10 @@ This guide will walk you through the following steps:
     1. Access your apps from anywhere
 1. Security
     1. Extend Zero Trust security
+    1. Threat protection and visibility with DNS layer security
 1. Additional Automation
-    1. Automate k3s updates
     1. Automate your app updates
-    1. Automate external resource creation
+    1. Automate k3s updates
 1. Operations
     1. Add your own apps
     1. Observability, health-checking, and performance
@@ -447,6 +447,8 @@ To prepare for deployment, it's necessary to bootstrap your development environm
 
 1. Open and edit your `bootstrap.env` file to ensure it includes all your respective unique values, then save the file.
 
+**Note**: Some variables contain the prefix `TF_VAR_` - This prefix enables Terraform to use your local environment variables for Terraform runs.
+
 1. Source the `bootstrap.env` file to set the respective environment variables in your terminal.
 
 ```sh
@@ -689,7 +691,11 @@ terraform apply --auto-approve
 
 **Note**: You no longer need to run terraform locally after this since Terraform Cloud will now manage all your Terraform automation workflows.
 
-1. Verify Terraform Cloud has been bootstrapped by logging into your [Terraform Cloud UI](https://app.terraform.io/) and checking that the run status is `Applied` for both of your workspaces.
+1. Verify Terraform Cloud has been bootstrapped by logging into your [Terraform Cloud UI](https://app.terraform.io/). Click into your organization, then click into your Cloudflare workspace.
+
+**Note**: Due to race conditions with the Terraform Cloud bootstrapping and Cloudflare provider, you will see an error with the initial run. Triggering a manual run from the UI or committing to your repository will allow the Cloudflare workflow (and all future Cloudflare workflows) to continue. 
+
+1. Once you clear the initial race condition, check that the run status is `Applied` for your Cloudflare workspace.
 
 Your Terraform Cloud workspace will now continuously monitor your GitHub repository for changes and automatically create any respective resources in your Cloudflare account.
 
@@ -702,61 +708,42 @@ With your cloud infrastructure and Kubernetes infrastructure in place, the only 
 - Port: `443` 
 - Destination: Your Traefik Ingress IP (whatever IP you set for `METALLB_TRAEFIK_ADDR`). 
 
-1. Test that this works by visiting one of your public-facing applications, for example, `grafana.<your-DNS-name>.com`
+1. Login to your Cloudflare App Launcher (your SSO portal) with your GitHub identity. [https://<your-cloudflare-team-name>.cloudflareaccess.com]
+
+1. Click one of your Kubernetes applications (ex: grafana, code-server, etc) to confirm that your application is publicly accessible.
+
+**Note**: Consider the following traffic flow if troubleshooting is necessary in your environment.
+Service Request -> Cloudflare -> Your Public IP -> Port Forwarding Rule on your Router - > Traefik Ingress private IP -> Kubernetes Service -> Kubernetes Pod
 
 Cloudflare will now encrypt and route all respective DNS requests to the Traefik Ingress controller in your Kubernetes cluster.
 
 ## Extend Zero Trust security
 
-Integrating Zero Trust security principles throughout your infrastructure and application ecosystem ensures you reliability and protects you from breaches. The fundamental difference from traditional security approaches is the shift of access controls from the network perimeter to individual users. To accomplish this, you will utilize features from Cloudflare, GitHub, and two-factor authentication (2FA) services.
+Integrating Zero Trust security principles throughout your infrastructure and application ecosystem ensures you reliability and protects you from breaches. The fundamental difference from traditional security approaches is the shift of access controls from the network perimeter to individual users. To accomplish this, you will utilize features from Cloudflare, GitHub, and multi-factor authentication (MFA) services.
+
+1. Choose which MFA TOTP app you will use. [Here are the GitHub recommendations](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication#configuring-two-factor-authentication-using-a-totp-mobile-app)
+
+1. Follow [this GitHub guide](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication) to secure your GitHub account with MFA.
+
+1. Follow [this Cloudflare guide](https://support.cloudflare.com/hc/en-us/articles/200167906-Securing-user-access-with-two-factor-authentication-2FA-) to secure your Cloudflare account with MFA.
+
+1. Follow [this Terraform Cloud guide](https://www.terraform.io/cloud-docs/users-teams-organizations/2fa) to secure your Terraform Cloud account with MFA.
+
+1.  
+
+1. Optional: Add Cloudflare Admin, GitHub, Terraform Cloud, and your Kubernetes apps to your Cloudflare App Launcher.
+
+Your ecosystem is now protected with multi-factor authentication.
+
+## Threat protection and visibility with DNS layer security
+
+Cloudflare Gateway uses DNS layer security to enable control and visibility of your distributed environment.
 
 TODO: Build out this section
-
-1. Choose which 2FA TOTP app you will use.
-
-1. [Configure your GitHub account with 2FA](https://docs.github.com/en/authentication/securing-your-account-with-two-factor-authentication-2fa/configuring-two-factor-authentication)
-
-1. 
-
-1. [Configure your Cloudflare account with 2FA](https://support.cloudflare.com/hc/en-us/articles/200167906-Securing-user-access-with-two-factor-authentication-2FA-)
-
-1. 
-
-1. [Configure your Terraform Cloud account with 2FA](https://www.terraform.io/cloud-docs/users-teams-organizations/2fa)
-
-1. 
 
 1. [Configure Cloudflare Gateway](https://www.cloudflare.com/products/zero-trust/gateway/)
 
 1. 
-
-1. Use the Cloudflare App Launcher as the SSO portal with GitHub as the Identity Provider (IdP).
-
-1. 
-
-1. Optional: Add Cloudflare, GitHub, Terraform Cloud, and your Kubernetes apps to the Cloudflare App Launcher.
-
-
-- Reference: [Cloudflare App Launcher](https://developers.cloudflare.com/cloudflare-one/applications/app-launcher)
-
-## Automate K3S updates
-
-System Upgrade Controller automates the upgrade process for your Kubernetes nodes. This is a Kubernetes-native approach to cluster upgrades. It leverages a custom resource definition (CRD), a plan, and a controller that schedules upgrades based on your configured plans.
-
-1. Navigate to the `/cluster/core/system-upgrade-controller` directory.
-
-1. Inspect the `server-plan.yaml` file.
-
-1. Notice these lines:
-
-```log
-  version: v1.23.1+k3s2
-  #channel: https://update.k3s.io/v1-release/channels/stable
-```
-
-1. You have the choice of either manually defining the desired k3s version OR continuously monitoring the stable release channel. Choose what makes the most sense for your desired upgrade plan.
-
-You now have an automated upgrade process for k3s that will begin as soon as the controller detects that a plan was created. Updating your plan will cause the controller to re-evaluate the plan and determine if another upgrade is needed.
 
 ## Automate your app updates
 
@@ -806,6 +793,25 @@ git push
 ```
 
 You now have an automated bot that will compare your cluster's application versions against the latest versions. Renovate bot will generate a pull request for you to review and merge whenever new versions are found.
+
+## Automate K3S updates
+
+System Upgrade Controller automates the upgrade process for your Kubernetes nodes. This is a Kubernetes-native approach to cluster upgrades. It leverages a custom resource definition (CRD), a plan, and a controller that schedules upgrades based on your configured plans.
+
+1. Navigate to the `/cluster/core/system-upgrade-controller` directory.
+
+1. Inspect the `server-plan.yaml` file.
+
+1. Notice these lines:
+
+```log
+  version: v1.23.1+k3s2
+  #channel: https://update.k3s.io/v1-release/channels/stable
+```
+
+1. You have the choice of either manually defining the desired k3s version OR continuously monitoring the stable release channel. Choose what makes the most sense for your desired upgrade plan.
+
+You now have an automated upgrade process for k3s that will begin as soon as the controller detects that a plan was created. Updating your plan will cause the controller to re-evaluate the plan and determine if another upgrade is needed.
 
 ## Add your own apps
 
@@ -889,6 +895,8 @@ TODO: Build out this section.
 
 1. Login to your Grafana instance at `https://grafana.<your-domain>`
 
+1. 
+
 ## Visualize your repo
 
 GitHub's repo visualizer provides you with the shape of your codebase, giving you a different perspective on your reposistory. It can be used as a baseline to detect large changes in structure, understand how your environment is structured, or as a visual tool to explain features to others.
@@ -897,9 +905,10 @@ TODO: Build out this section
 
 1. Navigate to the `/extras/github-actions` directory.
 
+1. 
+
 - Reference: [Repo Visualizer](https://github.com/githubocto/repo-visualizer)
 - Reference: [Repo Visualizer Blog](https://next.github.com/projects/repo-visualization)
-
 
 # One place to rule them all
 

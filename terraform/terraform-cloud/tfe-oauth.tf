@@ -4,4 +4,7 @@ resource "tfe_oauth_client" "github_oauth" {
   http_url         = "https://github.com"
   oauth_token      = var.GITHUB_PERSONAL_ACCESS_TOKEN
   service_provider = "github"
+  depends_on = [
+    tfe_organization.tfe_organization
+  ]
 }
