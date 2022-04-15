@@ -402,7 +402,7 @@ You now have a GitHub OAuth client and secret that will enable you to programati
 
 A GitHub Personal Access Token (PAT) enables the integration between Terraform Cloud and your GitHub repository. This further enables the GitOps model by allowing Terraform Cloud to automatically initiate Terraform runs when changes are committed to your GitHub repository.
 
-1. Follow [this GitHub guide](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) to create a Personal Access Token (PAT) with the following permissions:
+1. Follow [this GitHub guide](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) to create a Personal Access Token (PAT) with the following permission scopes:
     - This
     - This
     - This 
