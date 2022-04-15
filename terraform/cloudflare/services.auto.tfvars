@@ -8,5 +8,6 @@ SERVICE_LIST = [
     "traefik",
     "grafana",
     "prometheus",
-    "test"
+    "test",
+    "test2"
     ]
