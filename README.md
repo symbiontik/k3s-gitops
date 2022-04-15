@@ -696,7 +696,7 @@ terraform apply --auto-approve
 
 1. Verify Terraform Cloud has been bootstrapped by logging into your [Terraform Cloud UI](https://app.terraform.io/). Click into your organization, then click into your Cloudflare workspace.
 
-**Note**: Due to race conditions with the Terraform Cloud bootstrapping and Cloudflare provider, you will see an error with the initial run. Triggering a manual run from the UI or committing to your repository will allow the Cloudflare workflow (and all future Cloudflare workflows) to continue. 
+**Note**: Due to race conditions with the Terraform Cloud bootstrapping and Cloudflare provider, you will see an error with the initial run. Triggering a manual run from the UI or committing a change to any files in the `terraform/cloudflare/` directory in your repository will allow the Cloudflare workflow (and all future Cloudflare workflows) to continue. 
 
 1. Once you clear the initial race condition, check that the run status is `Applied` for your Cloudflare workspace.
 
@@ -826,10 +826,10 @@ With this existing infrastructure in place, it's relatively simple to run your c
 cd /cluster/apps/
 ```
 
-1. Create a new directory called `esphome` and navigate into that directory.
+1. Create a new directory called `vault` and navigate into that directory.
 
 ```sh
-mkdir esphome && cd esphome
+mkdir vault && cd vault
 ```
 
 1. Since this will be a stateful app, create a persistent storage definition file `config-pvc.yaml`.
@@ -850,9 +850,10 @@ touch helm-release.yaml
 touch kustomization.yaml
 ```
 
-1. Copy and paste each file's respective content from the `/extras/apps/esphome` folder to their respective files you just created in `/cluster/apps/esphome`, then save your files.
+1. Copy and paste each file's respective content from the `/extras/apps/vault` folder to their respective files you just created in `/cluster/apps/vault`, then save your files.
 
-1. Edit your `/cluster/apps/kustomization.yaml` file to include your `esphome` directory, then save the file.
+
+1. For configuration management purposes, edit your `/cluster/apps/kustomization.yaml` file to include your `vault` directory, then save the file.
 
 ```log
 ---
@@ -862,9 +863,42 @@ resources:
   - esphome
   - home-assistant
   - influxdb
+  - code-server
+  - vault
 ```
 
-1. Since this will be a public, externally-accessible resource, add `esphome` to your `/terraform/cloudflare/services.auto.tfvars` file.
+1. Since these resources will be managed by a Helm chart, create a new file `hashicorp-charts.yaml` in your Helm chart definition folder `/cluster/base/flux-system/charts/helm`.
+
+1. Paste the following contents in your file
+```yaml
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: HelmRepository
+metadata:
+  name: hashicorp-charts
+  namespace: flux-system
+spec:
+  interval: 15m
+  url: https://helm.releases.hashicorp.com
+  timeout: 3m
+```
+
+1. Since this will be a public, externally-accessible resource, add `vault` to your `/terraform/cloudflare/services.auto.tfvars` file.
+
+```log
+SERVICE_LIST = [
+    "traefik",
+    "hass",
+    "vscode",
+    "influxdb",
+    "code-server",
+    "esphome",
+    "traefik",
+    "grafana",
+    "prometheus",
+    "vault"
+]
+```
 
 **Note**: The `services.auto.tfvars` file is consumed by the other Cloudflare resource files to automatically create DNS records and Zero Trust resources for any entry within the file.
 
@@ -872,17 +906,23 @@ resources:
 
 ```sh
 git add .
-git commit -m "add esphome app"
+git commit -m "add vault app"
 git push
 ```
 
 1. This change to your GitHub repository will cause the following actions to automatically occur:
 
-- Your Kubernetes cluster will deploy the `esphome` app and resources on the next Flux sync. 
-- Terraform Cloud will deploy `esphome` DNS and Zero Trust resources to Cloudflare.
-- Your `esphome` application version will be checked for updates on the next Renovate sync.
+- Your Kubernetes cluster will deploy the `vault` app and resources on the next Flux sync. 
+- Terraform Cloud will deploy `vault` DNS and Zero Trust resources to Cloudflare.
+- Your `vault` application version will be checked for updates on the next Renovate sync.
 
-1. 
+TODO: Build out this section.
+
+1. Configure `vault` for Observability.
+    - Metrics: Prometheus
+    - Logs: Loki and Promtail
+    - Distributed Tracing: Jaeger
+    - Visualization: Grafana
 
 You have now successfully created a new app in your Kubernetes cluster.
 
@@ -919,11 +959,8 @@ Cheat sheet for managing important cluster and global resources.
 
 1. Kubernetes application secrets: `/cluster/base/cluster-secrets.sops.yaml`
 1. Helm charts: `/cluster/base/flux-system/charts/helm`
-1. Encryption secrets: `this_place.yaml`
 1. Local Environment variables: `bootstrap.env`
-1. Global Environment variables: `/terraform/terraform-cloud/tfe-variables.tf`
 1. Cloudflare service list: `/terraform/cloudflare/services.auto.tfvars`
-1. Configuration management files: `kustomization.yaml`
 1. RenovateBot configuration file: `.github/renovate.json5`
 
 # Gratitude
