@@ -34,8 +34,6 @@ spec:
         tag: "1.9.1"
         # Overrides the default Image Pull Policy
         pullPolicy: IfNotPresent
-      # Configure the Update Strategy Type for the StatefulSet
-      # See https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
       updateStrategyType: "OnDelete"
       # Supported log levels include: trace, debug, info, warn, error
       logLevel: "info"
@@ -43,16 +41,16 @@ spec:
       logFormat: "json"
       ingress:
         enabled: true
-        ingressClassName: "traefik"
+        ingressClassName: traefik
         pathType: Prefix
-        #activeService: true
         annotations:
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          cert-manager.io/cluster-issuer: letsencrypt-production
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
         hosts:
           - host: vault.${SECRET_DOMAIN}
             paths:
-              - path: /
+              - /
+              - /vault
         tls: 
           - hosts:
               - vault.${SECRET_DOMAIN}
