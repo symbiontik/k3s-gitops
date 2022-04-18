@@ -711,7 +711,7 @@ With your cloud infrastructure and Kubernetes infrastructure in place, the only 
 - Port: `443` 
 - Destination: Your Traefik Ingress IP (whatever IP you set for `METALLB_TRAEFIK_ADDR`). 
 
-1. Login to your Cloudflare App Launcher (your SSO portal) with your GitHub identity. [https://<your-cloudflare-team-name>.cloudflareaccess.com]
+1. Login to your Cloudflare App Launcher (your SSO portal) with your GitHub identity. https://<your-cloudflare-team-name>.cloudflareaccess.com
 
 1. Click one of your Kubernetes applications (ex: grafana, code-server, etc) to confirm that your application is publicly accessible.
 
@@ -730,13 +730,11 @@ Integrating Zero Trust security principles throughout your infrastructure and ap
 
 1. Follow [this Cloudflare guide](https://support.cloudflare.com/hc/en-us/articles/200167906-Securing-user-access-with-two-factor-authentication-2FA-) to secure your Cloudflare account with MFA.
 
-1. Follow [this Terraform Cloud guide](https://www.terraform.io/cloud-docs/users-teams-organizations/2fa) to secure your Terraform Cloud account with MFA.
+1. Follow [this Terraform Cloud guide](https://www.terraform.io/cloud-docs/users-teams-organizations/2fa) to secure your Terraform Cloud account with MFA.  
 
-1.  
+1. Optional: Follow [this Cloudflare guide](https://developers.cloudflare.com/cloudflare-one/applications/configure-apps/) to add Cloudflare Admin, GitHub, Terraform Cloud, your Kubernetes apps, and other applications to your Cloudflare App Launcher.
 
-1. Optional: Add Cloudflare Admin, GitHub, Terraform Cloud, and your Kubernetes apps to your Cloudflare App Launcher.
-
-Your ecosystem is now protected with multi-factor authentication.
+Your complete infrastructure ecosystem is now protected with multi-factor authentication.
 
 ## Threat protection and visibility with DNS layer security
 
