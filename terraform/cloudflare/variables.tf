@@ -16,6 +16,12 @@ variable "CLOUDFLARE_DOMAIN" {
  default     = null
 }
 
+variable "CLOUDFLARE_ACCESS_EMAIL" {
+ type        = string
+ description = "Your desired email(s) for your Cloudflare administrator access group"
+ default     = null
+}
+
 variable "PUBLIC_IP_ADDRESS" {
  type        = string
  description = "Your public IP address"

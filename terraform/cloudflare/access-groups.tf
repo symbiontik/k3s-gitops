@@ -4,7 +4,7 @@ resource "cloudflare_access_group" "administrators" {
   name           = "administrators"
 
   include {
-    email = [var.CLOUDFLARE_EMAIL]
+    email = [var.CLOUDFLARE_ACCESS_EMAIL]
   }
 
   require {
