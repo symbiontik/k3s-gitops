@@ -159,3 +159,6 @@ spec:
           storage "file" {
             path = "/vault/data"
           }
+    #ui:
+    #  enabled: true
+    #  serviceType: LoadBalancer
