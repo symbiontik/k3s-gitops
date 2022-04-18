@@ -877,6 +877,8 @@ spec:
   timeout: 3m
 ```
 
+1. For configuration management purposes, edit your `/cluster/base/flux-system/charts/helm/kustomization.yaml` file to include your `hashicorp-charts.yaml` file, then save the file.
+
 1. Since this will be a public, externally-accessible resource, add `vault` to your `/terraform/cloudflare/services.auto.tfvars` file.
 
 ```log

@@ -9,6 +9,7 @@ resources:
   - external-dns-charts.yaml
   - grafana-charts.yaml
   - hajimari-charts.yaml
+  - hashicorp-charts.yaml
   - influxdata-charts.yaml
   - infracloudio-charts.yaml
   - jaeger-charts.yaml
