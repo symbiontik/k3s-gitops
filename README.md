@@ -830,12 +830,6 @@ cd /cluster/apps/
 mkdir vault && cd vault
 ```
 
-1. Since this will be a stateful app, create a persistent storage definition file `config-pvc.yaml`.
-
-```sh
-touch config-pvc.yaml
-```
-
 1. Since this deployment will be defined and managed by a Helm chart, create the file `helm-release.yaml`.
 
 ```sh
@@ -847,6 +841,8 @@ touch helm-release.yaml
 ```sh
 touch kustomization.yaml
 ```
+
+1. In most stateful application cases, you would create a persistent storage definition file `config-pvc.yaml`, however, in this case the Vault Helm chart creates a custom persistent storage definition itself.
 
 1. Copy and paste each file's respective content from the `/extras/apps/vault` folder to their respective files you just created in `/cluster/apps/vault`, then save your files.
 
@@ -911,8 +907,10 @@ git push
 1. This change to your GitHub repository will cause the following actions to automatically occur:
 
 - Your Kubernetes cluster will deploy the `vault` app and resources on the next Flux sync. 
+- Since `vault` will be a publicly accessible resource, `cert-manager` will generate an SSL certificate and traefik will create an ingress route for the service.
 - Terraform Cloud will deploy `vault` DNS and Zero Trust resources to Cloudflare.
-- Your `vault` application version will be checked for updates on the next Renovate sync.
+- Your `vault` application version will be checked for updates every Renovate sync.
+- Your `vault` application logs will be scraped by `promtail` and sent to `loki`. 
 
 TODO: Build out this section.
 
