@@ -24,6 +24,14 @@ resource "tfe_variable" "cloudflare_domain" {
   workspace_id = tfe_workspace.cloudflare.id
 }
 
+resource "tfe_variable" "cloudflare_access_email" {
+  key          = "CLOUDFLARE_ACCESS_EMAIL"
+  value        = var.CLOUDFLARE_ACCESS_EMAIL
+  sensitive    = true
+  category     = "terraform"
+  workspace_id = tfe_workspace.cloudflare.id
+}
+
 resource "tfe_variable" "public_ip_address" {
   key          = "PUBLIC_IP_ADDRESS"
   value        = var.PUBLIC_IP_ADDRESS
