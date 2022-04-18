@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://helm.releases.hashicorp.com
       chart: vault
-      version: 0.18.0
+      version: 0.19.0
       sourceRef:
         kind: HelmRepository
         name: hashicorp-charts
@@ -23,6 +23,10 @@ spec:
     remediation:
       remediateLastFailure: true
   values:
+    global:
+      # enabled is the master enabled switch. Setting this to true or false
+      # will enable or disable all the components within this chart by default.
+      enabled: true
     server:
       enabled: true
       image:
@@ -40,6 +44,8 @@ spec:
       ingress:
         enabled: true
         ingressClassName: "traefik"
+        pathType: Prefix
+        #activeService: true
         annotations:
           cert-manager.io/cluster-issuer: "letsencrypt-production"
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
@@ -47,11 +53,10 @@ spec:
           - host: vault.${SECRET_DOMAIN}
             paths:
               - path: /
-                pathType: Prefix
-        tls:
+        tls: 
           - hosts:
               - vault.${SECRET_DOMAIN}
-            secretName: "vault-tls"
+            secretName: vault-tls
       readinessProbe:
         enabled: true
         failureThreshold: 2
@@ -156,35 +161,3 @@ spec:
           storage "file" {
             path = "/vault/data"
           }
-    # Vault UI
-    #ui:
-      # True if you want to create a Service entry for the Vault UI.
-      #
-      # serviceType can be used to control the type of service created. For
-      # example, setting this to "LoadBalancer" will create an external load
-      # balancer (for supported K8S installations) to access the UI.
-      #enabled: false
-      #publishNotReadyAddresses: true
-      # The service should only contain selectors for active Vault pod
-      #activeVaultPodOnly: false
-      #serviceType: "ClusterIP"
-      #serviceNodePort: null
-      #externalPort: 8200
-      #targetPort: 8200
-
-      # The externalTrafficPolicy can be set to either Cluster or Local
-      # and is only valid for LoadBalancer and NodePort service types.
-      # The default value is Cluster.
-      # ref: https://kubernetes.io/docs/concepts/services-networking/service/#external-traffic-policy
-      #externalTrafficPolicy: Cluster
-
-      #loadBalancerSourceRanges:
-      #   - 10.0.0.0/16
-      #   - 1.78.23.3/32
-
-      # loadBalancerIP:
-
-      # Extra annotations to attach to the ui service
-      # This can either be YAML or a YAML-formatted multi-line templated string map
-      # of the annotations to apply to the ui service
-      #annotations: {}
