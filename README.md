@@ -53,13 +53,13 @@ This guide will walk you through the following steps:
 1. Deployment
     1. Configure and Deploy Flux
     1. Deploy your Kubernetes cluster resources
-    1. Automate external resource creation
+    1. Automate external resource creation with Terraform Cloud
     1. Access your apps from anywhere
 1. Security
     1. Extend Zero Trust security
     1. Threat protection and visibility with DNS layer security
 1. Additional Automation
-    1. Automate your app updates
+    1. Automate your app updates with Renovate Bot
     1. Automate k3s updates
 1. Operations
     1. Add your own apps
@@ -647,7 +647,7 @@ flux get helmrelease -A
 
 Your Kubernetes cluster is now being managed by Flux - your Git repository is driving the state of your cluster!
 
-## Automate external resource creation
+## Automate external resource creation with Terraform Cloud
 
 In this section you will bootstrap Terraform Cloud, which will then monitor the resources in the respective `terraform/` subdirectories. True to the GitOps philosophy, when Terraform Cloud detects any changes within these directories, it will automatically trigger a workflow to create and maintain the desired state of your external resources. 
 
@@ -734,42 +734,50 @@ Integrating Zero Trust security principles throughout your infrastructure and ap
 
 1. Optional: Follow [this Cloudflare guide](https://developers.cloudflare.com/cloudflare-one/applications/configure-apps/) to add Cloudflare Admin, GitHub, Terraform Cloud, your Kubernetes apps, and other applications to your Cloudflare App Launcher.
 
-Your complete infrastructure ecosystem is now protected with multi-factor authentication.
+Your infrastructure ecosystem is now protected with multi-factor authentication.
 
 ## Threat protection and visibility with DNS layer security
 
 Cloudflare Gateway uses DNS layer security to enable control and visibility of your distributed environment.
+- Reference: [What is Cloudflare Gateway](https://www.cloudflare.com/products/zero-trust/gateway/)
 
 TODO: Build out this section
 
-1. [Configure Cloudflare Gateway](https://www.cloudflare.com/products/zero-trust/gateway/)
+1. On your router, replace your DNS entries with these Cloudflare DNS entries:
+- `172.64.36.1`
+- `172.64.36.2`
+- Reference: https://developers.cloudflare.com/cloudflare-one/connections/connect-devices/agentless/router/
 
-1. 
+1. [Set up secure Gateway policies](https://developers.cloudflare.com/cloudflare-one/policies/filtering/)
 
-## Automate your app updates
+## Automate your app updates with Renovate Bot
 
 Renovate is a bot that watches the contents of your repository looking for dependency updates and automatically creates pull requests when updates are found. When you merge these PRs, Flux will automatically apply the changes to your cluster. 
 
 Renovate runs via a scheduled Github Action workflow; GitHub Actions are used to automate, customize, and execute your software development workflows directly in your repository, similarly to how Flux does this for your Kubernetes cluster.
 
-TODO: Build out this section
+1. Follow [this GitHub guide](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) to create a Personal Access Token (PAT) with the following permission scopes:
+    - public_repo
 
-1. TODO: Replace the contents below with these instructions since the previous workflow action has been deprecated:
-https://github.com/renovatebot/github-action#configurationfile 
+1. Copy the GitHub Personal Access token to your clipboard.
 
-1. Create a GitHub Personal Access Token for Renovate. 
+1. Paste your API token as the value for `RENOVATE_TOKEN` in your `bootstrap.env` file, then save the file. 
+
+1. Follow [this GitHub guide](https://docs.github.com/en/actions/security-guides/encrypted-secrets#creating-encrypted-secrets-for-an-environment) to create an encrypted GitHub secret for Renovate. 
 
 1. Create a GitHub secret called `RENOVATE_TOKEN` and paste in the Personal Access Token you just generated.
 
-1. Navigate to the root of your `k3os-gitops` repository.
-
-1. Copy the file `/extras/github-actions/renovate.yaml` to your `.github/workflows` directory.
-
-```sh
-cp /extras/github-actions/renovate.yaml .github/workflows/renovate.yaml
-```
-
-1. Replace the GitHub repository URL in the `.github/workflows/renovate.json5` file with your GitHub repository URL.
+1. Replace the following values in your `.github/renovate.json5` file with your respective values, then save the file:
+    ```log
+        # Replace with your time zone in pytz format
+        "timezone": "America/Chicago",
+        # Replace with any value
+        "username": "sym[bot]",
+        # Replace with your GitHub repo identifier
+        "repositories": ["symbiontik/k3s-gitops"],
+        # Replace with any desired commit body message
+        "commitBody": "Signed-off-by: symbiontik <symbiontik@users.noreply.github.com>",
+    ```
 
 1. Within each of your `helm-release.yaml` files, ensure you create a respective `renovate:` line within your chart spec similar to the following stanza - this specifies the chart that Renovate will watch for version updates to your respective applications/resources.
 
@@ -789,11 +797,14 @@ spec:
 
 ```sh
 git add .
-git commit -m "add github action - renovate bot"
+git commit -m "configure github action - renovate bot"
 git push
 ```
 
 You now have an automated bot that will compare your cluster's application versions against the latest versions. Renovate bot will generate a pull request for you to review and merge whenever new versions are found.
+
+Additional reading regarding Renovate cluster configuration:
+- [Renovate Bot Customization](https://github.com/renovatebot/github-action#configurationfile)
 
 ## Automate K3S updates
 
