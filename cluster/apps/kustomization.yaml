@@ -6,4 +6,5 @@ resources:
   - home-assistant
   - influxdb
   - code-server
+  - kube-dashboard
   - vault
