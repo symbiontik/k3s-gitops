@@ -25,19 +25,21 @@ spec:
   values:
     ingress:
       enabled: true
-      className: "traefik"
       annotations:
+        kubernetes.io/ingress.class: traefik
+        traefik.ingress.kubernetes.io/ssl-redirect: "true"
         cert-manager.io/cluster-issuer: "letsencrypt-production"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-      hosts:
-        - host: kube-dashboard.${SECRET_DOMAIN}
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - hosts:
-            - kube-dashboard.${SECRET_DOMAIN}
-          secretName: "kube-dashboard-tls"
+      customPaths:
+        hosts:
+          - host: kube-dashboard.${SECRET_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - kube-dashboard.${SECRET_DOMAIN}
+            secretName: "kube-dashboard-tls"
     probes:
       liveness:
         enabled: false
