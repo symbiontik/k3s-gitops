@@ -981,3 +981,8 @@ I have major appreciation for the people and organizations of the open-source co
 - [RenovateBot](https://github.com/renovatebot/github-action)
 - [Template-cluster-k3s](https://github.com/k8s-at-home/template-cluster-k3s)
 - [HomeOps](https://github.com/onedr0p/home-ops)
+
+## Ideas
+
+- Replace Kubernetes secrets in `/cluster/base/cluster-secrets.sops.yaml` with GitHub secrets
+- Configure Terraform Cloud to manage drift in Cloudflare
