@@ -23,23 +23,29 @@ spec:
     remediation:
       remediateLastFailure: true
   values:
+    image:
+      name: kubernetesui/dashboard
+      tag: v2.3.0
+      pullPolicy: IfNotPresent
     ingress:
       enabled: true
+      ingressClassName: "traefik"
       annotations:
-        kubernetes.io/ingress.class: traefik
-        traefik.ingress.kubernetes.io/ssl-redirect: "true"
         cert-manager.io/cluster-issuer: "letsencrypt-production"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-      customPaths:
-        hosts:
-          - host: kube-dashboard.${SECRET_DOMAIN}
-            paths:
-              - path: /
-                pathType: Prefix
-        tls:
-          - hosts:
-              - kube-dashboard.${SECRET_DOMAIN}
-            secretName: "kube-dashboard-tls"
+      hosts:
+        - host: kube-dashboard.${SECRET_DOMAIN}
+          paths:
+            - path: /
+              pathType: Prefix
+      tls:
+        - hosts:
+            - kube-dashboard.${SECRET_DOMAIN}
+          secretName: "kube-dashboard-tls"
+    extraArgs:
+      - --enable-skip-login
+      - --disable-settings-authorizer
+      - --enable-insecure-login
     probes:
       liveness:
         enabled: false
