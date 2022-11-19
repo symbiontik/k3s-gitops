@@ -54,7 +54,3 @@ spec:
         enabled: false
       startup:
         enabled: false
-    persistence:
-      config:
-        enabled: true
-        existingClaim: kube-dashboard-data
