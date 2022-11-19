@@ -1,13 +1,14 @@
 resource "tfe_workspace" "cloudflare" {
   name              = "cloudflare"
-  organization      = tfe_organization.k3s_gitops.id
+  organization      = tfe_organization.tfe_organization.id
   auto_apply        = true
   working_directory = "terraform/cloudflare/"
-}
-
-resource "tfe_workspace" "terraform_cloud" {
-  name              = "terraform-cloud"
-  organization      = tfe_organization.k3s_gitops.id
-  auto_apply        = true
-  working_directory = "terraform/terraform-cloud/"
+  vcs_repo {
+    identifier  = var.GITHUB_REPOSITORY_IDENTIFIER
+    branch = "main"
+    oauth_token_id = tfe_oauth_client.github_oauth.oauth_token_id
+  }
+  depends_on = [
+    tfe_oauth_client.github_oauth
+  ]
 }

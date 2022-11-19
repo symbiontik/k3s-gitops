@@ -7,5 +7,6 @@ SERVICE_LIST = [
     "esphome",
     "traefik",
     "grafana",
-    "prometheus"
-    ]
+    "prometheus",
+    "vault"
+]

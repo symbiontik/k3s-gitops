@@ -25,11 +25,12 @@ http:
 influxdb:
   api_version: 2
   ssl: false
-  host: influxdb.home
+  host: influxdb
+  #host: influxdb.apps
   port: 8086
   token: wgXSklpkhpbZXGEZvojQhwPH-l_bc1dipFksMbvVoePLzdZlKCZoMSgUwVV2UFACaQa0egMiGVwX58S2vcBm1A==
   organization: 8f380de9376985bb
-  bucket: home_assistant
+  bucket: home-assistant
   tags:
     source: HA
   tags_attributes:

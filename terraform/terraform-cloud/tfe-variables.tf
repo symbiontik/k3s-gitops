@@ -1,20 +1,4 @@
-resource "tfe_variable" "terraform_cloud_token" {
-  key          = "TERRAFORM_CLOUD_TOKEN"
-  value        = var.TERRAFORM_CLOUD_TOKEN
-  sensitive    = true
-  category     = "terraform"
-  workspace_id = tfe_workspace.terraform_cloud.id
-  description  = "a useful description"
-}
-
-resource "tfe_variable" "terraform_cloud_email" {
-  key          = "TERRAFORM_CLOUD_EMAIL"
-  value        = var.TERRAFORM_CLOUD_EMAIL
-  sensitive    = true
-  category     = "terraform"
-  workspace_id = tfe_workspace.terraform_cloud.id
-  description  = "a useful description"
-}
+# Cloudflare Workspace Variables
 
 resource "tfe_variable" "cloudflare_email" {
   key          = "CLOUDFLARE_EMAIL"
@@ -22,7 +6,6 @@ resource "tfe_variable" "cloudflare_email" {
   sensitive    = true
   category     = "terraform"
   workspace_id = tfe_workspace.cloudflare.id
-  description  = "a useful description"
 }
 
 resource "tfe_variable" "cloudflare_apikey" {
@@ -31,7 +14,6 @@ resource "tfe_variable" "cloudflare_apikey" {
   sensitive    = true
   category     = "terraform"
   workspace_id = tfe_workspace.cloudflare.id
-  description  = "a useful description"
 }
 
 resource "tfe_variable" "cloudflare_domain" {
@@ -40,7 +22,14 @@ resource "tfe_variable" "cloudflare_domain" {
   sensitive    = true
   category     = "terraform"
   workspace_id = tfe_workspace.cloudflare.id
-  description  = "a useful description"
+}
+
+resource "tfe_variable" "cloudflare_access_email" {
+  key          = "CLOUDFLARE_ACCESS_EMAIL"
+  value        = var.CLOUDFLARE_ACCESS_EMAIL
+  sensitive    = true
+  category     = "terraform"
+  workspace_id = tfe_workspace.cloudflare.id
 }
 
 resource "tfe_variable" "public_ip_address" {
@@ -49,5 +38,20 @@ resource "tfe_variable" "public_ip_address" {
   sensitive    = true
   category     = "terraform"
   workspace_id = tfe_workspace.cloudflare.id
-  description  = "a useful description"
+}
+
+resource "tfe_variable" "cloudflare_oauth_client_id" {
+  key          = "CLOUDFLARE_OAUTH_CLIENT_ID"
+  value        = var.CLOUDFLARE_OAUTH_CLIENT_ID
+  sensitive    = true
+  category     = "terraform"
+  workspace_id = tfe_workspace.cloudflare.id
+}
+
+resource "tfe_variable" "cloudflare_oauth_client_secret" {
+  key          = "CLOUDFLARE_OAUTH_CLIENT_SECRET"
+  value        = var.CLOUDFLARE_OAUTH_CLIENT_SECRET
+  sensitive    = true
+  category     = "terraform"
+  workspace_id = tfe_workspace.cloudflare.id
 }

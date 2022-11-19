@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://prometheus-community.github.io/helm-charts
       chart: kube-prometheus-stack
-      version: 18.0.12
+      version: 39.4.0
       sourceRef:
         kind: HelmRepository
         name: prometheus-community-charts
@@ -27,8 +27,6 @@ spec:
             sourceLabels:
               - __meta_kubernetes_pod_node_name
             targetLabel: kubernetes_node
-    kube-state-metrics:
-      fullnameOverride: kube-state-metrics
     prometheus-node-exporter:
       fullnameOverride: node-exporter
     grafana:
@@ -81,15 +79,11 @@ spec:
           traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
           cert-manager.io/cluster-issuer: "letsencrypt-production"
         hosts:
-          - "prometheus.${SECRET_DOMAIN}"
+          - prometheus.${SECRET_DOMAIN}
         tls:
           - hosts:
-              - "prometheus.${SECRET_DOMAIN}"
-            secretName: "prometheus-tls"
-      #thanosService:
-        #enabled: true
-      #thanosServiceMonitor:
-        #enabled: true
+              - prometheus.${SECRET_DOMAIN}
+            secretName: prometheus-tls
       prometheusSpec:
         replicas: 1
         replicaExternalLabelName: "replica"
@@ -100,6 +94,7 @@ spec:
         retention: 6h
         enableAdminAPI: true
         walCompression: true
+        externalUrl: prometheus.${SECRET_DOMAIN}
         storageSpec:
           volumeClaimTemplate:
             spec:
@@ -110,12 +105,12 @@ spec:
                   storage: 1Gi
               storageClassName: local-path
         additionalScrapeConfigs:
-          - job_name: 'influxdb'
+          - job_name: 'influxdb-influxdb2'
             honor_timestamps: true
             metrics_path: /metrics
             static_configs:
               - targets:
-                  - "influxdb.apps:8086"
+                  - "influxdb-influxdb2.apps:80"
           - job_name: "node-exporter"
             honor_timestamps: true
             static_configs:

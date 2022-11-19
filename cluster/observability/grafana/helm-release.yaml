@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://grafana.github.io/helm-charts
       chart: grafana
-      version: 6.16.9
+      version: 6.16.14
       sourceRef:
         kind: HelmRepository
         name: grafana-charts
@@ -95,13 +95,13 @@ spec:
           - name: InfluxDB
             type: influxdb
             access: proxy
-            url: http://influxdb.apps:8086
+            url: http://influxdb-influxdb2.apps:80
             secureJsonData:
-              token: yUi9_V9Zorm3T-JHBMZBnSl2Qhwf7JnrdrnOUT51zTcDvOBe2GPfvzn3ISTlhN9nT9tWYcPfMaM6I5rweZ3FVA==
+              token: wgXSklpkhpbZXGEZvojQhwPH-l_bc1dipFksMbvVoePLzdZlKCZoMSgUwVV2UFACaQa0egMiGVwX58S2vcBm1A==
             jsonData:
               version: Flux
-              organization: oep
-              defaultBucket: home_assistant
+              organization: influxdata
+              defaultBucket: home-assistant
             editable: true
             basicAuth: false
     dashboards:

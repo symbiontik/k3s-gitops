@@ -6,3 +6,4 @@ resources:
   - home-assistant
   - influxdb
   - code-server
+  - vault

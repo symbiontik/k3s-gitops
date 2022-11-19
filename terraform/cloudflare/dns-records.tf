@@ -1,7 +1,7 @@
 # Data lookup for your Cloudflare zones using your Cloudflare domain name
 data "cloudflare_zones" "domain" {
   filter {
-    name = var.BOOTSTRAP_CLOUDFLARE_DOMAIN
+    name = var.CLOUDFLARE_DOMAIN
   }
 }
 

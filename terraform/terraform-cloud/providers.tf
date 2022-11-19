@@ -2,12 +2,11 @@ terraform {
 
   required_providers {
     tfe = {
-      source  = "cloudflare/cloudflare"
-      version = "0.29.0"
+      version = "~> 0.30.2"
     }
   }
 }
 
 provider "tfe" {
-  token    = var.TERRAFORM_CLOUD_TOKEN
+  token   = var.TERRAFORM_CLOUD_TOKEN
 }
