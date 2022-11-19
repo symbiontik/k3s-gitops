@@ -27,16 +27,18 @@ env:
 jobs:
   renovate-helm-releases:
     name: Renovate
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Verify Renovate Configuration
-        uses: tj-actions/renovate-config-validator@v1.3
-        with:
-          config-file: .github/renovate.json5
+      #- name: Verify Renovate Configuration
+        #uses: tj-actions/renovate-config-validator@v1.3
+      #- name: Validate
+        #uses: rinchsan/renovate-config-validator@v0.0.12
+        #with:
+          #config-file: .github/renovate.json5
       - name: Self-hosted Renovate for Helm Release Updates
-        uses: renovatebot/github-action@v32.11.3
+        uses: renovatebot/github-action@v34.28.0
         with:
           configurationFile: .github/renovate.json5
           token: ${{ secrets.RENOVATE_TOKEN }}
