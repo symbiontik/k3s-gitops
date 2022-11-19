@@ -25,11 +25,12 @@ spec:
   values:
     image:
       name: kubernetesui/dashboard
-      tag: v2.3.0
+      tag: v2.7.0
       pullPolicy: IfNotPresent
+    protocolHttps: true
     ingress:
       enabled: true
-      ingressClassName: "traefik"
+      className: "traefik"
       annotations:
         cert-manager.io/cluster-issuer: "letsencrypt-production"
         traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
