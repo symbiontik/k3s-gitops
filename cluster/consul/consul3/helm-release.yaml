@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: consul
+  name: consul3
   namespace: consul
 spec:
   interval: 5m
@@ -25,6 +25,7 @@ spec:
   values:
     global:
       enabled: true
+      image: "hashicorp/consul:1.14.1"
       datacenter: dc1
     tls:
       enabled: true
