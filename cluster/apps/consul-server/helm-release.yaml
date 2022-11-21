@@ -25,7 +25,6 @@ spec:
   values:
     global:
       enabled: true
-      name: consul
       image: "hashicorp/consul:1.14.0"
       datacenter: dc1
     tls:
