@@ -8,3 +8,4 @@ resources:
   - code-server
   - kube-dashboard
   - vault
+  - consul
