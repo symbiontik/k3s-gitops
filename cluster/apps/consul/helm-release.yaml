@@ -32,24 +32,24 @@ spec:
     server:
       enabled: true
       replicas: 1
-    ui:
-      enabled: true
-    service:
-      type: NodePort
     connectInject:
       enabled: true
-    ingress:
+    ui:
       enabled: true
-      ingressClassName: traefik
-      pathType: Prefix
-      annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-production
-        traefik.ingress.kubernetes.io/router.entrypoints: websecure
-      hosts:
-        - host: consul.${SECRET_DOMAIN}
-          paths:
-            - /
-      tls: 
-        - hosts:
-            - consul.${SECRET_DOMAIN}
-          secretName: consul-tls
+      service:
+        type: NodePort
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        pathType: Prefix
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-production
+          traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        hosts:
+          - host: consul.${SECRET_DOMAIN}
+            paths:
+              - /
+        tls: 
+          - hosts:
+              - consul.${SECRET_DOMAIN}
+            secretName: consul-tls
