@@ -37,7 +37,8 @@ spec:
     ui:
       enabled: true
       service:
-        type: ClusterIP
+        enabled: true
+        #type: ClusterIP
       ingress:
         enabled: true
         ingressClassName: traefik
