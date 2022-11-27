@@ -9,7 +9,7 @@ spec:
   dependsOn:
     - name: crds
   path: ./cluster/observability
-  prune: false
+  prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
