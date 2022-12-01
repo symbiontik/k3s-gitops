@@ -8,6 +8,5 @@ SERVICE_LIST = [
     "traefik",
     "grafana",
     "prometheus",
-    "kube-dashboard",
-    "vault"
+    "kube-dashboard"
 ]
