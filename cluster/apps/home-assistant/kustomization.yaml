@@ -3,5 +3,4 @@ kind: Kustomization
 resources:
   - helm-release.yaml
   - config-pvc.yaml
-  - code-server.sops.yaml
   - home-assistant.sops.yaml
