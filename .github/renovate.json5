@@ -1,6 +1,6 @@
 {
   "enabled": true,
-  "timezone": "America/Chicago",
+  "timezone": "America/New_York",
   "platform": "github",
   "username": "sym[bot]",
   "repositories": ["symbiontik/k3s-gitops"],

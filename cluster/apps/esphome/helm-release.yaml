@@ -25,7 +25,7 @@ spec:
   values:
     hostNetwork: true
     env:
-      TZ: "America/Chicago"
+      TZ: "America/New_York"
     ingress:
       main:
         enabled: true
