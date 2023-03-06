@@ -23,11 +23,13 @@ spec:
     remediation:
       remediateLastFailure: true
   values:
+    nodeSelector:
+      kubernetes.io/hostname: chronos
     image:
       repository: ghcr.io/home-assistant/home-assistant
       tag: 2022.11.3
     env:
-      TZ: "America/Chicago"
+      TZ: "America/New_York"
     envFrom:
       - secretRef:
           name: home-assistant
@@ -94,6 +96,14 @@ spec:
         volumeMounts:
           - name: config
             mountPath: /config
+    volumeMounts:         
+      - mountPath: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if01-port0
+        name: zigbee-usb
+    volumes:
+      - hostPath:
+          path: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if01-port0
+          type: ""
+        name: zigbee-usb
     resources:
       requests:
         cpu: 100m
