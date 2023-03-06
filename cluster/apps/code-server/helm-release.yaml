@@ -53,5 +53,5 @@ spec:
     persistence:
       config:
         enabled: true
-        existingClaim: code-data
+        existingClaim: code-data-2
         mountPath: /config

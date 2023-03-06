@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: code-data
+  name: code-data-2
   namespace: apps
 spec:
   accessModes:
