@@ -87,6 +87,7 @@ spec:
         mountPath: /media
       downloads:
         enabled: true
+        existingClaim: qbittorrent-downloads
         mountPath: /downloads
     metrics:
       # -- Enable and configure prometheus-qbittorrent-exporter sidecar and Prometheus podMonitor.
