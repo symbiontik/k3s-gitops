@@ -7,4 +7,4 @@ resources:
   - influxdb
   - code-server
   - kube-dashboard
-  - vault
+  - qbittorrent
