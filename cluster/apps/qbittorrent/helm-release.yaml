@@ -1,0 +1,134 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: qbittorrent
+  namespace: apps
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://helm.releases.hashicorp.com
+      chart: qbittorrent
+      version: 13.5.2
+      sourceRef:
+        kind: HelmRepository
+        name: k8s-at-home-charts
+        namespace: flux-system
+      interval: 5m
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      remediateLastFailure: true
+  values:
+    image:
+      repository: ghcr.io/k8s-at-home/qbittorrent
+      # @default -- chart.appVersion
+      tag: v4.4.2
+      pullPolicy: IfNotPresent
+    settings:
+      # -- Enables automatic port configuration at startup
+      # This sets the qbittorrent port to the value of `service.bittorrent.ports.bittorrent.port`.
+      automaticPortSetup: false
+    # -- environment variables. See [image docs](https://docs.k8s-at-home.com/our-container-images/configuration/) for more details.
+    # @default -- See below
+    env:
+      # -- Set the container timezone
+      TZ: UTC
+    #hostNetwork: true
+    #dnsPolicy: ClusterFirstWithHostNet
+    # -- Configures service settings for the chart.
+    # @default -- See values.yaml
+    service:
+      main:
+        ports:
+          http:
+            port: 8080
+      bittorrent:
+        enabled: false
+        type: ClusterIP
+        ports:
+          bittorrent:
+            enabled: true
+            port: 6881
+            protocol: TCP
+            targetPort: 6881
+    ingress:
+      main:
+        enabled: true
+        ingressClassName: "traefik"
+        annotations:
+          cert-manager.io/cluster-issuer: "letsencrypt-production"
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+        hosts:
+          - host: qbittorrent.${SECRET_DOMAIN}
+            paths:
+              - path: /
+                pathType: Prefix
+        tls:
+          - hosts:
+              - qbittorrent.${SECRET_DOMAIN}
+            secretName: "qbittorrent-tls"
+    probes:
+      liveness:
+        enabled: false
+      readiness:
+        enabled: false
+      startup:
+        enabled: false
+    persistence:
+      config:
+        enabled: true
+        existingClaim: qbittorrent-data
+      media:
+        enabled: false
+        mountPath: /media
+      downloads:
+        enabled: false
+        mountPath: /downloads
+    metrics:
+      # -- Enable and configure prometheus-qbittorrent-exporter sidecar and Prometheus podMonitor.
+      # @default -- See values.yaml
+      enabled: false
+      serviceMonitor:
+        interval: 15s
+        scrapeTimeout: 5s
+        labels: {}
+      # -- Enable and configure Prometheus Rules for the chart under this key.
+      # @default -- See values.yaml
+      prometheusRule:
+        enabled: false
+        labels: {}
+        # -- Configure additionial rules for the chart under this key.
+        # @default -- See prometheusrules.yaml
+        rules: []
+          # - alert: qBittorrentDown
+          #   annotations:
+          #     description: qBittorrent service is down.
+          #     summary: qBittorrent is down.
+          #   expr: |
+          #     qbittorrent_up == 0
+          #   for: 5m
+          #   labels:
+          #     severity: critical
+      exporter:
+        image:
+          # -- image repository
+          repository: esanchezm/prometheus-qbittorrent-exporter
+          # -- image tag
+          tag: v1.2.0
+          # -- image pull policy
+          pullPolicy: IfNotPresent
+        env:
+          # -- qbittorrent username
+          # update value after configuring qbittorrent
+          user: "admin"
+          # -- qbittorrent password
+          # update value after configuring qbittorrent
+          password: "adminadmin"
+          # -- metrics port
+          port: 9022
+          # -- log level [DEBUG|INFO|WARNING|ERROR|CRITICAL]
+          logLevel: INFO

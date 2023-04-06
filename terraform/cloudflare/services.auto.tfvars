@@ -9,5 +9,5 @@ SERVICE_LIST = [
     "grafana",
     "prometheus",
     "kube-dashboard",
-    "vault"
+    "qbittorrent"
 ]
