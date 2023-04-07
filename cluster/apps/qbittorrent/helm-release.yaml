@@ -8,7 +8,7 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://helm.releases.hashicorp.com
+      # renovate: registryUrl=https://k8s-at-home.com/charts/
       chart: qbittorrent
       version: 13.5.2
       sourceRef:
@@ -24,9 +24,9 @@ spec:
       remediateLastFailure: true
   values:
     image:
-      repository: ghcr.io/k8s-at-home/qbittorrent
+      repository: ghcr.io/linuxserver/qbittorrent
       # @default -- chart.appVersion
-      tag: v4.4.2
+      tag: version-4.5.2-r1
       pullPolicy: IfNotPresent
     settings:
       # -- Enables automatic port configuration at startup
