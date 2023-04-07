@@ -24,9 +24,9 @@ spec:
       remediateLastFailure: true
   values:
     image:
-      repository: ghcr.io/k8s-at-home/qbittorrent
+      repository: ghcr.io/linuxserver/qbittorrent
       # @default -- chart.appVersion
-      tag: v4.4.2
+      tag: 4.5.2
       pullPolicy: IfNotPresent
     settings:
       # -- Enables automatic port configuration at startup
@@ -86,8 +86,8 @@ spec:
         enabled: false
         mountPath: /media
       downloads:
-        enabled: true
-        existingClaim: qbittorrent-downloads
+        enabled: false
+        #existingClaim: qbittorrent-downloads
         mountPath: /downloads
     metrics:
       # -- Enable and configure prometheus-qbittorrent-exporter sidecar and Prometheus podMonitor.
