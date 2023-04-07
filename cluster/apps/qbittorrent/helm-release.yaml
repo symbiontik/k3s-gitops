@@ -24,9 +24,9 @@ spec:
       remediateLastFailure: true
   values:
     image:
-      repository: ghcr.io/linuxserver/qbittorrent
+      repository: ghcr.io/k8s-at-home/qbittorrent
       # @default -- chart.appVersion
-      tag: version-4.5.2-r1
+      tag: v4.4.2
       pullPolicy: IfNotPresent
     settings:
       # -- Enables automatic port configuration at startup
