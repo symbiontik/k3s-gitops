@@ -20,6 +20,9 @@ jobs:
         uses: tj-actions/changed-files@v35
         with:
           files: notes/**
+          files: |
+            notes/**
+            **.mdx
 
       - name: Get changed files and write the outputs to a txt file
         if: steps.changed-files-specific.outputs.any_changed == 'true'
