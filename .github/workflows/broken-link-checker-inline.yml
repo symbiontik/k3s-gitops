@@ -12,18 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        #with:
-          #fetch-depth: 0
-#      - name: Get changed files in the notes/** subdirectories
-#        id: changed-files-specific
-#        uses: tj-actions/changed-files@v35
-#        with:
-#          files: |
-#            notes/**
-#            **.mdx
+        with:
+          fetch-depth: 0
 
       - name: Get changed files and write the outputs to a txt file
-        #if: steps.changed-files-specific.outputs.any_changed == 'true'
         id: changed-files-write-output-files-txt
         uses: tj-actions/changed-files@v35
         #uses: ./
@@ -37,8 +29,8 @@ jobs:
         if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
         run: |
           cat .github/outputs/all_changed_and_modified_files.txt
+          cat .github/outputs/notes/docs/test2.mdxadded_files.txt
           ls .github/outputs/
-
 
       - name: Run lychee link checker
         if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
