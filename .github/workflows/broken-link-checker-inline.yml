@@ -20,7 +20,6 @@ jobs:
         id: changed-files-specific
         uses: tj-actions/changed-files@v35
         with:
-          files: notes/**
           files: |
             notes/**
             **.mdx
