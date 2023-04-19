@@ -24,7 +24,7 @@ jobs:
             notes/**
             **.mdx
           write_output_files: true
-          separator: "\n"
+          #separator: " "
 
       - name: Verify the contents of the .github/outputs/added_files.txt file
         if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
