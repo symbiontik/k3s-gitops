@@ -1,0 +1,1752 @@
+---
+id: 9ebb1571-0edd-4c5b-81a7-9bfcca8e0894
+name: Enable external traffic ingress into Consul service mesh
+description: >-
+  Enable ingress into your Consul service mesh to allow outside traffic to
+  securely access your services and applications.
+products_used:
+  - product: consul
+    min_version: 1.14.4
+read_time: 10
+default_collection_context: consul/get-started-kubernetes
+---
+
+In this tutorial, you will enable external access into your service mesh by deploying a Consul API Gateway. Consul API Gateway provides a consistent method to handle inbound requests and route them to the appropriate service within your service mesh. 
+
+Select your learning path by clicking one of the following tabs.
+
+<Tabs>
+<Tab heading="HCP-managed Consul" group="hcp">
+<Tabs>
+<Tab heading="EKS" group="hcp-eks">
+
+To set up ingress into your service mesh, you will:
+
+- Enable Consul ingress features
+- Deploy Consul API Gateway
+- Deploy RBAC and Reference Grant resources
+- View Consul services with the CLI, UI, and/or API
+- Explore ingress into the HashiCups UI
+
+</Tab>
+<Tab heading="AKS" group="hcp-aks">
+
+To set up ingress into your service mesh, you will:
+
+- Enable Consul ingress features
+- Deploy Consul API Gateway
+- Deploy RBAC and Reference Grant resources
+- View Consul services with the CLI, UI, and/or API
+- Explore ingress into the HashiCups UI
+
+</Tab>
+</Tabs>
+</Tab>
+
+<Tab heading="Self-managed Consul" group="self">
+<Tabs>
+<Tab heading="EKS" group="self-eks">
+
+To set up ingress into your service mesh, you will:
+
+- Enable Consul ingress features
+- Deploy Consul API Gateway
+- Deploy RBAC and Reference Grant resources
+- View Consul services with the CLI, UI, and/or API
+- Explore ingress into the HashiCups UI
+
+</Tab>
+<Tab heading="AKS" group="self-aks">
+
+To set up ingress into your service mesh, you will:
+
+- Enable Consul ingress features
+- Deploy Consul API Gateway
+- Deploy RBAC and Reference Grant resources
+- View Consul services with the CLI, UI, and/or API
+- Explore ingress into the HashiCups UI
+
+</Tab>
+<Tab heading="Local" group="self-local">
+
+To set up ingress into your service mesh, you will:
+
+- Enable Consul ingress features
+- Deploy Consul API Gateway
+- Deploy RBAC and Reference Grant resources
+- View Consul services with the CLI, UI, and/or API
+- Explore ingress into the HashiCups UI
+
+</Tab>
+
+</Tabs>
+</Tab>
+</Tabs>
+
+## Prerequisites
+
+<Tabs>
+<Tab heading="HCP-managed Consul" group="hcp">
+<Tabs>
+<Tab heading="EKS" group="hcp-eks">
+
+The tutorial assumes that you have completed the previous tutorials in this getting started collection.
+
+For this tutorial, you will need:
+
+- An [AWS account](https://aws.amazon.com/account/) configured for [use with Terraform](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication)
+- An [HCP account](https://portal.cloud.hashicorp.com/sign-in?utm_source=learn) configured for [use with Terraform](https://registry.terraform.io/providers/hashicorp/hcp/latest/docs/guides/auth)
+- [aws-cli >= 2.0](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+- [terraform >= 1.0](/terraform/tutorials/aws-get-started/install-cli)
+- [consul >= 1.14.4](/consul/downloads/)
+- [consul-k8s >= 1.0.0](/consul/docs/k8s/installation/install-cli) 
+- [git >= 2.0](https://git-scm.com/downloads)
+- [helm >= 3.0](https://helm.sh/docs/using_helm/)
+- [kubectl <= 1.24](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+
+</Tab>
+<Tab heading="AKS" group="hcp-aks">
+
+The tutorial assumes that you have completed the previous tutorials in this getting started collection.
+
+For this tutorial, you will need:
+
+- An [Azure account](http://portal.azure.com) configured for [use with Terraform](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/azure_cli)
+- An [HCP account](https://portal.cloud.hashicorp.com/sign-in?utm_source=learn) configured for [use with Terraform](https://registry.terraform.io/providers/hashicorp/hcp/latest/docs/guides/auth)
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+- [terraform >= 1.0](/terraform/tutorials/aws-get-started/install-cli)
+- [consul >= 1.14.4](/consul/downloads/)
+- [consul-k8s >= 1.0.0](/consul/docs/k8s/installation/install-cli) 
+- [git >= 2.0](https://git-scm.com/downloads)
+- [helm >= 3.0](https://helm.sh/docs/using_helm/)
+- [kubectl <= 1.24](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+
+</Tab>
+</Tabs>
+</Tab>
+
+<Tab heading="Self-managed Consul" group="self">
+<Tabs>
+<Tab heading="EKS" group="self-eks">
+
+The tutorial assumes that you have completed the previous tutorials in this getting started collection.
+
+For this tutorial, you will need:
+
+- An [AWS account](https://aws.amazon.com/account/) configured for [use with Terraform](https://registry.terraform.io/providers/hashicorp/aws/latest/docs#authentication)
+- [aws-cli >= 2.0](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html)
+- [terraform >= 1.0](/terraform/tutorials/aws-get-started/install-cli)
+- [consul >= 1.14.4](/consul/downloads/)
+- [consul-k8s >= 1.0.0](/consul/docs/k8s/installation/install-cli) 
+- [git >= 2.0](https://git-scm.com/downloads)
+- [helm >= 3.0](https://helm.sh/docs/using_helm/)
+- [kubectl <= 1.24](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+
+</Tab>
+<Tab heading="AKS" group="self-aks">
+
+The tutorial assumes that you have completed the previous tutorials in this getting started collection.
+
+For this tutorial, you will need:
+
+- An [Azure account](http://portal.azure.com) configured for [use with Terraform](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/guides/azure_cli)
+- [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+- [terraform >= 1.0](/terraform/tutorials/aws-get-started/install-cli)
+- [consul >= 1.14.4](/consul/downloads/)
+- [consul-k8s >= 1.0.0](/consul/docs/k8s/installation/install-cli) 
+- [git >= 2.0](https://git-scm.com/downloads)
+- [helm >= 3.0](https://helm.sh/docs/using_helm/)
+- [kubectl <= 1.24](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+
+</Tab>
+<Tab heading="Local" group="self-local">
+
+The tutorial assumes that you have completed the previous tutorials in this getting started collection.
+
+For this tutorial, you will need:
+
+- [consul >= 1.14.4](/consul/downloads/)
+- [consul-k8s >= 1.0.0](/consul/docs/k8s/installation/install-cli) 
+- [docker >= 20.0](https://docs.docker.com/get-docker/)
+- [git >= 2.0](https://git-scm.com/downloads)
+- [helm >= 3.0](https://helm.sh/docs/using_helm/)
+- [kind <= 0.24.x](https://kind.sigs.k8s.io/docs/user/quick-start/)
+- [kubectl <= 1.24](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+
+</Tab>
+
+</Tabs>
+</Tab>
+</Tabs>
+
+## Enable Consul ingress features
+
+<Tabs>
+<Tab heading="HCP-managed Consul" group="hcp">
+<Tabs>
+<Tab heading="EKS" group="hcp-eks">
+
+You will now enable additional Consul features in your Kubernetes cluster using the official Consul Helm chart or the `consul-k8s` CLI.
+
+Consul API Gateway implements and is configured through the Kubernetes [Gateway API Specification](https://gateway-api.sigs.k8s.io/). This specification defines a set of custom resource definitions (CRDs) that can create logical gateways which route traffic based on a client request's path or protocol.
+
+First, create the custom resource definitions (CRD) for the API Gateway Controller. 
+
+```shell-session
+$ kubectl apply --kustomize "github.com/hashicorp/consul-api-gateway/config/crd?ref=v0.5.1"
+customresourcedefinition.apiextensions.k8s.io/gatewayclassconfigs.api-gateway.consul.hashicorp.com created
+customresourcedefinition.apiextensions.k8s.io/gatewayclasses.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/gateways.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/httproutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/meshservices.api-gateway.consul.hashicorp.com created
+customresourcedefinition.apiextensions.k8s.io/referencepolicies.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/tcproutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/tlsroutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/udproutes.gateway.networking.k8s.io created
+```
+
+Review the additional configuration details.
+
+<CodeBlockConfig filename="helm/values-v2.yaml" hideClipboard>
+
+```yml
+# Contains values that affect multiple components of the chart.
+global:
+ ## ...
+
+# Configures and installs the Consul API Gateway.
+apiGateway:
+ enabled: true
+ # Image to use for the api-gateway-controller pods and gateway instances
+ image: "hashicorp/consul-api-gateway:0.5.1"
+ # Configuration settings for the GatewayClass
+ managedGatewayClass:
+   # Defines the type of service created for gateways (e.g. LoadBalancer, ClusterIP, NodePort)
+   # LoadBalancer is primarily used for cloud deployments.
+   serviceType: LoadBalancer
+```
+
+</CodeBlockConfig>
+
+Since these Consul resources are managed with Terraform, the respective module's Helm configuration file controls the Helm chart deployment for this environment.
+
+Update your Consul deployment's Helm chart values.
+
+```shell-session
+cp helm/values-v2.yaml modules/eks-client/template/consul.tpl
+```
+
+Then, deploy the resources. Confirm the run by entering `yes`.
+
+```shell-session
+$ terraform apply
+
+## ...
+Do you want to perform these actions?
+ Terraform will perform the actions described above.
+ Only 'yes' will be accepted to approve.
+
+ Enter a value: yes
+
+## ...
+
+Apply complete! Resources: 1 added, 1 changed, 1 destroyed.
+```
+
+</Tab>
+<Tab heading="AKS" group="hcp-aks">
+
+You will now enable additional Consul features in your Kubernetes cluster using the official Consul Helm chart or the `consul-k8s` CLI.
+
+Consul API Gateway implements and is configured through the Kubernetes [Gateway API Specification](https://gateway-api.sigs.k8s.io/). This specification defines a set of custom resource definitions (CRDs) that can create logical gateways which route traffic based on a client request's path or protocol.
+
+First, create the custom resource definitions (CRD) for the API Gateway Controller. 
+
+```shell-session
+$ kubectl apply --kustomize "github.com/hashicorp/consul-api-gateway/config/crd?ref=v0.5.1"
+customresourcedefinition.apiextensions.k8s.io/gatewayclassconfigs.api-gateway.consul.hashicorp.com created
+customresourcedefinition.apiextensions.k8s.io/gatewayclasses.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/gateways.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/httproutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/meshservices.api-gateway.consul.hashicorp.com created
+customresourcedefinition.apiextensions.k8s.io/referencepolicies.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/tcproutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/tlsroutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/udproutes.gateway.networking.k8s.io created
+```
+
+Review the additional configuration details.
+
+<CodeBlockConfig filename="helm/values-v2.yaml" hideClipboard>
+
+```yml
+# Contains values that affect multiple components of the chart.
+global:
+ ## ...
+
+# Configures and installs the Consul API Gateway.
+apiGateway:
+ enabled: true
+ # Image to use for the api-gateway-controller pods and gateway instances
+ image: "hashicorp/consul-api-gateway:0.5.1"
+ # Configuration settings for the GatewayClass
+ managedGatewayClass:
+   # Defines the type of service created for gateways (e.g. LoadBalancer, ClusterIP, NodePort)
+   # LoadBalancer is primarily used for cloud deployments.
+   serviceType: LoadBalancer
+```
+
+</CodeBlockConfig>
+
+Since these Consul resources are managed with Terraform, the respective module's Helm configuration file controls the Helm chart deployment for this environment.
+
+Update your Consul deployment's Helm chart values.
+
+```shell-session
+cp helm/values-v2.yaml modules/hcp-aks-client/templates/consul.tpl
+```
+
+Then, deploy the resources. Confirm the run by entering `yes`.
+
+```shell-session
+$ terraform apply
+
+## ...
+Do you want to perform these actions?
+ Terraform will perform the actions described above.
+ Only 'yes' will be accepted to approve.
+
+ Enter a value: yes
+
+## ...
+
+Apply complete! Resources: 1 added, 1 changed, 1 destroyed.
+```
+
+</Tab>
+</Tabs>
+</Tab>
+
+<Tab heading="Self-managed Consul" group="self">
+<Tabs>
+<Tab heading="EKS" group="self-eks">
+
+You will now enable additional Consul features in your Kubernetes cluster using the official Consul Helm chart or the `consul-k8s` CLI.
+
+Consul API Gateway implements and is configured through the Kubernetes [Gateway API Specification](https://gateway-api.sigs.k8s.io/). This specification defines a set of custom resource definitions (CRDs) that can create logical gateways which route traffic based on a client request's path or protocol.
+
+First, create the custom resource definitions (CRD) for the API Gateway Controller. 
+
+```shell-session
+$ kubectl apply --kustomize "github.com/hashicorp/consul-api-gateway/config/crd?ref=v0.5.1"
+customresourcedefinition.apiextensions.k8s.io/gatewayclassconfigs.api-gateway.consul.hashicorp.com created
+customresourcedefinition.apiextensions.k8s.io/gatewayclasses.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/gateways.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/httproutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/meshservices.api-gateway.consul.hashicorp.com created
+customresourcedefinition.apiextensions.k8s.io/referencepolicies.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/tcproutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/tlsroutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/udproutes.gateway.networking.k8s.io created
+```
+
+Review the additional configuration details.
+
+<CodeBlockConfig filename="helm/values-v2.yaml" hideClipboard>
+
+```yml
+# Contains values that affect multiple components of the chart.
+global:
+ ## ...
+
+# Configures and installs the Consul API Gateway.
+apiGateway:
+ enabled: true
+ # Image to use for the api-gateway-controller pods and gateway instances
+ image: "hashicorp/consul-api-gateway:0.5.1"
+ # Configuration settings for the GatewayClass
+ managedGatewayClass:
+   # Defines the type of service created for gateways (e.g. LoadBalancer, ClusterIP, NodePort)
+   # LoadBalancer is primarily used for cloud deployments.
+   serviceType: LoadBalancer
+```
+
+</CodeBlockConfig>
+
+<Tabs>
+<Tab heading="Consul K8S CLI">
+
+Update Consul in your Kubernetes cluster with Consul K8S CLI. Confirm the run by entering `y`.
+
+```shell-session
+$ consul-k8s upgrade -config-file=helm/values-v2.yaml
+```
+
+Refer to the [Consul K8S CLI documentation](/consul/docs/k8s/k8s-cli) to learn more about additional settings.
+
+</Tab>
+<Tab heading="Helm">
+
+Update Consul in your Kubernetes cluster. 
+
+```shell-session
+$ helm upgrade --values helm/values-v2.yaml consul hashicorp/consul --namespace consul --version "1.0.2"
+```
+
+Review the official [Helm chart values](/consul/docs/k8s/helm#configuration-values) to learn more about these settings.
+
+</Tab>
+</Tabs>
+
+</Tab>
+<Tab heading="AKS" group="self-aks">
+
+You will now enable additional Consul features in your Kubernetes cluster using the official Consul Helm chart or the `consul-k8s` CLI.
+
+Consul API Gateway implements and is configured through the Kubernetes [Gateway API Specification](https://gateway-api.sigs.k8s.io/). This specification defines a set of custom resource definitions (CRDs) that can create logical gateways which route traffic based on a client request's path or protocol.
+
+First, create the custom resource definitions (CRD) for the API Gateway Controller. 
+
+```shell-session
+$ kubectl apply --kustomize "github.com/hashicorp/consul-api-gateway/config/crd?ref=v0.5.1"
+customresourcedefinition.apiextensions.k8s.io/gatewayclassconfigs.api-gateway.consul.hashicorp.com created
+customresourcedefinition.apiextensions.k8s.io/gatewayclasses.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/gateways.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/httproutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/meshservices.api-gateway.consul.hashicorp.com created
+customresourcedefinition.apiextensions.k8s.io/referencepolicies.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/tcproutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/tlsroutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/udproutes.gateway.networking.k8s.io created
+```
+
+Review the additional configuration details.
+
+<CodeBlockConfig filename="helm/values-v2.yaml" hideClipboard>
+
+```yml
+# Contains values that affect multiple components of the chart.
+global:
+ ## ...
+
+# Configures and installs the Consul API Gateway.
+apiGateway:
+ enabled: true
+ # Image to use for the api-gateway-controller pods and gateway instances
+ image: "hashicorp/consul-api-gateway:0.5.1"
+ # Configuration settings for the GatewayClass
+ managedGatewayClass:
+   # Defines the type of service created for gateways (e.g. LoadBalancer, ClusterIP, NodePort)
+   # LoadBalancer is primarily used for cloud deployments.
+   serviceType: LoadBalancer
+```
+
+</CodeBlockConfig>
+
+<Tabs>
+<Tab heading="Consul K8S CLI">
+
+Update Consul in your Kubernetes cluster with Consul K8S CLI. Confirm the run by entering `y`.
+
+```shell-session
+$ consul-k8s upgrade -config-file=helm/values-v2.yaml
+```
+
+Refer to the [Consul K8S CLI documentation](/consul/docs/k8s/k8s-cli) to learn more about additional settings.
+
+</Tab>
+<Tab heading="Helm">
+
+Update Consul in your Kubernetes cluster. 
+
+```shell-session
+$ helm upgrade --values helm/values-v2.yaml consul hashicorp/consul --namespace consul --version "1.0.2"
+```
+
+Review the official [Helm chart values](/consul/docs/k8s/helm#configuration-values) to learn more about these settings.
+
+</Tab>
+</Tabs>
+
+</Tab>
+<Tab heading="Local" group="self-local">
+
+You will now enable additional Consul features in your Kubernetes cluster using the official Consul Helm chart or the `consul-k8s` CLI.
+
+Consul API Gateway implements and is configured through the Kubernetes [Gateway API Specification](https://gateway-api.sigs.k8s.io/). This specification defines a set of custom resource definitions (CRDs) that can create logical gateways which route traffic based on a client request's path or protocol.
+
+First, create the custom resource definitions (CRD) for the API Gateway Controller. 
+
+```shell-session
+$ kubectl apply --kustomize "github.com/hashicorp/consul-api-gateway/config/crd?ref=v0.5.1"
+customresourcedefinition.apiextensions.k8s.io/gatewayclassconfigs.api-gateway.consul.hashicorp.com created
+customresourcedefinition.apiextensions.k8s.io/gatewayclasses.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/gateways.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/httproutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/meshservices.api-gateway.consul.hashicorp.com created
+customresourcedefinition.apiextensions.k8s.io/referencepolicies.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/tcproutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/tlsroutes.gateway.networking.k8s.io created
+customresourcedefinition.apiextensions.k8s.io/udproutes.gateway.networking.k8s.io created
+```
+
+Review the additional configuration details.
+
+<CodeBlockConfig filename="helm/values-v2.yaml" hideClipboard>
+
+```yml
+# Contains values that affect multiple components of the chart.
+global:
+ ## ...
+
+# Configures and installs the Consul API Gateway.
+apiGateway:
+ enabled: true
+ # Image to use for the api-gateway-controller pods and gateway instances
+ image: "hashicorp/consul-api-gateway:0.5.1"
+ # Configuration settings for the GatewayClass
+ managedGatewayClass:
+   # Defines the type of service created for gateways (e.g. LoadBalancer, ClusterIP, NodePort)
+   # NodePort is primarily used for local deployments.
+   serviceType: NodePort
+   # Toggles the gateway ports to be mapped to host ports (used for local deployments)
+   useHostPorts: true
+```
+
+</CodeBlockConfig>
+
+<Tabs>
+<Tab heading="Consul K8S CLI">
+
+Update Consul in your Kubernetes cluster with Consul K8S CLI. Confirm the run by entering `y`.
+
+```shell-session
+$ consul-k8s upgrade -config-file=helm/values-v2.yaml
+```
+
+Refer to the [Consul K8S CLI documentation](/consul/docs/k8s/k8s-cli) to learn more about additional settings.
+
+</Tab>
+<Tab heading="Helm">
+
+Update Consul in your Kubernetes cluster. 
+
+```shell-session
+$ helm upgrade --values helm/values-v2.yaml consul hashicorp/consul --namespace consul --version "1.0.2"
+```
+
+Review the official [Helm chart values](/consul/docs/k8s/helm#configuration-values) to learn more about these settings.
+
+</Tab>
+</Tabs>
+
+
+</Tab>
+
+</Tabs>
+</Tab>
+</Tabs>
+
+## Deploy Consul API Gateway
+
+<Tabs>
+<Tab heading="HCP-managed Consul" group="hcp">
+<Tabs>
+<Tab heading="EKS" group="hcp-eks">
+
+### Review Consul API Gateway configuration
+
+Now that you have enabled ingress features in your Consul service mesh, you can deploy the Consul API Gateway and associated [HTTP Routes](https://gateway-api.sigs.k8s.io/api-types/httproute/) to your Kubernetes cluster. The Consul API Gateway uses HTTP Routes to route traffic to your applications.
+
+Review the `api-gw/consul-api-gateway.yaml` configuration file. This file contains the configuration for the API Gateway pod, the listener, and TLS attributes.
+
+<CodeBlockConfig filename="api-gw/consul-api-gateway.yaml" hideClipboard>
+
+```yml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+# The Gateway is the main infrastructure resource that links API gateway components.
+kind: Gateway
+metadata:
+  name: api-gateway
+  namespace: consul
+spec:
+  gatewayClassName: consul-api-gateway
+  # Configures the listener that is bound to the gateway's address.
+  listeners:
+    # Defines the listener protocol (HTTP, HTTPS, or TCP)
+  - protocol: HTTP
+    port: 8080
+    name: http
+    allowedRoutes:
+      namespaces:
+        from: Same
+```
+
+</CodeBlockConfig>
+
+Review the `api-gw/routes.yaml` configuration file. This file contains the configuration for HTTP routing including the network traffic rules and the backend service that will receive the ingress traffic.
+
+<Accordion heading="routes.yaml" collapse>
+
+<CodeBlockConfig filename="api-gw/routes.yaml" hideClipboard>
+
+```yml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+# HTTPRoute routes HTTP requests to backend services.
+kind: HTTPRoute
+metadata:
+  name: http-route-1
+  namespace: consul
+spec:
+  # Defines the gateway listener.
+  parentRefs:
+  - name: api-gateway
+  # Rules define behaviors for network traffic that goes through the route.
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    # Defines the backend service.
+    backendRefs:
+    - kind: Service
+      name: nginx
+      namespace: default
+      port: 80
+```
+
+</CodeBlockConfig>
+
+</Accordion>
+
+### Deploy Consul API Gateway
+
+Next, deploy the API Gateway, wait for the API Gateway to completely deploy, and deploy the routes. 
+
+```shell-session
+$ kubectl apply --filename api-gw/consul-api-gateway.yaml --namespace consul && \
+kubectl wait --for=condition=ready gateway/api-gateway --namespace consul --timeout=90s && \
+kubectl apply --filename api-gw/routes.yaml --namespace consul
+```
+
+Expected output:
+
+```log hideClipboard
+gateway.gateway.networking.k8s.io/api-gateway created
+gateway.gateway.networking.k8s.io/api-gateway condition met
+httproute.gateway.networking.k8s.io/http-route-1 created
+```
+
+Verify you have created all the pods in your `consul` namespace. You should find an output similar to the following.
+
+```shell-session
+$ kubectl get pods --namespace consul | grep "api-gateway"
+NAME                                             READY   STATUS    RESTARTS   AGE
+api-gateway-6ddbd69979-bm5kq                     1/1     Running   0          64s
+consul-api-gateway-controller-66dddfb4c8-jj8w2   1/1     Running   1          7m9s
+```
+
+The diagram below shows the services running in your Kubernetes cluster. This includes Consul API Gateway, service mesh layer, and HashiCups microservice application pods.
+
+![Kubernetes and Application Architecture for this tutorial](/img/consul/kubernetes-gs-ingress_example_application_architecture.png)
+
+Consul API Gateway enables ingress, load-balancing, and other advanced traffic behavior for your service mesh applications. In this tutorial, Consul API Gateway allows external traffic into the HashiCups service.
+
+</Tab>
+<Tab heading="AKS" group="hcp-aks">
+
+### Review Consul API Gateway configuration
+
+Now that you have enabled ingress features in your Consul service mesh, you can deploy the Consul API Gateway and associated [HTTP Routes](https://gateway-api.sigs.k8s.io/api-types/httproute/) to your Kubernetes cluster. The Consul API Gateway uses HTTP Routes to route traffic to your applications.
+
+Review the `api-gw/consul-api-gateway.yaml` configuration file. This file contains the configuration for the API Gateway pod, the listener, and TLS attributes.
+
+<CodeBlockConfig filename="api-gw/consul-api-gateway.yaml" hideClipboard>
+
+```yml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+# The Gateway is the main infrastructure resource that links API gateway components.
+kind: Gateway
+metadata:
+  name: api-gateway
+  namespace: consul
+spec:
+  gatewayClassName: consul-api-gateway
+  # Configures the listener that is bound to the gateway's address.
+  listeners:
+    # Defines the listener protocol (HTTP, HTTPS, or TCP)
+  - protocol: HTTP
+    port: 8080
+    name: http
+    allowedRoutes:
+      namespaces:
+        from: Same
+```
+
+</CodeBlockConfig>
+
+Review the `api-gw/routes.yaml` configuration file. This file contains the configuration for HTTP routing including the network traffic rules and the backend service that will receive the ingress traffic.
+
+<Accordion heading="routes.yaml" collapse>
+
+<CodeBlockConfig filename="api-gw/routes.yaml" hideClipboard>
+
+```yml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+# HTTPRoute routes HTTP requests to backend services.
+kind: HTTPRoute
+metadata:
+  name: http-route-1
+  namespace: consul
+spec:
+  # Defines the gateway listener.
+  parentRefs:
+  - name: api-gateway
+  # Rules define behaviors for network traffic that goes through the route.
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    # Defines the backend service.
+    backendRefs:
+    - kind: Service
+      name: nginx
+      namespace: default
+      port: 80
+```
+
+</CodeBlockConfig>
+
+</Accordion>
+
+### Deploy Consul API Gateway
+
+Next, deploy the API Gateway, wait for the API Gateway to completely deploy, and deploy the routes. 
+
+```shell-session
+$ kubectl apply --filename api-gw/consul-api-gateway.yaml --namespace consul && \
+kubectl wait --for=condition=ready gateway/api-gateway --namespace consul --timeout=90s && \
+kubectl apply --filename api-gw/routes.yaml --namespace consul
+```
+
+Expected output:
+
+```log hideClipboard
+gateway.gateway.networking.k8s.io/api-gateway created
+gateway.gateway.networking.k8s.io/api-gateway condition met
+httproute.gateway.networking.k8s.io/http-route-1 created
+```
+
+Verify you have created all the pods in your `consul` namespace. You should find an output similar to the following.
+
+```shell-session
+$ kubectl get pods --namespace consul | grep "api-gateway"
+NAME                                             READY   STATUS    RESTARTS   AGE
+api-gateway-6ddbd69979-bm5kq                     1/1     Running   0          64s
+consul-api-gateway-controller-66dddfb4c8-jj8w2   1/1     Running   1          7m9s
+```
+
+The diagram below shows the services running in your Kubernetes cluster. This includes Consul API Gateway, service mesh layer, and HashiCups microservice application pods.
+
+![Kubernetes and Application Architecture for this tutorial](/img/consul/kubernetes-gs-ingress_example_application_architecture.png)
+
+Consul API Gateway enables ingress, load-balancing, and other advanced traffic behavior for your service mesh applications. In this tutorial, Consul API Gateway allows external traffic into the HashiCups service.
+
+</Tab>
+</Tabs>
+</Tab>
+
+<Tab heading="Self-managed Consul" group="self">
+<Tabs>
+<Tab heading="EKS" group="self-eks">
+
+### Review Consul API Gateway configuration
+
+Now that you have enabled ingress features in your Consul service mesh, you can deploy the Consul API Gateway and associated [HTTP Routes](https://gateway-api.sigs.k8s.io/api-types/httproute/) to your Kubernetes cluster. The Consul API Gateway uses HTTP Routes to route traffic to your applications.
+
+Review the `api-gw/consul-api-gateway.yaml` configuration file. This file contains the configuration for the API Gateway pod, the listener, and TLS attributes.
+
+<CodeBlockConfig filename="api-gw/consul-api-gateway.yaml" hideClipboard>
+
+```yml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+# The Gateway is the main infrastructure resource that links API gateway components.
+kind: Gateway
+metadata:
+  name: api-gateway
+  namespace: consul
+spec:
+  gatewayClassName: consul-api-gateway
+  # Configures the listener that is bound to the gateway's address.
+  listeners:
+    # Defines the listener protocol (HTTP, HTTPS, or TCP)
+  - protocol: HTTP
+    port: 8080
+    name: http
+    allowedRoutes:
+      namespaces:
+        from: Same
+```
+
+</CodeBlockConfig>
+
+Review the `api-gw/routes.yaml` configuration file. This file contains the configuration for HTTP routing including the network traffic rules and the backend service that will receive the ingress traffic.
+
+<Accordion heading="routes.yaml" collapse>
+
+<CodeBlockConfig filename="api-gw/routes.yaml" hideClipboard>
+
+```yml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+# HTTPRoute routes HTTP requests to backend services.
+kind: HTTPRoute
+metadata:
+  name: http-route-1
+  namespace: consul
+spec:
+  # Defines the gateway listener.
+  parentRefs:
+  - name: api-gateway
+  # Rules define behaviors for network traffic that goes through the route.
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    # Defines the backend service.
+    backendRefs:
+    - kind: Service
+      name: nginx
+      namespace: default
+      port: 80
+```
+
+</CodeBlockConfig>
+
+</Accordion>
+
+### Deploy Consul API Gateway
+
+Next, deploy the API Gateway, wait for the API Gateway to completely deploy, and deploy the routes. 
+
+```shell-session
+$ kubectl apply --filename api-gw/consul-api-gateway.yaml --namespace consul && \
+kubectl wait --for=condition=ready gateway/api-gateway --namespace consul --timeout=90s && \
+kubectl apply --filename api-gw/routes.yaml --namespace consul
+```
+
+Expected output:
+
+```log hideClipboard
+gateway.gateway.networking.k8s.io/api-gateway created
+gateway.gateway.networking.k8s.io/api-gateway condition met
+httproute.gateway.networking.k8s.io/http-route-1 created
+```
+
+Verify you have created all the pods in your `consul` namespace. You should find an output similar to the following.
+
+```shell-session
+$ kubectl get pods --namespace consul | grep "api-gateway"
+NAME                                             READY   STATUS    RESTARTS   AGE
+api-gateway-6ddbd69979-bm5kq                     1/1     Running   0          64s
+consul-api-gateway-controller-66dddfb4c8-jj8w2   1/1     Running   1          7m9s
+```
+
+The diagram below shows the services running in your Kubernetes cluster. This includes Consul API Gateway, service mesh layer, and HashiCups microservice application pods.
+
+![Kubernetes and Application Architecture for this tutorial](/img/consul/kubernetes-gs-ingress_example_application_architecture.png)
+
+Consul API Gateway enables ingress, load-balancing, and other advanced traffic behavior for your service mesh applications. In this tutorial, Consul API Gateway allows external traffic into the HashiCups service.
+
+</Tab>
+<Tab heading="AKS" group="self-aks">
+
+### Review Consul API Gateway configuration
+
+Now that you have enabled ingress features in your Consul service mesh, you can deploy the Consul API Gateway and associated [HTTP Routes](https://gateway-api.sigs.k8s.io/api-types/httproute/) to your Kubernetes cluster. The Consul API Gateway uses HTTP Routes to route traffic to your applications.
+
+Review the `api-gw/consul-api-gateway.yaml` configuration file. This file contains the configuration for the API Gateway pod, the listener, and TLS attributes.
+
+<CodeBlockConfig filename="api-gw/consul-api-gateway.yaml" hideClipboard>
+
+```yml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+# The Gateway is the main infrastructure resource that links API gateway components.
+kind: Gateway
+metadata:
+  name: api-gateway
+  namespace: consul
+spec:
+  gatewayClassName: consul-api-gateway
+  # Configures the listener that is bound to the gateway's address.
+  listeners:
+    # Defines the listener protocol (HTTP, HTTPS, or TCP)
+  - protocol: HTTP
+    port: 8080
+    name: http
+    allowedRoutes:
+      namespaces:
+        from: Same
+```
+
+</CodeBlockConfig>
+
+Review the `api-gw/routes.yaml` configuration file. This file contains the configuration for HTTP routing including the network traffic rules and the backend service that will receive the ingress traffic.
+
+<Accordion heading="routes.yaml" collapse>
+
+<CodeBlockConfig filename="api-gw/routes.yaml" hideClipboard>
+
+```yml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+# HTTPRoute routes HTTP requests to backend services.
+kind: HTTPRoute
+metadata:
+  name: http-route-1
+  namespace: consul
+spec:
+  # Defines the gateway listener.
+  parentRefs:
+  - name: api-gateway
+  # Rules define behaviors for network traffic that goes through the route.
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    # Defines the backend service.
+    backendRefs:
+    - kind: Service
+      name: nginx
+      namespace: default
+      port: 80
+```
+
+</CodeBlockConfig>
+
+</Accordion>
+
+### Deploy Consul API Gateway
+
+Next, deploy the API Gateway, wait for the API Gateway to completely deploy, and deploy the routes. 
+
+```shell-session
+$ kubectl apply --filename api-gw/consul-api-gateway.yaml --namespace consul && \
+kubectl wait --for=condition=ready gateway/api-gateway --namespace consul --timeout=90s && \
+kubectl apply --filename api-gw/routes.yaml --namespace consul
+```
+
+Expected output:
+
+```log hideClipboard
+gateway.gateway.networking.k8s.io/api-gateway created
+gateway.gateway.networking.k8s.io/api-gateway condition met
+httproute.gateway.networking.k8s.io/http-route-1 created
+```
+
+Verify you have created all the pods in your `consul` namespace. You should find an output similar to the following.
+
+```shell-session
+$ kubectl get pods --namespace consul | grep "api-gateway"
+NAME                                             READY   STATUS    RESTARTS   AGE
+api-gateway-6ddbd69979-bm5kq                     1/1     Running   0          64s
+consul-api-gateway-controller-66dddfb4c8-jj8w2   1/1     Running   1          7m9s
+```
+
+The diagram below shows the services running in your Kubernetes cluster. This includes Consul API Gateway, service mesh layer, and HashiCups microservice application pods.
+
+![Kubernetes and Application Architecture for this tutorial](/img/consul/kubernetes-gs-ingress_example_application_architecture.png)
+
+Consul API Gateway enables ingress, load-balancing, and other advanced traffic behavior for your service mesh applications. In this tutorial, Consul API Gateway allows external traffic into the HashiCups service.
+
+</Tab>
+<Tab heading="Local" group="self-local">
+
+### Review Consul API Gateway configuration
+
+Now that you have enabled ingress features in your Consul service mesh, you can deploy the Consul API Gateway and associated [HTTP Routes](https://gateway-api.sigs.k8s.io/api-types/httproute/) to your Kubernetes cluster. The Consul API Gateway uses HTTP Routes to route traffic to your applications.
+
+Review the `api-gw/consul-api-gateway.yaml` configuration file. This file contains the configuration for the API Gateway pod, the listener, and TLS attributes.
+
+<CodeBlockConfig filename="api-gw/consul-api-gateway.yaml" hideClipboard>
+
+```yml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+# The Gateway is the main infrastructure resource that links API gateway components.
+kind: Gateway
+metadata:
+ name: api-gateway
+ namespace: consul
+spec:
+ gatewayClassName: consul-api-gateway
+ # Configures the listener that is bound to the gateway's address.
+ listeners:
+   # Defines the listener protocol (HTTP, HTTPS, or TCP)
+ - protocol: HTTPS
+   port: 8443
+   name: https
+   allowedRoutes:
+     namespaces:
+       from: Same
+   tls:
+     # Defines the certificate to use for the HTTPS listener.
+     certificateRefs:
+       - name: consul-server-cert
+```
+
+</CodeBlockConfig>
+
+Review the `api-gw/routes.yaml` configuration file. This file contains the configuration for HTTP routing including the network traffic rules and the backend service that will receive the ingress traffic.
+
+<Accordion heading="routes.yaml" collapse>
+
+<CodeBlockConfig filename="api-gw/routes.yaml" hideClipboard>
+
+```yml
+apiVersion: gateway.networking.k8s.io/v1alpha2
+# HTTPRoute routes HTTP requests to backend services.
+kind: HTTPRoute
+metadata:
+ name: http-route-1
+ namespace: consul
+spec:
+ # Defines the gateway listener.
+ parentRefs:
+ - name: api-gateway
+ # Rules define behaviors for network traffic that goes through the route.
+ rules:
+ - matches:
+   - path:
+       type: PathPrefix
+       value: /
+   # Defines the backend service.
+   backendRefs:
+   - kind: Service
+     name: nginx
+     namespace: default
+     port: 80
+```
+
+</CodeBlockConfig>
+
+</Accordion>
+
+### Deploy Consul API Gateway
+
+Next, deploy the API Gateway, wait for the API Gateway to completely deploy, and deploy the routes. 
+
+```shell-session
+$ kubectl apply --filename api-gw/consul-api-gateway.yaml --namespace consul && \
+kubectl wait --for=condition=ready gateway/api-gateway --namespace consul --timeout=90s && \
+kubectl apply --filename api-gw/routes.yaml --namespace consul
+```
+
+Expected output:
+
+```log hideClipboard
+gateway.gateway.networking.k8s.io/api-gateway created
+gateway.gateway.networking.k8s.io/api-gateway condition met
+httproute.gateway.networking.k8s.io/http-route-1 created
+```
+
+Verify you have created all the pods in your `consul` namespace. You should find an output similar to the following.
+
+```shell-session
+$ kubectl get pods --namespace consul | grep "api-gateway"
+NAME                                             READY   STATUS    RESTARTS   AGE
+api-gateway-6ddbd69979-bm5kq                     1/1     Running   0          64s
+consul-api-gateway-controller-66dddfb4c8-jj8w2   1/1     Running   1          7m9s
+```
+
+The diagram below shows the services running in your Kubernetes cluster. This includes Consul API Gateway, service mesh layer, and HashiCups microservice application pods.
+
+![Kubernetes and Application Architecture for this tutorial](/img/consul/kubernetes-gs-ingress_example_application_architecture.png)
+
+Consul API Gateway enables ingress, load-balancing, and other advanced traffic behavior for your service mesh applications. In this tutorial, Consul API Gateway allows external traffic into the HashiCups service.
+
+</Tab>
+
+</Tabs>
+</Tab>
+</Tabs>
+
+## Deploy RBAC and Reference Grant resources
+
+<Tabs>
+<Tab heading="HCP-managed Consul" group="hcp">
+<Tabs>
+<Tab heading="EKS" group="hcp-eks">
+
+Now that Consul API Gateway is operational in your cluster, you will deploy [role-based access control (RBAC)](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) and [Reference Grant](https://gateway-api.sigs.k8s.io/api-types/referencegrant/) resources. RBAC enables the Consul API gateway to interact with Consul datacenter resources and reference grants enable the Consul API Gateway to route traffic between different namespaces.
+
+Deploy the RBAC and Reference Grant resources.
+
+```shell-session
+$ kubectl apply --filename hashicups/v2/
+clusterrolebinding.rbac.authorization.k8s.io/consul-api-gateway-tokenreview-binding created
+clusterrole.rbac.authorization.k8s.io/consul-api-gateway-auth created
+clusterrolebinding.rbac.authorization.k8s.io/consul-api-gateway-auth-binding created
+clusterrolebinding.rbac.authorization.k8s.io/consul-auth-binding created
+referencegrant.gateway.networking.k8s.io/consul-reference-grant created
+```
+
+</Tab>
+<Tab heading="AKS" group="hcp-aks">
+
+Now that Consul API Gateway is operational in your cluster, you will deploy [role-based access control (RBAC)](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) and [Reference Grant](https://gateway-api.sigs.k8s.io/api-types/referencegrant/) resources. RBAC enables the Consul API gateway to interact with Consul datacenter resources and reference grants enable the Consul API Gateway to route traffic between different namespaces.
+
+Deploy the RBAC and Reference Grant resources.
+
+```shell-session
+$ kubectl apply --filename hashicups/v2/
+clusterrolebinding.rbac.authorization.k8s.io/consul-api-gateway-tokenreview-binding created
+clusterrole.rbac.authorization.k8s.io/consul-api-gateway-auth created
+clusterrolebinding.rbac.authorization.k8s.io/consul-api-gateway-auth-binding created
+clusterrolebinding.rbac.authorization.k8s.io/consul-auth-binding created
+referencegrant.gateway.networking.k8s.io/consul-reference-grant created
+```
+
+</Tab>
+</Tabs>
+</Tab>
+
+<Tab heading="Self-managed Consul" group="self">
+<Tabs>
+<Tab heading="EKS" group="self-eks">
+
+Now that Consul API Gateway is operational in your cluster, you will deploy [role-based access control (RBAC)](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) and [Reference Grant](https://gateway-api.sigs.k8s.io/api-types/referencegrant/) resources. RBAC enables the Consul API gateway to interact with Consul datacenter resources and reference grants enable the Consul API Gateway to route traffic between different namespaces.
+
+Deploy the RBAC and Reference Grant resources.
+
+```shell-session
+$ kubectl apply --filename hashicups/v2/
+clusterrolebinding.rbac.authorization.k8s.io/consul-api-gateway-tokenreview-binding created
+clusterrole.rbac.authorization.k8s.io/consul-api-gateway-auth created
+clusterrolebinding.rbac.authorization.k8s.io/consul-api-gateway-auth-binding created
+clusterrolebinding.rbac.authorization.k8s.io/consul-auth-binding created
+referencegrant.gateway.networking.k8s.io/consul-reference-grant created
+```
+
+</Tab>
+<Tab heading="AKS" group="self-aks">
+
+Now that Consul API Gateway is operational in your cluster, you will deploy [role-based access control (RBAC)](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) and [Reference Grant](https://gateway-api.sigs.k8s.io/api-types/referencegrant/) resources. RBAC enables the Consul API gateway to interact with Consul datacenter resources and reference grants enable the Consul API Gateway to route traffic between different namespaces.
+
+Deploy the RBAC and Reference Grant resources.
+
+```shell-session
+$ kubectl apply --filename hashicups/v2/
+clusterrolebinding.rbac.authorization.k8s.io/consul-api-gateway-tokenreview-binding created
+clusterrole.rbac.authorization.k8s.io/consul-api-gateway-auth created
+clusterrolebinding.rbac.authorization.k8s.io/consul-api-gateway-auth-binding created
+clusterrolebinding.rbac.authorization.k8s.io/consul-auth-binding created
+referencegrant.gateway.networking.k8s.io/consul-reference-grant created
+```
+
+</Tab>
+<Tab heading="Local" group="self-local">
+
+Now that Consul API Gateway is operational in your cluster, you will deploy [role-based access control (RBAC)](https://kubernetes.io/docs/reference/access-authn-authz/rbac/) and [Reference Grant](https://gateway-api.sigs.k8s.io/api-types/referencegrant/) resources. RBAC enables the Consul API gateway to interact with Consul datacenter resources and reference grants enable the Consul API Gateway to route traffic between different namespaces.
+
+Deploy the RBAC and Reference Grant resources.
+
+```shell-session
+$ kubectl apply --filename hashicups/v2/
+clusterrolebinding.rbac.authorization.k8s.io/consul-api-gateway-tokenreview-binding created
+clusterrole.rbac.authorization.k8s.io/consul-api-gateway-auth created
+clusterrolebinding.rbac.authorization.k8s.io/consul-api-gateway-auth-binding created
+clusterrolebinding.rbac.authorization.k8s.io/consul-auth-binding created
+referencegrant.gateway.networking.k8s.io/consul-reference-grant created
+```
+
+</Tab>
+
+</Tabs>
+</Tab>
+</Tabs>
+
+## View Consul services
+
+<Tabs>
+<Tab heading="HCP-managed Consul" group="hcp">
+<Tabs>
+<Tab heading="EKS" group="hcp-eks">
+
+In this section, you will view your Consul services with the CLI, UI, and/or API to explore the details of your service mesh ingress.
+
+<Tabs>
+<Tab heading="CLI">
+
+
+In your terminal, run the CLI command `consul catalog services` to return the `api-gateway` service registered in Consul.
+
+```shell-session
+$ consul catalog services | grep api-gateway
+api-gateway
+```
+
+Return the list of Consul intentions. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+```shell-session
+$ consul intention list
+ID  Source       Action  Destination     Precedence
+    api-gateway  allow   nginx           9
+    nginx        allow   frontend        9
+    nginx        allow   public-api      9
+    product-api  allow   product-api-db  9
+    public-api   allow   payments        9
+    public-api   allow   product-api     9
+```
+
+</Tab>
+<Tab heading="UI">
+
+Output the HCP Consul URL value to your terminal and paste it in your browser.
+
+```shell-session
+$ echo $CONSUL_HTTP_ADDR
+learn-hcp-eks-cluster.public.consul.00000000-0000-0000-0000-000000000000.aws.hashicorp.cloud
+```
+
+Output the token value to your terminal and copy the value to your clipboard. You will use this ACL token to authenticate in the Consul UI.
+
+```shell-session
+$ echo $CONSUL_HTTP_TOKEN
+fe0dd5c3-f2e1-81e8-cde8-49d26cee5efc
+```
+
+On the left navigation pane, click the **Services** tab to review your deployed services. Click the **API Gateway** service to view the service details.
+
+![Consul UI Services Page](/img/consul/kubernetes-gs-ingress_consul_ui_services.png 'Consul services page in UI with Consul and HashiCups services')
+
+Within the **API Gateway** service details page, click the **Intentions** sub-tab. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+![Consul UI API Gateway Intentions Page](/img/consul/kubernetes-gs-ingress_consul_ui_intentions.png 'Consul intentions page in UI with API Gateway and nginx services')
+
+</Tab>
+<Tab heading="API">
+
+In your terminal, run the following `curl` command to return the list of Consul services. Notice that `api-gateway` is one of them. 
+
+```shell-session
+$ curl -k \
+    --header "X-Consul-Token: $CONSUL_HTTP_TOKEN" \
+    $CONSUL_HTTP_ADDR/v1/catalog/services
+```
+
+Sample output: 
+
+```json hideClipboard
+{"api-gateway":[],"consul":[],"frontend":[],"frontend-sidecar-proxy":[],"nginx":[],"nginx-sidecar-proxy":[],"payments":[],"payments-sidecar-proxy":[],"product-api":[],"product-api-db":[],"product-api-db-sidecar-proxy":[],"product-api-sidecar-proxy":[],"public-api":[],"public-api-sidecar-proxy":[]}
+```
+
+Run the following `curl` command to return the list of intentions defined in Consul. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+```shell-session
+$ curl -k \
+    --header "X-Consul-Token: $CONSUL_HTTP_TOKEN" \
+    $CONSUL_HTTP_ADDR/v1/connect/intentions 
+```
+
+Sample output: 
+
+```json hideClipboard
+[{"Description":"Allow traffic from Consul API Gateway. Reconciled by controller at 2022-09-12T14:45:16Z.","SourceNS":"default","SourceName":"api-gateway","DestinationNS":"default","DestinationName":"nginx","SourceType":"consul","Action":"allow","Precedence":9,"CreateIndex":205,"ModifyIndex":205},{"SourceNS":"default","SourceName":"nginx","DestinationNS":"default","DestinationName":"frontend","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":256,"ModifyIndex":256},{"SourceNS":"default","SourceName":"nginx","DestinationNS":"default","DestinationName":"public-api","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":257,"ModifyIndex":257},{"SourceNS":"default","SourceName":"product-api","DestinationNS":"default","DestinationName":"product-api-db","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":259,"ModifyIndex":259},{"SourceNS":"default","SourceName":"public-api","DestinationNS":"default","DestinationName":"payments","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":260,"ModifyIndex":260},{"SourceNS":"default","SourceName":"public-api","DestinationNS":"default","DestinationName":"product-api","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":258,"ModifyIndex":258}]
+```
+
+</Tab>
+</Tabs>
+
+</Tab>
+<Tab heading="AKS" group="hcp-aks">
+
+In this section, you will view your Consul services with the CLI, UI, and/or API to explore the details of your service mesh ingress.
+
+<Tabs>
+<Tab heading="CLI">
+
+
+In your terminal, run the CLI command `consul catalog services` to return the `api-gateway` service registered in Consul.
+
+```shell-session
+$ consul catalog services | grep api-gateway
+api-gateway
+```
+
+Return the list of Consul intentions. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+```shell-session
+$ consul intention list
+ID  Source       Action  Destination     Precedence
+    api-gateway  allow   nginx           9
+    nginx        allow   frontend        9
+    nginx        allow   public-api      9
+    product-api  allow   product-api-db  9
+    public-api   allow   payments        9
+    public-api   allow   product-api     9
+```
+
+</Tab>
+<Tab heading="UI">
+
+Output the HCP Consul URL value to your terminal and paste it in your browser.
+
+```shell-session
+$ echo $CONSUL_HTTP_ADDR
+learn-hcp-aks-cluster.public.consul.00000000-0000-0000-0000-000000000000.azure.hashicorp.cloud
+```
+
+Output the token value to your terminal and copy the value to your clipboard. You will use this ACL token to authenticate in the Consul UI.
+
+```shell-session
+$ echo $CONSUL_HTTP_TOKEN
+fe0dd5c3-f2e1-81e8-cde8-49d26cee5efc
+```
+
+On the left navigation pane, click the **Services** tab to review your deployed services. Click the **API Gateway** service to view the service details.
+
+![Consul UI Services Page](/img/consul/kubernetes-gs-ingress_consul_ui_services.png 'Consul services page in UI with Consul and HashiCups services')
+
+Within the **API Gateway** service details page, click the **Intentions** sub-tab. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+![Consul UI API Gateway Intentions Page](/img/consul/kubernetes-gs-ingress_consul_ui_intentions.png 'Consul intentions page in UI with API Gateway and nginx services')
+
+</Tab>
+<Tab heading="API">
+
+In your terminal, run the following `curl` command to return the list of Consul services. Notice that `api-gateway` is one of them. 
+
+```shell-session
+$ curl -k \
+    --header "X-Consul-Token: $CONSUL_HTTP_TOKEN" \
+    $CONSUL_HTTP_ADDR/v1/catalog/services
+```
+
+Sample output: 
+
+```json hideClipboard
+{"api-gateway":[],"consul":[],"frontend":[],"frontend-sidecar-proxy":[],"nginx":[],"nginx-sidecar-proxy":[],"payments":[],"payments-sidecar-proxy":[],"product-api":[],"product-api-db":[],"product-api-db-sidecar-proxy":[],"product-api-sidecar-proxy":[],"public-api":[],"public-api-sidecar-proxy":[]}
+```
+
+Run the following `curl` command to return the list of intentions defined in Consul. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+```shell-session
+$ curl -k \
+    --header "X-Consul-Token: $CONSUL_HTTP_TOKEN" \
+    $CONSUL_HTTP_ADDR/v1/connect/intentions 
+```
+
+Sample output: 
+
+```json hideClipboard
+[{"Description":"Allow traffic from Consul API Gateway. Reconciled by controller at 2022-09-12T14:45:16Z.","SourceNS":"default","SourceName":"api-gateway","DestinationNS":"default","DestinationName":"nginx","SourceType":"consul","Action":"allow","Precedence":9,"CreateIndex":205,"ModifyIndex":205},{"SourceNS":"default","SourceName":"nginx","DestinationNS":"default","DestinationName":"frontend","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":256,"ModifyIndex":256},{"SourceNS":"default","SourceName":"nginx","DestinationNS":"default","DestinationName":"public-api","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":257,"ModifyIndex":257},{"SourceNS":"default","SourceName":"product-api","DestinationNS":"default","DestinationName":"product-api-db","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":259,"ModifyIndex":259},{"SourceNS":"default","SourceName":"public-api","DestinationNS":"default","DestinationName":"payments","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":260,"ModifyIndex":260},{"SourceNS":"default","SourceName":"public-api","DestinationNS":"default","DestinationName":"product-api","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":258,"ModifyIndex":258}]
+```
+
+</Tab>
+</Tabs>
+
+</Tab>
+</Tabs>
+</Tab>
+
+<Tab heading="Self-managed Consul" group="self">
+<Tabs>
+<Tab heading="EKS" group="self-eks">
+
+In this section, you will view your Consul services with the CLI, UI, and/or API to explore the details of your service mesh ingress.
+
+<Tabs>
+<Tab heading="CLI">
+
+In your terminal, run the CLI command `consul catalog services` to return the `api-gateway` service registered in Consul.
+
+```shell-session
+$ consul catalog services | grep api-gateway
+api-gateway
+```
+
+Return the list of Consul intentions. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+```shell-session
+$ consul intention list
+ID  Source       Action  Destination     Precedence
+    api-gateway  allow   nginx           9
+    nginx        allow   frontend        9
+    nginx        allow   public-api      9
+    product-api  allow   product-api-db  9
+    public-api   allow   payments        9
+    public-api   allow   product-api     9
+```
+
+</Tab>
+<Tab heading="UI">
+
+Output the Consul URL value to your terminal and paste it in your browser.
+
+```shell-session
+$ echo $CONSUL_HTTP_ADDR
+https://my-loadbalancer-1234567890.us-east-1.elb.amazonaws.com
+```
+
+Output the token value to your terminal and copy the value to your clipboard. You will use this ACL token to authenticate in the Consul UI.
+
+```shell-session
+$ echo $CONSUL_HTTP_TOKEN
+fe0dd5c3-f2e1-81e8-cde8-49d26cee5efc
+```
+
+On the left navigation pane, click the **Services** tab to review your deployed services. Click the **API Gateway** service to view the service details.
+
+![Consul UI Services Page](/img/consul/kubernetes-gs-ingress_consul_ui_services.png 'Consul services page in UI with Consul and HashiCups services')
+
+Within the **API Gateway** service details page, click the **Intentions** sub-tab. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+![Consul UI API Gateway Intentions Page](/img/consul/kubernetes-gs-ingress_consul_ui_intentions.png 'Consul intentions page in UI with API Gateway and nginx services')
+
+</Tab>
+<Tab heading="API">
+
+In your terminal, run the following `curl` command to return the list of Consul services. Notice that `api-gateway` is one of them. 
+
+```shell-session
+$ curl -k \
+    --header "X-Consul-Token: $CONSUL_HTTP_TOKEN" \
+    $CONSUL_HTTP_ADDR/v1/catalog/services
+```
+
+Sample output: 
+
+```json hideClipboard
+{"api-gateway":[],"consul":[],"frontend":[],"frontend-sidecar-proxy":[],"nginx":[],"nginx-sidecar-proxy":[],"payments":[],"payments-sidecar-proxy":[],"product-api":[],"product-api-db":[],"product-api-db-sidecar-proxy":[],"product-api-sidecar-proxy":[],"public-api":[],"public-api-sidecar-proxy":[]}
+```
+
+Run the following `curl` command to return the list of intentions defined in Consul. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+```shell-session
+$ curl -k \
+    --header "X-Consul-Token: $CONSUL_HTTP_TOKEN" \
+    $CONSUL_HTTP_ADDR/v1/connect/intentions 
+```
+
+Sample output: 
+
+```json hideClipboard
+[{"Description":"Allow traffic from Consul API Gateway. Reconciled by controller at 2022-09-12T14:45:16Z.","SourceNS":"default","SourceName":"api-gateway","DestinationNS":"default","DestinationName":"nginx","SourceType":"consul","Action":"allow","Precedence":9,"CreateIndex":205,"ModifyIndex":205},{"SourceNS":"default","SourceName":"nginx","DestinationNS":"default","DestinationName":"frontend","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":256,"ModifyIndex":256},{"SourceNS":"default","SourceName":"nginx","DestinationNS":"default","DestinationName":"public-api","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":257,"ModifyIndex":257},{"SourceNS":"default","SourceName":"product-api","DestinationNS":"default","DestinationName":"product-api-db","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":259,"ModifyIndex":259},{"SourceNS":"default","SourceName":"public-api","DestinationNS":"default","DestinationName":"payments","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":260,"ModifyIndex":260},{"SourceNS":"default","SourceName":"public-api","DestinationNS":"default","DestinationName":"product-api","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":258,"ModifyIndex":258}]
+```
+
+</Tab>
+</Tabs>
+
+</Tab>
+<Tab heading="AKS" group="self-aks">
+
+In this section, you will view your Consul services with the CLI, UI, and/or API to explore the details of your service mesh ingress.
+
+<Tabs>
+<Tab heading="CLI">
+
+In your terminal, run the CLI command `consul catalog services` to return the `api-gateway` service registered in Consul.
+
+```shell-session
+$ consul catalog services | grep api-gateway
+api-gateway
+```
+
+Return the list of Consul intentions. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+```shell-session
+$ consul intention list
+ID  Source       Action  Destination     Precedence
+    api-gateway  allow   nginx           9
+    nginx        allow   frontend        9
+    nginx        allow   public-api      9
+    product-api  allow   product-api-db  9
+    public-api   allow   payments        9
+    public-api   allow   product-api     9
+```
+
+</Tab>
+<Tab heading="UI">
+
+Output the Consul URL value to your terminal and paste it in your browser.
+
+```shell-session
+$ echo $CONSUL_HTTP_ADDR
+https://24.122.12.125
+```
+
+Output the token value to your terminal and copy the value to your clipboard. You will use this ACL token to authenticate in the Consul UI.
+
+```shell-session
+$ echo $CONSUL_HTTP_TOKEN
+fe0dd5c3-f2e1-81e8-cde8-49d26cee5efc
+```
+
+On the left navigation pane, click the **Services** tab to review your deployed services. Click the **API Gateway** service to view the service details.
+
+![Consul UI Services Page](/img/consul/kubernetes-gs-ingress_consul_ui_services.png 'Consul services page in UI with Consul and HashiCups services')
+
+Within the **API Gateway** service details page, click the **Intentions** sub-tab. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+![Consul UI API Gateway Intentions Page](/img/consul/kubernetes-gs-ingress_consul_ui_intentions.png 'Consul intentions page in UI with API Gateway and nginx services')
+
+</Tab>
+<Tab heading="API">
+
+In your terminal, run the following `curl` command to return the list of Consul services. Notice that `api-gateway` is one of them. 
+
+```shell-session
+$ curl -k \
+    --header "X-Consul-Token: $CONSUL_HTTP_TOKEN" \
+    $CONSUL_HTTP_ADDR/v1/catalog/services
+```
+
+Sample output: 
+
+```json hideClipboard
+{"api-gateway":[],"consul":[],"frontend":[],"frontend-sidecar-proxy":[],"nginx":[],"nginx-sidecar-proxy":[],"payments":[],"payments-sidecar-proxy":[],"product-api":[],"product-api-db":[],"product-api-db-sidecar-proxy":[],"product-api-sidecar-proxy":[],"public-api":[],"public-api-sidecar-proxy":[]}
+```
+
+Run the following `curl` command to return the list of intentions defined in Consul. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+```shell-session
+$ curl -k \
+    --header "X-Consul-Token: $CONSUL_HTTP_TOKEN" \
+    $CONSUL_HTTP_ADDR/v1/connect/intentions 
+```
+
+Sample output: 
+
+```json hideClipboard
+[{"Description":"Allow traffic from Consul API Gateway. Reconciled by controller at 2022-09-12T14:45:16Z.","SourceNS":"default","SourceName":"api-gateway","DestinationNS":"default","DestinationName":"nginx","SourceType":"consul","Action":"allow","Precedence":9,"CreateIndex":205,"ModifyIndex":205},{"SourceNS":"default","SourceName":"nginx","DestinationNS":"default","DestinationName":"frontend","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":256,"ModifyIndex":256},{"SourceNS":"default","SourceName":"nginx","DestinationNS":"default","DestinationName":"public-api","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":257,"ModifyIndex":257},{"SourceNS":"default","SourceName":"product-api","DestinationNS":"default","DestinationName":"product-api-db","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":259,"ModifyIndex":259},{"SourceNS":"default","SourceName":"public-api","DestinationNS":"default","DestinationName":"payments","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":260,"ModifyIndex":260},{"SourceNS":"default","SourceName":"public-api","DestinationNS":"default","DestinationName":"product-api","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":258,"ModifyIndex":258}]
+```
+
+</Tab>
+</Tabs>
+
+</Tab>
+<Tab heading="Local" group="self-local">
+
+In this section, you will view your Consul services with the CLI, UI, and/or API to explore the details of your service mesh ingress.
+
+<Tabs>
+<Tab heading="CLI">
+
+Open a separate terminal window and expose the Consul server with `kubectl port-forward` using the `consul-ui` service name as the target. 
+
+```shell-session
+$ kubectl port-forward svc/consul-ui --namespace consul 8501:443
+```
+
+In your original terminal, run the CLI command `consul catalog services` to return the `api-gateway` service registered in Consul.
+
+```shell-session
+$ consul catalog services | grep api-gateway
+api-gateway
+```
+
+Return the list of Consul intentions. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+```shell-session
+$ consul intention list
+ID  Source       Action  Destination     Precedence
+    api-gateway  allow   nginx           9
+    nginx        allow   frontend        9
+    nginx        allow   public-api      9
+    product-api  allow   product-api-db  9
+    public-api   allow   payments        9
+    public-api   allow   product-api     9
+```
+
+</Tab>
+<Tab heading="UI">
+
+Open a separate terminal window and  expose the Consul UI with `kubectl port-forward` using the `consul-ui` service name as the target.
+
+```shell-session
+$ kubectl port-forward svc/consul-ui --namespace consul 8501:443
+```
+
+Open [https://localhost:8501](https://localhost:8501) in your browser to find the Consul UI. 
+
+On the left navigation pane, click the **Services** tab to review your deployed services. Click the **API Gateway** service to view the service details.
+
+![Consul UI Services Page](/img/consul/kubernetes-gs-ingress_consul_ui_services.png 'Consul services page in UI with Consul and HashiCups services')
+
+Within the **API Gateway** service details page, click the **Intentions** sub-tab. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+![Consul UI API Gateway Intentions Page](/img/consul/kubernetes-gs-ingress_consul_ui_intentions.png 'Consul intentions page in UI with API Gateway and nginx services')
+
+</Tab>
+<Tab heading="API">
+
+Open a separate terminal window and expose the Consul server with `kubectl port-forward` using the `consul-ui` service name as the target. 
+
+```shell-session
+$ kubectl port-forward svc/consul-ui --namespace consul 8501:443
+```
+
+In your original terminal, run the following `curl` command to return the list of Consul services. Notice that `api-gateway` is one of them. 
+
+```shell-session
+$ curl -k \
+    --header "X-Consul-Token: $CONSUL_HTTP_TOKEN" \
+    $CONSUL_HTTP_ADDR/v1/catalog/services
+```
+
+Sample output: 
+
+```json hideClipboard
+{"api-gateway":[],"consul":[],"frontend":[],"frontend-sidecar-proxy":[],"nginx":[],"nginx-sidecar-proxy":[],"payments":[],"payments-sidecar-proxy":[],"product-api":[],"product-api-db":[],"product-api-db-sidecar-proxy":[],"product-api-sidecar-proxy":[],"public-api":[],"public-api-sidecar-proxy":[]}
+```
+
+Run the following `curl` command to return the list of intentions defined in Consul. Consul automatically creates intentions between the Consul API Gateway and any destination services defined in your route configuration files. In this case, it created an intention to allow traffic from `api-gateway` to `nginx`.
+
+```shell-session
+$ curl -k \
+    --header "X-Consul-Token: $CONSUL_HTTP_TOKEN" \
+    $CONSUL_HTTP_ADDR/v1/connect/intentions 
+```
+
+Sample output: 
+
+```json hideClipboard
+[{"Description":"Allow traffic from Consul API Gateway. Reconciled by controller at 2022-09-12T14:45:16Z.","SourceNS":"default","SourceName":"api-gateway","DestinationNS":"default","DestinationName":"nginx","SourceType":"consul","Action":"allow","Precedence":9,"CreateIndex":205,"ModifyIndex":205},{"SourceNS":"default","SourceName":"nginx","DestinationNS":"default","DestinationName":"frontend","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":256,"ModifyIndex":256},{"SourceNS":"default","SourceName":"nginx","DestinationNS":"default","DestinationName":"public-api","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":257,"ModifyIndex":257},{"SourceNS":"default","SourceName":"product-api","DestinationNS":"default","DestinationName":"product-api-db","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":259,"ModifyIndex":259},{"SourceNS":"default","SourceName":"public-api","DestinationNS":"default","DestinationName":"payments","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":260,"ModifyIndex":260},{"SourceNS":"default","SourceName":"public-api","DestinationNS":"default","DestinationName":"product-api","SourceType":"consul","Action":"allow","Meta":{"consul.hashicorp.com/source-datacenter":"dc1","external-source":"kubernetes"},"Precedence":9,"CreateIndex":258,"ModifyIndex":258}]
+```
+
+</Tab>
+</Tabs>
+
+</Tab>
+
+</Tabs>
+</Tab>
+</Tabs>
+
+
+## Explore ingress into the demo application
+
+<Tabs>
+<Tab heading="HCP-managed Consul" group="hcp">
+<Tabs>
+<Tab heading="EKS" group="hcp-eks">
+
+Set your Consul API Gateway address to the `CONSUL_APIGW_ADDR` environment variable. 
+
+```sh
+$ export CONSUL_APIGW_ADDR=http://$(kubectl get svc/api-gateway --namespace consul -o json | jq -r '.status.loadBalancer.ingress[0].hostname'):8080
+```
+
+Output the Consul API Gateway value to your terminal and paste it in your browser to access the HashiCups UI through the API Gateway.
+
+```shell-session
+$ echo $CONSUL_APIGW_ADDR
+http://a46cc0cc9dc6841a4b1a0fa1771973ca-1032165333.us-west-2.elb.amazonaws.com:8080
+```
+
+![HashiCups UI](/img/consul/kubernetes-gs-ingress_example_application_hashicups.png 'HashiCups UI front end page')
+
+For more information on accessing service mesh services via the Consul API Gateway, visit the [Consul API Gateway documentation page](/consul/docs/api-gateway).
+
+</Tab>
+<Tab heading="AKS" group="hcp-aks">
+
+Set your Consul API Gateway address to the `CONSUL_APIGW_ADDR` environment variable. 
+
+```sh
+$ export CONSUL_APIGW_ADDR=http://$(kubectl get svc/api-gateway --namespace consul -o json | jq -r '.status.loadBalancer.ingress[0].ip'):8080
+```
+
+Output the Consul API Gateway value to your terminal and paste it in your browser to access the HashiCups UI through the API Gateway.
+
+```shell-session
+$ echo $CONSUL_APIGW_ADDR
+http://24.132.10.127:8080
+```
+
+![HashiCups UI](/img/consul/kubernetes-gs-ingress_example_application_hashicups.png 'HashiCups UI front end page')
+
+For more information on accessing service mesh services via the Consul API Gateway, visit the [Consul API Gateway documentation page](/consul/docs/api-gateway).
+
+</Tab>
+</Tabs>
+</Tab>
+
+<Tab heading="Self-managed Consul" group="self">
+<Tabs>
+<Tab heading="EKS" group="self-eks">
+
+Set your Consul API Gateway address to the `CONSUL_APIGW_ADDR` environment variable. 
+
+```sh
+$ export CONSUL_APIGW_ADDR=http://$(kubectl get svc/api-gateway --namespace consul -o json | jq -r '.status.loadBalancer.ingress[0].hostname'):8080
+```
+
+Output the Consul API Gateway value to your terminal and paste it in your browser to access the HashiCups UI through the API Gateway.
+
+```shell-session
+$ echo $CONSUL_APIGW_ADDR
+http://a46cc0cc9dc6841a4b1a0fa1771973ca-1032165333.us-west-2.elb.amazonaws.com:8080
+```
+
+![HashiCups UI](/img/consul/kubernetes-gs-ingress_example_application_hashicups.png 'HashiCups UI front end page')
+
+For more information on accessing service mesh services via the Consul API Gateway, visit the [Consul API Gateway documentation page](/consul/docs/api-gateway).
+
+</Tab>
+<Tab heading="AKS" group="self-aks">
+
+Set your Consul API Gateway address to the `CONSUL_APIGW_ADDR` environment variable. 
+
+```sh
+$ export CONSUL_APIGW_ADDR=http://$(kubectl get svc/api-gateway --namespace consul -o json | jq -r '.status.loadBalancer.ingress[0].ip'):8080
+```
+
+Output the Consul API Gateway value to your terminal and paste it in your browser to access the HashiCups UI through the API Gateway.
+
+```shell-session
+$ echo $CONSUL_APIGW_ADDR
+http://24.132.10.127:8080
+```
+
+![HashiCups UI](/img/consul/kubernetes-gs-ingress_example_application_hashicups.png 'HashiCups UI front end page')
+
+For more information on accessing service mesh services via the Consul API Gateway, visit the [Consul API Gateway documentation page](/consul/docs/api-gateway).
+
+</Tab>
+<Tab heading="Local" group="self-local">
+
+Retrieve information on the `api-gateway` service. 
+
+```shell-session
+$ kubectl get services api-gateway --namespace consul
+NAME          TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)          AGE
+api-gateway   NodePort   10.96.214.246   <none>        8443:31800/TCP   8m7s
+```
+
+In this local environment, API Gateway uses NodePort to let you access your application directly through the API Gateway without having to forward your Kubernetes cluster’s ports. In a cloud environment, API Gateway may use a LoadBalancer to automatically provision a publicly accessible DNS entry.
+
+Access the HashiCups UI through the API Gateway by opening [https://localhost:8443](https://localhost:8443) in your browser.
+
+![HashiCups UI](/img/consul/kubernetes-gs-ingress_example_application_hashicups.png 'HashiCups UI front end page')
+
+For more information on accessing service mesh services via the Consul API Gateway, visit the [Consul API Gateway documentation page](/consul/docs/api-gateway).
+
+</Tab>
+
+</Tabs>
+</Tab>
+</Tabs>
+
+## Next Steps
+
+In this tutorial, you enabled Consul ingress features and deployed Consul API Gateway into your Kubernetes cluster. After deploying Consul API Gateway, you accessed the demo application HashiCups through the Consul API Gateway endpoint and explored how ingress into a service mesh application works.
+
+In the [next tutorial](/consul/tutorials/get-started-kubernetes/kubernetes-gs-observability), you will deploy an observability suite to explore metrics, logs, and distributed traces within your Consul service mesh.
+
+For more information about the topics covered in this tutorial, refer to the following resources:
+
+- [Consul Docs](/consul/docs)
+- [Consul Kubernetes Docs](/consul/docs/k8s)
+- [Control Access into the Service Mesh with Consul API Gateway](/consul/tutorials/kubernetes/kubernetes-api-gateway) tutorial
