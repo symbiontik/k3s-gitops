@@ -25,7 +25,8 @@ jobs:
       - name: Get changed files and write the outputs to a txt file
         #if: steps.changed-files-specific.outputs.any_changed == 'true'
         id: changed-files-write-output-files-txt
-        uses: ./
+        uses: tj-actions/changed-files@v35
+        #uses: ./
         with:
           files: |
             notes/**
