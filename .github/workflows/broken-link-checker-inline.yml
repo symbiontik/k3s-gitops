@@ -36,7 +36,7 @@ jobs:
       - name: Verify the contents of the .github/outputs/added_files.txt file
         if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
         run: |
-          cat .github/outputs/added_files.txt
+          cat .github/outputs/all_changed_and_modified_files.txt
           ls .github/outputs/
 
 
