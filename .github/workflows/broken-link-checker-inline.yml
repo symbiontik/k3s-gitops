@@ -32,17 +32,16 @@ jobs:
             notes/**
             **.mdx
           write_output_files: true
+
+      - name: Verify the contents of the .github/outputs/added_files.txt file
+        if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
         run: |
           cat .github/outputs/added_files.txt
+          ls .github/outputs/
 
-#      - name: Verify the contents of the .github/outputs/added_files.txt file
-#        #if: steps.changed-files-specific.outputs.any_changed == 'true'
-#        run: |
-#          cat .github/outputs/added_files.txt
-#          echo .github/outputs/added_files.txt
 
       - name: Run lychee link checker
-        #if: steps.changed-files-specific.outputs.any_changed == 'true'
+        if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
         id: lychee
         uses: lycheeverse/lychee-action@v1.6.1
         with:
