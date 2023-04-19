@@ -15,28 +15,27 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get changed files and write the outputs to a txt file
-        id: changed-files-write-output-files-txt
+      - name: Get changed files
+        id: changed-files
         uses: tj-actions/changed-files@v35
-        #uses: ./
         with:
           files: |
             consul/**
             **.mdx
-          write_output_files: true
+          #write_output_files: true
           #separator: " "
 
-      - name: Verify the contents of the .github/outputs/added_files.txt file
+      #- name: Verify the contents of the .github/outputs/added_files.txt file
         #if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
-        run: |
-          cat .github/outputs/all_changed_and_modified_files.txt
+        #run: |
+         # cat .github/outputs/all_changed_and_modified_files.txt
 
       - name: Run lychee link checker
         #if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
         id: lychee
         uses: lycheeverse/lychee-action@v1.6.1
         with:
-          args: .github/outputs/all_changed_and_modified_files.txt --base https://developer.hashicorp.com/ --exclude-all-private --exclude '\.(svg|gif|jpg|png)' --exclude 'manage\.auth0\.com' --max-concurrency=24 --no-progress --verbose
+          args: ${{ steps.changed-files.outputs.all_changed_and_modified_files }} --base https://developer.hashicorp.com/ --exclude-all-private --exclude '\.(svg|gif|jpg|png)' --exclude 'manage\.auth0\.com' --max-concurrency=24 --no-progress --verbose
           # Fail GitHub action when broken links are found?
           fail: true
         env:
