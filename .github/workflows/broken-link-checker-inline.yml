@@ -24,12 +24,12 @@ jobs:
             notes/**
             **.mdx
           write_output_files: true
+          separator: "\n"
 
       - name: Verify the contents of the .github/outputs/added_files.txt file
         if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
         run: |
           cat .github/outputs/all_changed_and_modified_files.txt
-          cat .github/outputs/notes/docs/test2.mdxadded_files.txt
           ls .github/outputs/
 
       - name: Run lychee link checker
