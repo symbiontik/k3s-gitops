@@ -27,12 +27,12 @@ jobs:
           #separator: " "
 
       - name: Verify the contents of the .github/outputs/added_files.txt file
-        if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
+        #if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
         run: |
           cat .github/outputs/all_changed_and_modified_files.txt
 
       - name: Run lychee link checker
-        if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
+        #if: steps.changed-files-write-output-files-txt.outputs.any_changed == 'true'
         id: lychee
         uses: lycheeverse/lychee-action@v1.6.1
         with:
