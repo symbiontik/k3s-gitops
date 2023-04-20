@@ -13,17 +13,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Find the PR associated with this push, if there is one.
-      - uses: jwalton/gh-find-current-pr@v1
-        id: findPr
+      - uses: 8BitJonny/gh-get-current-pr@1.4.0
+        id: PR
         with:
-          # Can be "open", "closed", or "all".  Defaults to "open".
-          state: open
-      # This will echo "Your PR is 7", or be skipped if there is no current PR.
-      - run: echo "Your PR is ${PR}"
-        if: success() && steps.findPr.outputs.number
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Verbose setting SHA when using Pull_Request event trigger to fix #16
+          sha: ${{ github.event.pull_request.head.sha }}
+          # Only return if PR is still open
+          filterOutClosed: true
+          
+      - run: echo "Your PR is ${prNumber} and its JSON is ${prJSON}"
+        if: success() && steps.PR.outputs.number
         env:
-          PR: ${{ steps.findPr.outputs.pr }}
+          prNumber: ${{ steps.PR.outputs.number }}
+          # JSON object with the full PR object
+          prJSON: ${{ steps.PR.outputs.pr }}
+          # Direct access to common PR properties
+          prUrl: ${{ steps.PR.outputs.pr_url }}
+          prTitle: ${{ steps.PR.outputs.pr_title }}
+          prBody: ${{ steps.PR.outputs.pr_body }}
+          prCreatedAt: ${{ steps.PR.outputs.pr_created_at }}
+          prMergedAt: ${{ steps.PR.outputs.pr_merged_at }}
+          prClosedAt: ${{ steps.PR.outputs.pr_closed_at }}
+          prLabel: ${{ steps.PR.outputs.pr_labels }}
 
       - name: Get changed files
         id: changed-files
@@ -38,14 +50,13 @@ jobs:
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$file was changed"
           done
-          echo "${{ github.event.pull_request.number }}"
 
       - name: Run lychee link checker
         if: steps.changed-files.outputs.any_changed == 'true'
         id: lychee
         uses: lycheeverse/lychee-action@v1.6.1
         with:
-          args: ${{ steps.changed-files.outputs.all_changed_files }} --base https://tutorials-git-${{ steps.findPr.outputs.pr }}-hashicorp.vercel.app/ --exclude-all-private --exclude '\.(svg|gif|jpg|png)' --exclude 'manage\.auth0\.com' --max-concurrency=24 --no-progress --verbose
+          args: ${{ steps.changed-files.outputs.all_changed_files }} --base https://tutorials-git-${{ steps.PR.outputs.number }}-hashicorp.vercel.app/ --exclude-all-private --exclude '\.(svg|gif|jpg|png)' --exclude 'manage\.auth0\.com' --max-concurrency=24 --no-progress --verbose
           # Fail GitHub action when broken links are found?
           fail: true
         env:
