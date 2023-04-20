@@ -26,10 +26,9 @@ jobs:
           for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
             echo "$file was changed"
           done
-          echo "${{ steps.changed-files.any_changed }}"
 
       - name: Run lychee link checker
-        if: steps.changed-files.any_changed == 'true'
+        if: steps.changed-files.outputs.any_changed == 'true'
         id: lychee
         uses: lycheeverse/lychee-action@v1.6.1
         with:
