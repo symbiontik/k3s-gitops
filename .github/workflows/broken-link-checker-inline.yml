@@ -22,7 +22,7 @@ jobs:
             **.mdx
 
       - name: Run lychee link checker
-        if: steps.changed-files.any_changed == 'true'
+        #if: steps.changed-files.any_changed == 'true'
         id: lychee
         uses: lycheeverse/lychee-action@v1.6.1
         with:
