@@ -1,0 +1,59 @@
+name: Broken Link Check
+
+on:
+  workflow_run:
+    workflows: ["Helm Linter"]
+    types:
+      - completed
+
+jobs:
+  linkChecker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # Find the PR associated with this push, if there is one.
+      - uses: jwalton/gh-find-current-pr@v1
+        id: findPr
+        with:
+          # Can be "open", "closed", or "all".  Defaults to "open".
+          state: open
+      # This will echo "Your PR is 7", or be skipped if there is no current PR.
+      - run: echo "Your PR is ${PR}"
+        if: success() && steps.findPr.outputs.number
+        env:
+          PR: ${{ steps.findPr.outputs.pr }}
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+        with:
+          files: |
+            consul/**
+            **.mdx
+
+      - name: List all changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
+
+      - name: Run lychee link checker
+        if: steps.changed-files.outputs.any_changed == 'true'
+        id: lychee
+        uses: lycheeverse/lychee-action@v1.6.1
+        with:
+          args: ${{ steps.changed-files.outputs.all_changed_files }} --base https://tutorials-git-${{ steps.findPr.outputs.pr }}-hashicorp.vercel.app/ --exclude-all-private --exclude '\.(svg|gif|jpg|png)' --exclude 'manage\.auth0\.com' --max-concurrency=24 --no-progress --verbose
+          # Fail GitHub action when broken links are found?
+          fail: true
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Comment on PR with lychee output
+        if: env.lychee_exit_code != 0
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: Link Checker Report
+          content-filepath: ./lychee/out.md
