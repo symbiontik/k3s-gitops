@@ -69,7 +69,7 @@ jobs:
         with:
           header: Link Checker Report
           number: ${{ steps.findPr.outputs.pr }}
-          content-filepath: ./lychee/out.md
+          path: ./lychee/out.md
 
       - name: lychee exit code check
         if: env.lychee_exit_code != 0
