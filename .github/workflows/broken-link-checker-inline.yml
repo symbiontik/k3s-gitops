@@ -55,8 +55,8 @@ jobs:
         uses: lycheeverse/lychee-action@v1.6.1
         with:
           args: ${{ steps.changed-files.outputs.all_changed_files }} --base https://tutorials-git-${{ steps.findPr.outputs.pr }}-hashicorp.vercel.app/ --exclude-all-private --exclude '\.(svg|gif|jpg|png)' --exclude 'manage\.auth0\.com' --max-concurrency=24 --no-progress --verbose
-          # Fail GitHub action when broken links are found?
-          fail: true
+          # Fail GitHub action at this step when broken links are found?
+          fail: false
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
@@ -66,3 +66,10 @@ jobs:
         with:
           header: Link Checker Report
           content-filepath: ./lychee/out.md
+
+      - name: lychee exit code check
+        if: env.lychee_exit_code != 0
+        uses: actions/github-script@v3
+        with:
+          script: |
+              core.setFailed('lychee failed with exit code ${{env.lychee_exit_code}}')
