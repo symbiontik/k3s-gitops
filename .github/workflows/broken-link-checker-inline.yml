@@ -68,6 +68,7 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: Link Checker Report
+          number: ${{ steps.findPr.outputs.pr }}
           content-filepath: ./lychee/out.md
 
       - name: lychee exit code check
