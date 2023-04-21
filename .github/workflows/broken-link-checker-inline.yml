@@ -1,12 +1,13 @@
 name: Broken Link Check
 
 on:
-  workflow_dispatch:
-  push:
+  workflow_run:
+    workflows: ["Helm Linter"]
+    types:
+      - completed
 
 jobs:
   linkChecker:
-    #if: ${{ github.event.deployment_status.description == 'Deploy Preview' && github.event.deployment_status.state == 'success'  }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
