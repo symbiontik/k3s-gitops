@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   push:
 
+permissions:
+  pull-requests: write
+
 jobs:
   linkChecker:
     name: Link Checker
