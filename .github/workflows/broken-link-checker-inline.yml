@@ -66,10 +66,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Troubleshoot Append text to beginning of Lychee output file
+      - name: Troubleshoot Append text to beginning of Lychee output file (success)
         if: env.lychee_exit_code != 0
         run: |
           ls
+          cat lychee/out.md
+
+      - name: Troubleshoot Append text to beginning of Lychee output file (failure)
+        if: env.lychee_exit_code = 0
+        run: |
+          ls
+          cat lychee/out.md
 
 #      - name: Append text to beginning of Lychee output file
 #        # Append lychee output file under any lychee condition
