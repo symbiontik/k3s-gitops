@@ -95,3 +95,11 @@ jobs:
         with:
           script: |
               core.setFailed('lychee failed with exit code ${{env.lychee_exit_code}}')
+
+      # If all previous Github actions run (indicating success), this one will run and clean up PR comments
+      - name: Clean up PR comments if all previous steps succeed
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: Link Checker Report
+          number: ${{ steps.findPr.outputs.pr }}
+          delete: true
