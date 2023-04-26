@@ -65,10 +65,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Troubleshoot Append text to beginning of Lychee output file
-        if: env.lychee_exit_code = 0
-        run: |
-          ls
+#      - name: Troubleshoot Append text to beginning of Lychee output file
+#        run: |
+#          ls
 
 #      - name: Append text to beginning of Lychee output file
 #        # Append lychee output file under any lychee condition
@@ -77,23 +76,14 @@ jobs:
 #          sed -i '1s/^/The GitHub action "Broken Link Check" has successfully completed on all content within the scope of this PR.\n/' ./lychee/out.md
 
       # Comment on PR with lychee output; subsequent runs will modify existing content with latest results
-#      - name: Comment on PR with lychee output (failure condition)
-#        if: env.lychee_exit_code != 0
-#        uses: marocchino/sticky-pull-request-comment@v2
-#        with:
-#          header: Link Checker Report
-#          number: ${{ steps.findPr.outputs.pr }}
-#          path: ./lychee/out.md
-#          recreate: true
-
-      - name: Comment on PR with lychee output (success condition)
-        if: env.lychee_exit_code = 0
+      - name: Comment on PR with lychee output
+        if: env.lychee_exit_code != 1
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: Link Checker Report
           number: ${{ steps.findPr.outputs.pr }}
           path: ./lychee/out.md
-          recreate: true          
+          recreate: true
 
       # Fail github action if lychee exit code is anything other than the success code (0)
       - name: lychee exit code check
