@@ -60,14 +60,16 @@ jobs:
         uses: lycheeverse/lychee-action@v1.6.1
         with:
           args: ${{ steps.changed-files.outputs.all_changed_files }} --base https://developer.hashicorp.com/ --exclude-all-private --exclude '\.(svg|gif|jpg|png)' --exclude 'manage\.auth0\.com' --max-concurrency=24 --no-progress --verbose
+          jobSummary: true
           # Fail GitHub action at this step when broken links are found?
           fail: false
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-#      - name: Troubleshoot Append text to beginning of Lychee output file
-#        run: |
-#          ls
+      - name: Troubleshoot Append text to beginning of Lychee output file
+        if: env.lychee_exit_code != 0
+        run: |
+          ls
 
 #      - name: Append text to beginning of Lychee output file
 #        # Append lychee output file under any lychee condition
