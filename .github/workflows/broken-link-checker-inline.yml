@@ -65,6 +65,16 @@ jobs:
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
+      - name: Troubleshoot Append text to beginning of Lychee output file
+        run: |
+          ls
+
+#      - name: Append text to beginning of Lychee output file
+#        # Append lychee output file under any lychee condition
+#        if: env.lychee_exit_code != 3
+#        run: |
+#          sed -i '1s/^/The GitHub action "Broken Link Check" has successfully completed on all content within the scope of this PR.\n/' ./lychee/out.md
+
       # Comment on PR with lychee output; subsequent runs will modify existing content with latest results
       - name: Comment on PR with lychee output
         if: env.lychee_exit_code != 0
