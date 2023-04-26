@@ -67,6 +67,7 @@ jobs:
 
       - name: Troubleshoot Append text to beginning of Lychee output file
         run: |
+          pwd
           ls
 
 #      - name: Append text to beginning of Lychee output file
@@ -77,7 +78,7 @@ jobs:
 
       # Comment on PR with lychee output; subsequent runs will modify existing content with latest results
       - name: Comment on PR with lychee output
-        if: env.lychee_exit_code != 0
+        if: env.lychee_exit_code != 3
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: Link Checker Report
