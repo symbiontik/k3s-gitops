@@ -84,7 +84,7 @@ jobs:
           header: Link Checker Report
           number: ${{ steps.findPr.outputs.pr }}
           path: ./lychee/out.md
-          recreate: true
+          #recreate: true
 
       # Fail github action if lychee exit code is anything other than the success code (0)
       - name: lychee exit code check
