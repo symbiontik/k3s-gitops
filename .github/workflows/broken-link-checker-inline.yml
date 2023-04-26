@@ -6,6 +6,8 @@ on:
 
 permissions:
   pull-requests: write
+  checks: read
+  contents: read
 
 jobs:
   linkChecker:
@@ -57,20 +59,34 @@ jobs:
         id: lychee
         uses: lycheeverse/lychee-action@v1.6.1
         with:
-          args: ${{ steps.changed-files.outputs.all_changed_files }} --base https://tutorials-git-${{ steps.findPr.outputs.pr }}-hashicorp.vercel.app/ --exclude-all-private --exclude '\.(svg|gif|jpg|png)' --exclude 'manage\.auth0\.com' --max-concurrency=24 --no-progress --verbose
+          args: ${{ steps.changed-files.outputs.all_changed_files }} --base https://developer.hashicorp.com/ --exclude-all-private --exclude '\.(svg|gif|jpg|png)' --exclude 'manage\.auth0\.com' --accept 403,200,429 --timeout=60 --max-concurrency=24 --no-progress --verbose
           # Fail GitHub action at this step when broken links are found?
           fail: false
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
+      - name: Troubleshoot Append text to beginning of Lychee output file
+        run: |
+          ls
+
+#      - name: Append text to beginning of Lychee output file
+#        # Append lychee output file under any lychee condition
+#        if: env.lychee_exit_code != 3
+#        run: |
+#          sed -i '1s/^/The GitHub action "Broken Link Check" has successfully completed on all content within the scope of this PR.\n/' ./lychee/out.md
+
+      # Comment on PR with lychee output; subsequent runs will modify existing content with latest results
       - name: Comment on PR with lychee output
-        if: env.lychee_exit_code != 0
+        if: env.lychee_exit_code != 3
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: Link Checker Report
           number: ${{ steps.findPr.outputs.pr }}
           path: ./lychee/out.md
+          # Subsequent runs will recreate PR comment with latest results
+          recreate: true
 
+      # Fail github action if lychee exit code is anything other than the success code (0)
       - name: lychee exit code check
         if: env.lychee_exit_code != 0
         uses: actions/github-script@v3
