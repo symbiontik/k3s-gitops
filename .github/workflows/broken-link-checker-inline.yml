@@ -78,7 +78,7 @@ jobs:
 
       # Comment on PR with lychee output; subsequent runs will modify existing content with latest results
       - name: Comment on PR with lychee output
-        if: env.lychee_exit_code != 3
+        #if: env.lychee_exit_code != 0
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: Link Checker Report
