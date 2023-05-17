@@ -365,7 +365,7 @@ Terraform Cloud is an infrastructure-as-code tool that allows you to easily crea
 
 1. Copy the API token to your clipboard.
 
-1. Paste your API token as the value for `TERRAFORM_CLOUD_TOKEN` in your `bootstrap.env` file, then save the file. 
+1. Paste your API token as the value for `TF_VAR_TERRAFORM_CLOUD_TOKEN` in your `bootstrap.env` file, then save the file. 
 
 You now have a Terraform Cloud API token that will enable you to programatically configure your Terraform environment.
 
@@ -390,11 +390,11 @@ GitHub integrates with Cloudflare to secure your environment using Zero Trust se
 
 1. Copy the OAuth Client ID to your clipboard.
 
-1. Paste your API token as the value for `CLOUDFLARE_OAUTH_CLIENT_ID` in your `bootstrap.env` file, then save the file. 
+1. Paste your CLIENT ID as the value for `TF_VAR_CLOUDFLARE_OAUTH_CLIENT_ID` in your `bootstrap.env` file, then save the file. 
 
 1. Copy the OAuth Client Secret to your clipboard.
 
-1. Paste your API token as the value for `CLOUDFLARE_OAUTH_CLIENT_SECRET` in your `bootstrap.env` file, then save the file. 
+1. Paste your CLIENT Secret as the value for `TF_VAR_CLOUDFLARE_OAUTH_CLIENT_SECRET` in your `bootstrap.env` file, then save the file. 
 
 You now have a GitHub OAuth client and secret that will enable you to programatically configure your Cloudflare environment with Zero Trust security methodologies.
 
@@ -409,7 +409,7 @@ A GitHub Personal Access Token (PAT) enables the integration between Terraform C
 
 1. Copy the GitHub Personal Access token to your clipboard.
 
-1. Paste your API token as the value for `GITHUB_PERSONAL_ACCESS_TOKEN` in your `bootstrap.env` file, then save the file. 
+1. Paste your API token as the value for `TF_VAR_GITHUB_PERSONAL_ACCESS_TOKEN` in your `bootstrap.env` file, then save the file. 
 
 You now have a GitHub Personal Access Token (PAT) that will enable you to programatically integrate your Terraform Cloud and GitHub instances.
 
