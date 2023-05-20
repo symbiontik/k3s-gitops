@@ -1,15 +1,15 @@
 {
   "enabled": true,
-  "timezone": "America/Chicago",
+  "timezone": "America/Sao_Paulo",
   "platform": "github",
   "username": "sym[bot]",
-  "repositories": ["symbiontik/k3s-gitops"],
+  "repositories": ["franaraujo77/k3s-gitops"],
   "onboarding": false,
   "requireConfig": false,
   "semanticCommits": "enabled",
   "dependencyDashboard": true,
   "dependencyDashboardTitle": "Renovate Dashboard",
-  "commitBody": "Signed-off-by: symbiontik <symbiontik@users.noreply.github.com>",
+  "commitBody": "Signed-off-by: Renovate Bot <franaraujo77@users.noreply.github.com>",
   // Do not notify on closed unmerged PRs
   "suppressNotifications": ["prIgnoreNotification"],
   // Do not rebase PRs
