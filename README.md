@@ -605,7 +605,7 @@ kubectl apply --kustomize=./cluster/base/flux-system
 flux bootstrap github \
   --owner=my-github-username \
   --repository=$TF_VAR_GITHUB_REPOSITORY_IDENTIFIER \
-  --path=./cluster/base/flux-system \
+  --path=./cluster/base \
   --personal
 ````
 
