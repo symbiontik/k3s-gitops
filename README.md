@@ -601,6 +601,14 @@ kubectl apply --kustomize=./cluster/base/flux-system
 # unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
 ```
 
+````sh
+flux bootstrap github \
+  --owner=my-github-username \
+  --repository=$TF_VAR_GITHUB_REPOSITORY_IDENTIFIER \
+  --path=./cluster/base/flux-system \
+  --personal
+````
+
 1. Verify Flux components are running in the cluster.
 
 ```sh
