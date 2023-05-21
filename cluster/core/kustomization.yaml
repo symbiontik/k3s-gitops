@@ -4,4 +4,3 @@ resources:
   - cert-manager
   - metrics-server
   - namespaces
-  - system-upgrade-controller
