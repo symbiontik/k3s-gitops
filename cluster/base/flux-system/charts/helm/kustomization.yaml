@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - authentik-charts.yaml
   - bitnami-charts.yaml
+  - cloudflare-issuer-charts.yaml
   - code-server-charts.yaml
   - deliveryhero-charts.yaml
   - descheduler-charts.yaml
@@ -16,6 +17,7 @@ resources:
   - jetstack-charts.yaml
   - k8s-at-home-charts.yaml
   - kube-dashboard-charts.yaml
+  - longhorn-charts.yaml
   - metallb-charts.yaml
   - metrics-server-charts.yaml
   - minecraft-server-charts.yaml
@@ -23,6 +25,7 @@ resources:
   - nfs-subdir-external-provisioner-charts.yaml
   - node-feature-discovery-charts.yaml
   - prometheus-community-charts.yaml
+  - rancher-charts.yaml
   - rook-ceph-charts.yaml
   - stakater-charts.yaml
   - traefik-charts.yaml
