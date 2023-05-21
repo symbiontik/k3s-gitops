@@ -3,4 +3,3 @@ kind: Kustomization
 resources:
   #renovate: registryUrl=https://charts.jetstack.io chart=cert-manager
   - https://github.com/jetstack/cert-manager/releases/download/v1.11.0/cert-manager.crds.yaml
-  - https://raw.githubusercontent.com/cloudflare/origin-ca-issuer/v0.6.1/deploy/crds/cert-manager.k8s.cloudflare.com_originissuers.yaml
