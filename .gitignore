@@ -18,5 +18,7 @@ id_rsa*
 my.bootstrap.env
 # vscode-sops
 .decrypted~*.yaml
+#temporary sops and encrypted secrets files
+/tmpl/
 #Sensitive Bootstrap Environment Variables
 bootstrap.env
