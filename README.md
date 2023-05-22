@@ -452,30 +452,10 @@ To prepare for deployment, it's necessary to bootstrap your development environm
 
 **Note**: Some variables contain the prefix `TF_VAR_` - This prefix enables Terraform to use your local environment variables for Terraform runs.
 
-1. Source the `bootstrap.env` file to set the respective environment variables in your terminal.
+1. In a terminal window, run the following command to create your unique, encrypted deployment files.
 
 ```sh
-source bootstrap.env
-```
-
-1. In the same terminal window where you set your environment variables, run the following commands to create your unique, encrypted deployment files.
-
-```sh
-        # create sops configuration file
-        envsubst < "${PROJECT_DIR}/tmpl/.sops.yaml" \
-            > "${PROJECT_DIR}/.sops.yaml"
-        # create unique cluster resources
-        envsubst < "${PROJECT_DIR}/tmpl/cluster/cluster-settings.yaml" \
-            > "${PROJECT_DIR}/cluster/base/cluster-settings.yaml"
-        envsubst < "${PROJECT_DIR}/tmpl/cluster/gotk-sync.yaml" \
-            > "${PROJECT_DIR}/cluster/base/flux-system/gotk-sync.yaml"
-        envsubst < "${PROJECT_DIR}/tmpl/cluster/cluster-secrets.sops.yaml" \
-            > "${PROJECT_DIR}/cluster/base/cluster-secrets.sops.yaml"
-        envsubst < "${PROJECT_DIR}/tmpl/cluster/cert-manager-secret.sops.yaml" \
-            > "${PROJECT_DIR}/cluster/core/cert-manager/secret.sops.yaml"
-        # encrypt sensitive files
-        sops --encrypt --in-place "${PROJECT_DIR}/cluster/base/cluster-secrets.sops.yaml"
-        sops --encrypt --in-place "${PROJECT_DIR}/cluster/core/cert-manager/secret.sops.yaml"
+./bin/updateSopsSecrets.sh
 ```
 
 **Note**: Variables defined in `./cluster/base/cluster-secrets.sops.yaml` and `./cluster/base/cluster-settings.yaml` will be usable anywhere in your YAML manifests under `./cluster`. This gives you a central location to define and encrypt variables for your applications/infrastructure.
@@ -587,19 +567,6 @@ These are the components (organized by namespace) that will be deployed with thi
 1. Initialize Flux on your Kubernetes cluster.
 
 **Note**: Due to race conditions with the Flux CRDs you will have to run the below command twice. There should be no errors after your second run.
-
-```sh
-kubectl apply --kustomize=./cluster/base/flux-system
-# namespace/flux-system configured
-# customresourcedefinition.apiextensions.k8s.io/alerts.notification.toolkit.fluxcd.io created
-# ...
-# unable to recognize "./cluster/base/flux-system": no matches for kind "Kustomization" in version "kustomize.toolkit.fluxcd.io/v1beta1"
-# unable to recognize "./cluster/base/flux-system": no matches for kind "GitRepository" in version "source.toolkit.fluxcd.io/v1beta1"
-# unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
-# unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
-# unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
-# unable to recognize "./cluster/base/flux-system": no matches for kind "HelmRepository" in version "source.toolkit.fluxcd.io/v1beta1"
-```
 
 ````sh
 flux bootstrap github \

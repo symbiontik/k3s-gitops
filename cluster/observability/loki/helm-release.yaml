@@ -16,6 +16,11 @@ spec:
         name: grafana-charts
         namespace: flux-system
       interval: 5m
+  dependsOn:
+    - name: kube-prometheus-stack
+      namespace: observability
+    - name: promtail
+      namespace: observability
   values:
     serviceMonitor:
       enabled: true
