@@ -6,6 +6,9 @@ metadata:
   namespace: core
 spec:
   interval: 5m
+  dependsOn:
+    - name: cert-manager
+      namespace: core
   chart:
     spec:
       # renovate: registryUrl=https://cloudflare.github.io/origin-ca-issuer/charts
