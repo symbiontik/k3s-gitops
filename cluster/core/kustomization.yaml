@@ -7,3 +7,9 @@ resources:
   - metrics-server
   - namespaces
   - rancher
+spec:
+  interval: 5m
+  path: "./core/"
+  postBuild:
+    substitute:
+      cluster_env: "production"
