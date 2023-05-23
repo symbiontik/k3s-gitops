@@ -570,7 +570,7 @@ These are the components (organized by namespace) that will be deployed with thi
 
 ````sh
 flux bootstrap github \
-  --owner=my-github-username \
+  --owner=$GITHUB_USERNAME \
   --repository=$TF_VAR_GITHUB_REPOSITORY_IDENTIFIER \
   --path=./cluster/base \
   --personal
