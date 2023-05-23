@@ -1,0 +1,72 @@
+apiVersion: cert-manager.k8s.cloudflare.com/v1
+kind: OriginIssuer
+metadata:
+  name: prod-issuer
+  namespace: core
+spec:
+  requestType: OriginECC
+  auth:
+    serviceKeyRef:
+      name: service-key
+      key: key
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: rancher-karva
+  namespace: core
+spec:
+  # The secret name where cert-manager should store the signed certificate
+  secretName: rancher-karva-tls
+  dnsNames:
+    - rancher.karva.work
+  # Duration of the certificate
+  duration: 1680h
+  # Renew a day before the certificate expiration
+  renewBefore: 24h
+  # Reference the Origin CA Issuer you created above, which must be in the same namespace.
+  issuerRef:
+    group: cert-manager.k8s.cloudflare.com
+    kind: OriginIssuer
+    name: prod-issuer
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/issuer: prod-issuer
+    cert-manager.io/issuer-kind: OriginIssuer
+    cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
+    field.cattle.io/publicEndpoints: '[{"addresses":["192.168.15.249"],"port":443,"protocol":"HTTPS","serviceName":"cattle-system:rancher","ingressName":"cattle-system:rancher","hostname":"rancher.karva.work","allNodes":false}]'
+    meta.helm.sh/release-name: rancher
+    meta.helm.sh/release-namespace: cattle-system
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
+  generation: 1
+  labels:
+    app: rancher
+    app.kubernetes.io/managed-by: Helm
+    chart: rancher-2.7.3
+    heritage: Helm
+    release: rancher
+  name: rancher
+  namespace: cattle-system
+spec:
+  rules:
+  - host: rancher.karva.work
+    http:
+      paths:
+      - pathType: ImplementationSpecific
+        backend:
+          service:
+            name: rancher
+            port: 
+              number: 80
+  tls:
+    # specifying a host in the TLS section will tell cert-manager what
+    # DNS SANs should be on the created certificate.
+    - hosts:
+        - rancher.karva.work
+      # cert-manager will create this secret
+      secretName: rancher-tls

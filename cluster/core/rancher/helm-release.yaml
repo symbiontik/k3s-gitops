@@ -1,0 +1,28 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: rancher
+  namespace: core
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://releases.rancher.com/server-charts/latest
+      chart: rancher
+      sourceRef:
+        kind: HelmRepository
+        name: rancher-charts
+        namespace: flux-system
+  values:
+    # Declare values passed into templates.
+    hostname: rancher.karva.work 
+    bootstrapPassword: ${RANCHER_BOOTSTRAP_PASSWORD}
+    privateCA: true
+    ingress:
+      tls:
+        source: secret
+    global:
+      cattle:
+        psp:
+          enabled: false
