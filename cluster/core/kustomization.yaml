@@ -6,3 +6,4 @@ resources:
   - longhorn
   - metrics-server
   - namespaces
+  - rancher
