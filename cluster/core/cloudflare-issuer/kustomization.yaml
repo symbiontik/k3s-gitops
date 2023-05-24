@@ -3,8 +3,3 @@ kind: Kustomization
 resources:
   - helm-release.yaml
   - cloudflare-originca-secret.yaml
-spec:
-  interval: 10m
-  path: "./cloudflare-issuer"
-  prune: true
-  timeout: 1m
