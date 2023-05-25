@@ -339,6 +339,29 @@ Cloudflare is used throughout this guide for several reasons:
 
 You now have a Cloudflare API key that will enable you to programatically create Cloudflare and encryption resources with ease.
 
+## Generate a Cloudflare API key
+
+Cloudflare is used throughout this guide for several reasons: 
+
+- Enables `cert-manager` to utilize the Cloudflare DNS challenge for automating TLS certificate creation in your Kubernetes cluster
+- Enables accessibility of your apps from anywhere
+- Secures access to your apps with Cloudflare Access
+- Provides DNS security, detailed traffic metrics, and logging with Cloudflare Gateway
+- Provides you with Zero Trust security capabilities
+- Provides you with an single-sign-on (SSO) portal for your apps
+- Integrates with Terraform Cloud for automated Cloudflare resource creation
+- Automatically create Origin SSL Certificates 
+
+1. Login to your [Cloudflare account](https://dash.cloudflare.com/login).
+
+1. Get Origin CA API key by going to [this page](https://dash.cloudflare.com/profile/api-tokens) in your Cloudflare profile.
+
+**Note**: Your Origin CA API key is a sensitive credential that allows programatic access to your Cloudflare account - ensure you take all precautions to protect this key.
+
+1. Copy the Origin CA API key to your clipboard.
+
+1. Paste your API key as the value for `CLOUDFLARE_ORIGINCA_APIKEY` in your `bootstrap.env` file, then save the file. 
+
 ## Activate Cloudflare Zero Trust
 
 Cloudflare Zero Trust is a free suite of Zero Trust security tools including Cloudflare Access and Cloudflare Gateway. In order to programatically utilize these features, you must first activate the service on your Cloudflare account and generate a team name attribute.
@@ -397,6 +420,10 @@ GitHub integrates with Cloudflare to secure your environment using Zero Trust se
 1. Paste your CLIENT Secret as the value for `TF_VAR_CLOUDFLARE_OAUTH_CLIENT_SECRET` in your `bootstrap.env` file, then save the file. 
 
 You now have a GitHub OAuth client and secret that will enable you to programatically configure your Cloudflare environment with Zero Trust security methodologies.
+
+## Generate the initial configuration for rancher
+
+1. Update username as the value for `RANCHER_BOOTSTRAP_PASSWORD` in your `bootstrap.env` file, then save the file. 
 
 ## Generate a GitHub Personal Access Token for Terraform Cloud
 
