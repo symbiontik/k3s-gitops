@@ -4,7 +4,7 @@ kind: HelmRelease
 metadata:
   name: cloudflare-issuer
   namespace: core
-spec:
+spec: 
   interval: 5m
   dependsOn:
     - name: cert-manager
@@ -12,8 +12,8 @@ spec:
   chart:
     spec:
       # renovate: registryUrl=https://cloudflare.github.io/origin-ca-issuer/charts
-      chart: cloudflare-issuer
-      version: v0.6.1
+      chart: origin-ca-issuer
+      version: 0.5.0
       sourceRef:
         kind: HelmRepository
         name: cloudflare-issuer-charts
