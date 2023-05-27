@@ -2,7 +2,7 @@ apiVersion: cert-manager.k8s.cloudflare.com/v1
 kind: OriginIssuer
 metadata:
   name: prod-issuer
-  namespace: core
+  namespace: cattle-system
 spec:
   requestType: OriginECC
   auth:
@@ -14,7 +14,7 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: rancher-karva
-  namespace: core
+  namespace: cattle-system
 spec:
   # The secret name where cert-manager should store the signed certificate
   secretName: rancher-karva-tls
