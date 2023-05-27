@@ -21,10 +21,6 @@ spec:
     # Declare values passed into templates.
     hostname: rancher.karva.work 
     bootstrapPassword: ${SECRET_RANCHER_BOOTSTRAP_PASSWORD}
-    privateCA: true
-    ingress:
-      tls:
-        source: secret
     global:
       cattle:
         psp:
