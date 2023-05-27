@@ -13,7 +13,7 @@ jobs:
 
       - name: Run lychee link checker
         id: lychee
-        uses: lycheeverse/lychee-action@v1.6.1
+        uses: lycheeverse/lychee-action@v1.8.0
         with:
           args: . --exclude-all-private --exclude .png --max-concurrency=24 --no-progress --verbose
           # Fail action on broken links
