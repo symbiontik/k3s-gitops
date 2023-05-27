@@ -24,3 +24,5 @@ spec:
       - --metric-resolution=15s
     rbac:
       create: false
+    apiService:
+      create: false
