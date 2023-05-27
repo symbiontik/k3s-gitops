@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - apps.yaml
   - core.yaml
+  - cattle-system.yaml
   - flux-system.yaml
   - networking.yaml
   - observability.yaml
