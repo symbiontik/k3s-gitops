@@ -26,3 +26,5 @@ spec:
       create: false
     apiService:
       create: false
+    serviceAccount:
+      create: false
