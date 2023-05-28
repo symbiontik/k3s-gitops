@@ -6,5 +6,7 @@ resources:
 secretGenerator:
 - name: service-key
   namespace: cattle-system
+  options:
+    disableNameSuffixHash: true
   literals:
   - key=${SECRET_CLOUDFLARE_ORIGINCA_APIKEY}
