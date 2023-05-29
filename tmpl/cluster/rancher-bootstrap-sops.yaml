@@ -1,0 +1,2 @@
+stringData:
+  key: "${RANCHER_BOOTSTRAP_PASSWORD}"

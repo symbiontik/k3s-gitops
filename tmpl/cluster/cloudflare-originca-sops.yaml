@@ -1,0 +1,2 @@
+stringData:
+  key: "${CLOUDFLARE_ORIGINCA_APIKEY}"
