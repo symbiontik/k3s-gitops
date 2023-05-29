@@ -10,11 +10,11 @@ secretGenerator:
   namespace: cattle-system
   options:
     disableNameSuffixHash: true
-  files:
-  - values.yaml=cloudflare-originca-sops.yaml
+  envs:
+  - cloudflare-originca-sops.env
 - name: bootstrap-secret
   namespace: cattle-system
   options:
     disableNameSuffixHash: true
-  files:
-  - values.yaml=rancher-bootstrap-sops.yaml
+  envs:
+  - rancher-bootstrap-sops.env
