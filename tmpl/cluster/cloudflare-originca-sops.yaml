@@ -1,2 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cloudflare-secrets
+  namespace: flux-system
 stringData:
   key: "${CLOUDFLARE_ORIGINCA_APIKEY}"

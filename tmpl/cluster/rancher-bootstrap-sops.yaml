@@ -1,2 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: rancher-secrets
+  namespace: flux-system
 stringData:
   key: "${RANCHER_BOOTSTRAP_PASSWORD}"

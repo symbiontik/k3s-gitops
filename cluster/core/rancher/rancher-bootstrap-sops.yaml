@@ -1,5 +1,10 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: rancher-secrets
+    namespace: flux-system
 stringData:
-    key: ENC[AES256_GCM,data:dZfrwh4=,iv:o+lvS0guLBMmFlZfxUSxfFVzKhnhx9d0FJNHbv0zg7s=,tag:oqXwE/WEGKrBTtlP4HGPtw==,type:str]
+    key: ENC[AES256_GCM,data:VEN+mXE=,iv:8g1YORlOkcV0r16JWTlKcIJtmziPUvCCQd23deybIcg=,tag:pNAjlIuWUFV59mbkBRthtg==,type:str]
 sops:
     kms: []
     gcp_kms: []
@@ -9,14 +14,14 @@ sops:
         - recipient: age1qr4r8ma45q3tkze3um3ltv2rxey6zvrlydzwg8vn9vnvd956jyksh9kz0q
           enc: |
             -----BEGIN AGE ENCRYPTED FILE-----
-            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB2SXRBcFI3QjVZSXZBb2dR
-            NlJJQW1melNINmUvRVZpV3Q2M1VwUGF6a2swCjJLcnhEOWF5emVIcjRud0xrd0xY
-            TlZ6eS9UL3JGV2EvejViZS9NNldjcEkKLS0tIHVyOEp0VEp2S2lxNXVCMHNrdkps
-            dkZBMmNJb1ZmL2VaRytTK3k4aXN1a0kKs+OMhxh9UVc2aaCDBptr/MtDpEfbjItu
-            hU/15FJ1KAAKpVMFEu31PJCEW09RswCc3PMe4Fbo9P4P90umIWblVw==
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBURFRrOTRIVFpYK0Q4aWpH
+            SHBQVHRmMGZ5T01hVTBjanFPZXR4bmpNaEQ4CkE0b2s5OVRLa3paQmdhQ05yQnZo
+            VXFIa0k2bTRnbmJKRE83MURtOUEyS0kKLS0tIGcrUFJHYTRVYlRGWElwYWJ0OEFY
+            M1VCWkZCN20zbjBJS21oVFp0RklTOWcKCTPq8aHBWMYnCQQsOCtlUnqB2C5k1qbs
+            3JNfSF9z3V2xYZ9LG2VCOK/0uJXWN7Cjkz+vZ10FBR5Q/JgeUqFmsA==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2023-05-29T00:55:57Z"
-    mac: ENC[AES256_GCM,data:lY6YawxXHkPzzHA85q6j1VQvIFMguK6/BLa4qTpEVllFDVPVClF/ore0hm7hJUamQhGBFWq2jp/Rt8BT2uU5b/SAzRxKnF4OZ9P6Fe5M26z/RbybPg9FBztPjgn6IMVJ0nP82ZOe6Rv/k749EIHtPGy3sVgoNb2rgpZ8ZfvhI4M=,iv:GZmTolXnGKae327jaEf0SVGXTbfbg3D3xW5U1xVzt8w=,tag:4VgphbsjZRcSdVBWInWoBQ==,type:str]
+    lastmodified: "2023-05-29T01:21:12Z"
+    mac: ENC[AES256_GCM,data:og8RpSP8S+FWD4neoBjAAor2THfVfT7d47caN904MES2onwGp/4L/outdT8PMqjjkkWaCJH6T5YVgx9Vb/MCXwwx3eCkUtuigYtnikdHUYl6iZnxn5wNzftcshD07hBDq0skWPRhLx6+1NOFbk69oLdEksYp41NjBUTjrgFgddo=,iv:vjPkC8D5Kos2V9kNBdKw/JhyOZ757fX2tUcp0zCvu58=,tag:cW8AUkbFw5CjehIN6W8vTw==,type:str]
     pgp: []
     encrypted_regex: ^(data|stringData)$
     version: 3.7.3
