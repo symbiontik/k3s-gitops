@@ -3,8 +3,6 @@ kind: Kustomization
 resources:
   - helm-release.yaml
   - rancher.yaml
-  - cloudflare-originca-sops.env
-  - rancher-bootstrap-sops.env
 secretGenerator:
 - name: service-key
   namespace: cattle-system
