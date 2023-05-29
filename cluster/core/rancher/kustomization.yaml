@@ -3,10 +3,18 @@ kind: Kustomization
 resources:
   - helm-release.yaml
   - rancher.yaml
+  - cloudflare-originca-sops.yaml
+  - rancher-bootstrap-sops.yaml
 secretGenerator:
 - name: service-key
   namespace: cattle-system
   options:
     disableNameSuffixHash: true
-  literals:
-  - key=${SECRET_CLOUDFLARE_ORIGINCA_APIKEY}
+  files:
+  - values.yaml=cloudflare-originca-sops.yaml
+- name: bootstrap-secret
+  namespace: cattle-system
+  options:
+    disableNameSuffixHash: true
+  files:
+  - values.yaml=rancher-bootstrap-sops.yaml
