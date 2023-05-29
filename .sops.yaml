@@ -8,3 +8,15 @@ creation_rules:
     encrypted_regex: "^(data|stringData)$"
     age: >-
       age1qr4r8ma45q3tkze3um3ltv2rxey6zvrlydzwg8vn9vnvd956jyksh9kz0q
+  - path_regex: cluster/.*\.json
+    encrypted_regex: "^*key$"
+    age: >-
+      age1qr4r8ma45q3tkze3um3ltv2rxey6zvrlydzwg8vn9vnvd956jyksh9kz0q
+  - path_regex: cluster/.*\.env
+    encrypted_regex: "^*key$"
+    age: >-
+      age1qr4r8ma45q3tkze3um3ltv2rxey6zvrlydzwg8vn9vnvd956jyksh9kz0q
+  - path_regex: cluster/.*\.ini
+    encrypted_regex: "^.$"
+    age: >-
+      age1qr4r8ma45q3tkze3um3ltv2rxey6zvrlydzwg8vn9vnvd956jyksh9kz0q
