@@ -13,7 +13,7 @@ creation_rules:
     age: >-
       age1qr4r8ma45q3tkze3um3ltv2rxey6zvrlydzwg8vn9vnvd956jyksh9kz0q
   - path_regex: cluster/.*\.env
-    encrypted_regex: "^*key$"
+    encrypted_regex: "^*(key|Key|password|Password)$"
     age: >-
       age1qr4r8ma45q3tkze3um3ltv2rxey6zvrlydzwg8vn9vnvd956jyksh9kz0q
   - path_regex: cluster/.*\.ini
