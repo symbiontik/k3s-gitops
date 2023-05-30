@@ -37,7 +37,7 @@ metadata:
     cert-manager.io/issuer: prod-issuer
     cert-manager.io/issuer-kind: OriginIssuer
     cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
-    field.cattle.io/publicEndpoints: '[{"addresses":["192.168.15.249"],"port":443,"protocol":"HTTPS","serviceName":"cattle-system:rancher","ingressName":"cattle-system:rancher","hostname":"rancher.karva.work","allNodes":false}]'
+    field.cattle.io/publicEndpoints: '[{"addresses":["${METALLB_TRAEFIK_ADDR}"],"port":443,"protocol":"HTTPS","serviceName":"cattle-system:rancher","ingressName":"cattle-system:rancher","hostname":"rancher.${CLUSTER_DOMAIN}","allNodes":false}]'
     meta.helm.sh/release-name: rancher
     meta.helm.sh/release-namespace: cattle-system
     nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
@@ -54,7 +54,7 @@ metadata:
   namespace: cattle-system
 spec:
   rules:
-  - host: rancher.karva.work
+  - host: rancher.${CLUSTER_DOMAIN}
     http:
       paths:
       - pathType: ImplementationSpecific
@@ -67,6 +67,6 @@ spec:
     # specifying a host in the TLS section will tell cert-manager what
     # DNS SANs should be on the created certificate.
     - hosts:
-        - rancher.karva.work
+        - rancher.${CLUSTER_DOMAIN}
       # cert-manager will create this secret
       secretName: rancher-tls

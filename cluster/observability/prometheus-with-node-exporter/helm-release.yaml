@@ -74,15 +74,21 @@ spec:
       ingress:
         enabled: true
         pathType: Prefix
-        ingressClassName: "traefik"
         annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-          cert-manager.io/cluster-issuer: "letsencrypt-production"
+          cert-manager.io/issuer: prod-issuer
+          cert-manager.io/issuer-kind: OriginIssuer
+          cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
+          field.cattle.io/publicEndpoints: '[{"addresses":["${METALLB_TRAEFIK_ADDR}"],"port":443,"protocol":"HTTPS","serviceName":"observability:kube-prometheus-stack","ingressName":"observability:kube-prometheus-stack","hostname":"prometheus.${CLUSTER_DOMAIN}","allNodes":false}]'
+          meta.helm.sh/release-name: kube-prometheus-stack
+          meta.helm.sh/release-namespace: observability
+          nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
         hosts:
-          - prometheus.${SECRET_DOMAIN}
+          - prometheus.${CLUSTER_DOMAIN}
         tls:
           - hosts:
-              - prometheus.${SECRET_DOMAIN}
+              - prometheus.${CLUSTER_DOMAIN}
             secretName: prometheus-tls
       prometheusSpec:
         replicas: 1
@@ -94,7 +100,7 @@ spec:
         retention: 6h
         enableAdminAPI: true
         walCompression: true
-        externalUrl: prometheus.${SECRET_DOMAIN}
+        externalUrl: prometheus.${CLUSTER_DOMAIN}
         storageSpec:
           volumeClaimTemplate:
             spec:
