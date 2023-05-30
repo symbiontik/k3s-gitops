@@ -40,7 +40,7 @@ spec:
       GF_AUTH_DISABLE_LOGIN_FORM: true
     grafana.ini:
       server:
-        root_url: "https://grafana.${SECRET_DOMAIN}"
+        root_url: "https://grafana.${CLUSTER_DOMAIN}"
       paths:
         data: /var/lib/grafana/data
         logs: /var/log/grafana
@@ -170,15 +170,21 @@ spec:
       #enabled: true
     ingress:
       enabled: true
-      ingressClassName: "traefik"
       annotations:
-        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
+          cert-manager.io/issuer: prod-issuer
+          cert-manager.io/issuer-kind: OriginIssuer
+          cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
+          field.cattle.io/publicEndpoints: '[{"addresses":["${METALLB_TRAEFIK_ADDR}"],"port":443,"protocol":"HTTPS","serviceName":"observability:grafana","ingressName":"observability:grafana","hostname":"grafana.${CLUSTER_DOMAIN}","allNodes":false}]'
+          meta.helm.sh/release-name: grafana
+          meta.helm.sh/release-namespace: observability
+          nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
       hosts:
-        - "grafana.${SECRET_DOMAIN}"
+        - "grafana.${CLUSTER_DOMAIN}"
       tls:
         - hosts:
-            - "grafana.${SECRET_DOMAIN}"
+            - "grafana.${CLUSTER_DOMAIN}"
           secretName: "grafana-tls"
     #serviceAccount:
       #create: true
