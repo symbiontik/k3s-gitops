@@ -10,9 +10,3 @@ secretGenerator:
     disableNameSuffixHash: true
   envs:
   - cloudflare-originca-sops.env
-- name: bootstrap-secret
-  namespace: cattle-system
-  options:
-    disableNameSuffixHash: true
-  envs:
-  - rancher-bootstrap-sops.env
