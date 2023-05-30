@@ -27,7 +27,7 @@ spec:
     # extraArgs:
     #   log.level: debug
     loki:
-      config: 
+      config: |
         limits_config:
           enforce_metric_name: false
           reject_old_samples: true
