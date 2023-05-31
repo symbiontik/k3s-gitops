@@ -140,9 +140,3 @@ spec:
             static_configs:
               - targets:
                   - "promtail-metrics.observability:3101"
-          - job_name: "traefik"
-            honor_timestamps: true
-            metrics_path: /metrics
-            static_configs:
-              - targets:
-                  - "traefik.networking:8082"
