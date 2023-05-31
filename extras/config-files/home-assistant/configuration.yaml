@@ -25,7 +25,7 @@ http:
 influxdb:
   api_version: 2
   ssl: false
-  host: influxdb
+  host: influxdb.database
   #host: influxdb.apps
   port: 8086
   token: wgXSklpkhpbZXGEZvojQhwPH-l_bc1dipFksMbvVoePLzdZlKCZoMSgUwVV2UFACaQa0egMiGVwX58S2vcBm1A==
