@@ -28,6 +28,15 @@ spec:
     #   log.level: debug
     loki:
       config: |
+        schema_config: 
+          configs: 
+            - from: 2020-10-24 
+              store: boltdb-shipper 
+              object_store: filesystem 
+              schema: v11 
+              index: 
+                prefix: index_ 
+                period: 24h 
         limits_config:
           enforce_metric_name: false
           reject_old_samples: true
