@@ -28,7 +28,6 @@ spec:
     #   log.level: debug
     loki:
       config: |
-        auth_enabled: false 
         ingester: 
           wal: 
             enabled: true 
