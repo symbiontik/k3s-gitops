@@ -98,7 +98,7 @@ spec:
           - name: InfluxDB
             type: influxdb
             access: proxy
-            url: http://influxdb-influxdb2.apps:80
+            url: http://influxdb-influxdb2.database:80
             secureJsonData:
               token: wgXSklpkhpbZXGEZvojQhwPH-l_bc1dipFksMbvVoePLzdZlKCZoMSgUwVV2UFACaQa0egMiGVwX58S2vcBm1A==
             jsonData:

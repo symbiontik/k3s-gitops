@@ -3,7 +3,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
   name: influxdb
-  namespace: apps
+  namespace: database
 spec:
   releaseName: influxdb
   interval: 5m
@@ -28,11 +28,17 @@ spec:
       portName: http
     ingress:
       enabled: true
-      ingressClassName: traefik
       annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
-        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
-      hostname: influxdb.${SECRET_DOMAIN}
+          cert-manager.io/issuer: prod-issuer
+          cert-manager.io/issuer-kind: OriginIssuer
+          cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
+          field.cattle.io/publicEndpoints: '[{"addresses":["${METALLB_TRAEFIK_ADDR}"],"port":443,"protocol":"HTTPS","serviceName":"database:influxdb","ingressName":"database:influxdb","hostname":"influxdb.${CLUSTER_DOMAIN}","allNodes":false}]'
+          meta.helm.sh/release-name: influxdb
+          meta.helm.sh/release-namespace: database
+          nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
+      hostname: influxdb.${CLUSTER_DOMAIN}
       path: /
       tls: true
       secretName: influxdb-tls

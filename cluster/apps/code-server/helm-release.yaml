@@ -37,18 +37,24 @@ spec:
       #PROXY_DOMAIN: ${SECRET_DOMAIN}
     ingress:
       enabled: true
-      ingressClassName: "traefik"
       annotations:
-        cert-manager.io/cluster-issuer: "letsencrypt-production"
-        traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          cert-manager.io/issuer: prod-issuer
+          cert-manager.io/issuer-kind: OriginIssuer
+          cert-manager.io/issuer-group: cert-manager.k8s.cloudflare.com
+          field.cattle.io/publicEndpoints: '[{"addresses":["${METALLB_TRAEFIK_ADDR}"],"port":443,"protocol":"HTTPS","serviceName":"apps:code-server","ingressName":"apps:code-server","hostname":"vscode.${CLUSTER_DOMAIN}","allNodes":false}]'
+          meta.helm.sh/release-name: code-server
+          meta.helm.sh/release-namespace: apps
+          nginx.ingress.kubernetes.io/proxy-connect-timeout: "30"
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
       hosts:
-        - host: code-server.${SECRET_DOMAIN}
+        - host: code-server.${CLUSTER_DOMAIN}
           paths:
             - path: /
               pathType: Prefix
       tls:
         - hosts:
-            - code-server.${SECRET_DOMAIN}
+            - code-server.${CLUSTER_DOMAIN}
           secretName: "code-server-tls"
     persistence:
       config:
