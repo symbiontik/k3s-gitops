@@ -31,7 +31,7 @@ spec:
       # -- configures cluster domain ("cluster.local" by default)
       clusterDomain: "cluster.local"
       # -- configures DNS service name
-      dnsService: "kube-dns"
+      dnsService: "coredns"
       # -- configures DNS service namespace
       dnsNamespace: "kube-system"
     # -- Overrides the chart's name
