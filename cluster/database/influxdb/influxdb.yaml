@@ -1,3 +1,15 @@
+apiVersion: cert-manager.k8s.cloudflare.com/v1
+kind: OriginIssuer
+metadata:
+  name: prod-issuer
+  namespace: database
+spec:
+  requestType: OriginECC
+  auth:
+    serviceKeyRef:
+      name: service-key
+      key: key
+---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
