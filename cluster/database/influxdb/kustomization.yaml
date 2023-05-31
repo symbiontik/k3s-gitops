@@ -3,6 +3,7 @@ kind: Kustomization
 resources:
   - helm-release.yaml
   - config-pvc.yaml
+  - influxdb.yaml
 secretGenerator:
 - name: service-key
   namespace: database
