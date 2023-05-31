@@ -45,10 +45,24 @@ spec:
           ingestion_burst_size_mb: 24
         storage_config:
           boltdb_shipper:
-            active_index_directory: /data/loki/index
-            cache_location: /data/loki/index_cache
+            active_index_directory: /tmp/loki/boltdb-shipper-active 
+            cache_location: /tmp/loki/boltdb-shipper-cache 
             cache_ttl: 24h         # Can be increased for faster performance over longer query periods, uses more disk space
             shared_store: filesystem
           filesystem:
-            directory: /data/loki/chunks
+            directory: /tmp/loki/chunks 
+        tableManager:
+          retention_deletes_enabled: false 
+          retention_period: 0s 
+        ruler: 
+          storage: 
+            type: local 
+            local: 
+              directory: /tmp/loki/rules 
+          rule_path: /tmp/loki/rules-temp 
+          alertmanager_url: http://localhost:9093 
+          ring: 
+            kvstore: 
+              store: inmemory 
+          enable_api: true
 
