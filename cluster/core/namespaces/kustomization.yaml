@@ -4,6 +4,7 @@ resources:
   - apps.yaml
   - core.yaml
   - cattle-system.yaml
+  - database.yaml
   - flux-system.yaml
   - networking.yaml
   - observability.yaml
