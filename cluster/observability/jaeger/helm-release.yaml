@@ -10,7 +10,7 @@ spec:
     spec:
       # renovate: registryUrl=https://jaegertracing.github.io/helm-charts
       chart: jaeger
-      version: 0.71.2
+      version: 0.71.3
       sourceRef:
         kind: HelmRepository
         name: jaeger-charts
