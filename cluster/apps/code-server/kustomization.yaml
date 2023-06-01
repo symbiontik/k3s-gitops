@@ -5,7 +5,7 @@ resources:
   - config-pvc.yaml
 secretGenerator:
 - name: service-key
-  namespace: cattle-system
+  namespace: apps
   options:
     disableNameSuffixHash: true
   envs:
