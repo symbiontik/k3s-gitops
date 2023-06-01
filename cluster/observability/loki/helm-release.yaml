@@ -306,15 +306,15 @@ spec:
           rules_directory: /var/loki/rules
       # -- Configure memcached as an external cache for chunk and results cache. Disabled by default
       # must enable and specify a host for each cache you would like to use.
-      #memcached:
+      memcached:
       #  chunk_cache:
-      #    enabled: false
+          enabled: false
       #    host: ""
       #    service: "memcached-client"
       #    batch_size: 256
       #    parallelism: 10
-      #  results_cache:
-      #    enabled: false
+        results_cache:
+          enabled: false
       #    host: ""
       #    service: "memcached-client"
       #    timeout: "500ms"
