@@ -23,9 +23,9 @@ spec:
     remediation:
       remediateLastFailure: true
   values:
-    image:
-      repository: ghcr.io/linuxserver/code-server
-      tag: "version-v3.11.1"
+    #image:
+    #  repository: ghcr.io/linuxserver/code-server
+    #  tag: "version-v3.11.1"
     service:
       enabled: true
       type: ClusterIP
