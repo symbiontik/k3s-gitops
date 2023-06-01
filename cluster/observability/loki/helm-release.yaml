@@ -22,18 +22,18 @@ spec:
     - name: promtail
       namespace: observability
   values:
-    global:
-      image:
+    #global:
+    #  image:
         # -- Overrides the Docker registry globally for all images
-        registry: null
+    #    registry: null
       # -- Overrides the priorityClassName for all pods
-      priorityClassName: null
+    #  priorityClassName: null
       # -- configures cluster domain ("cluster.local" by default)
-      clusterDomain: "cluster.local"
+    #  clusterDomain: "cluster.local"
       # -- configures DNS service name
-      dnsService: "coredns"
+    #  dnsService: "coredns"
       # -- configures DNS service namespace
-      dnsNamespace: "kube-system"
+    #  dnsNamespace: "kube-system"
     # -- Overrides the chart's name
     nameOverride: null
     # -- Overrides the chart's computed fullname
