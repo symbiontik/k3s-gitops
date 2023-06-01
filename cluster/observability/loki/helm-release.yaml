@@ -307,7 +307,7 @@ spec:
       # -- Configure memcached as an external cache for chunk and results cache. Disabled by default
       # must enable and specify a host for each cache you would like to use.
       memcached:
-      #  chunk_cache:
+        chunk_cache:
           enabled: false
       #    host: ""
       #    service: "memcached-client"
