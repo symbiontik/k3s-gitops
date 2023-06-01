@@ -22,6 +22,9 @@ spec:
     - name: promtail
       namespace: observability
   values:
+
+#https://github.com/grafana/loki/blob/main/production/helm/loki/values.yaml
+
     #global:
     #  image:
         # -- Overrides the Docker registry globally for all images

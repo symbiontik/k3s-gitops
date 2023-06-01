@@ -3,3 +3,10 @@ kind: Kustomization
 resources:
   - helm-release.yaml
   - config-pvc.yaml
+secretGenerator:
+- name: service-key
+  namespace: cattle-system
+  options:
+    disableNameSuffixHash: true
+  envs:
+  - cloudflare-originca-sops.env

@@ -1,3 +1,17 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: vscode-storage-class
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  numberOfReplicas: "2"
+  staleReplicaTimeout: "2880" # 48 hours in minutes
+  replicaAutoBalance: "least-effort"
+  fsType: "ext4"
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -7,7 +21,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: vscode-storage-class
   resources:
     requests:
       storage: 10Gi
-  storageClassName: local-path
