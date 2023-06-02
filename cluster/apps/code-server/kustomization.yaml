@@ -3,10 +3,3 @@ kind: Kustomization
 resources:
   - helm-release.yaml
   - config-pvc.yaml
-secretGenerator:
-- name: service-key
-  namespace: apps
-  options:
-    disableNameSuffixHash: true
-  envs:
-  - cloudflare-originca-sops.env
