@@ -4,16 +4,16 @@ kind: HelmRelease
 metadata:
   name: home-assistant
   namespace: apps
-affinity:
-  nodeAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      nodeSelectorTerms:
-      - matchExpressions:
-        - key: app
-          operator: In
-          values:
-          - zwave-controller
 spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: app
+            operator: In
+            values:
+            - zwave-controller
   interval: 5m
   chart:
     spec:
