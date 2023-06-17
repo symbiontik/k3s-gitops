@@ -4,6 +4,15 @@ kind: HelmRelease
 metadata:
   name: home-assistant
   namespace: apps
+affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: app
+          operator: In
+          values:
+          - zwave-controller
 spec:
   interval: 5m
   chart:
@@ -62,10 +71,10 @@ spec:
       config:
         enabled: true
         existingClaim: home-assistant-data
-      # usb:
-      #   enabled: true
-      #   type: hostPath
-      #   hostPath: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if01-port0
+      usb:
+        enabled: true
+        type: hostPath
+        hostPath: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if00-port0
     addons:
       codeserver:
         enabled: true
@@ -100,20 +109,20 @@ spec:
         volumeMounts:
           - name: config
             mountPath: /config
-    volumeMounts:         
-      - mountPath: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if00-port0
-        name: zigbee-usb-0
-      - mountPath: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if01-port0
-        name: zigbee-usb-1
-    volumes:
-        - hostPath:
-          path: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if00-port0
-          type: ""
-          name: zigbee-usb-0
-        - hostPath:
-          path: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if01-port0
-          type: ""
-          name: zigbee-usb-1
+    # volumeMounts:         
+    #   - mountPath: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if00-port0
+    #     name: zigbee-usb-0
+    #   - mountPath: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if01-port0
+    #     name: zigbee-usb-1
+    # volumes:
+    #     - hostPath:
+    #       path: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if00-port0
+    #       type: ""
+    #       name: zigbee-usb-0
+    #     - hostPath:
+    #       path: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if01-port0
+    #       type: ""
+    #       name: zigbee-usb-1
     resources:
       requests:
         cpu: 100m
