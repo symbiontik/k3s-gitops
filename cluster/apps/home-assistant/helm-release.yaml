@@ -74,8 +74,8 @@ spec:
       usb:
         enabled: true
         type: hostPath
-        mountPath: /dev/ttyUSB0
-        hostPath: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if00-port0
+        mountPath: /dev/ttyUSB1
+        hostPath: /dev/serial/by-id/usb-Silicon_Labs_HubZ_Smart_Home_Controller_C1300E2A-if01-port0
     addons:
       codeserver:
         enabled: true
