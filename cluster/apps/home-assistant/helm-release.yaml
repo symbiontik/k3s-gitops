@@ -5,15 +5,6 @@ metadata:
   name: home-assistant
   namespace: apps
 spec:
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          - key: app
-            operator: In
-            values:
-            - zwave-controller
   interval: 5m
   chart:
     spec:
@@ -32,6 +23,15 @@ spec:
     remediation:
       remediateLastFailure: true
   values:
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - zwave-controller
     nodeSelector:
       kubernetes.io/hostname: chronos
     image:
