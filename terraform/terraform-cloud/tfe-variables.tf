@@ -8,6 +8,14 @@ resource "tfe_variable" "cloudflare_email" {
   workspace_id = tfe_workspace.cloudflare.id
 }
 
+resource "tfe_variable" "example" {
+  key          = "example_key"
+  value        = "EXAMPLE"
+  sensitive    = true
+  category     = "terraform"
+  workspace_id = tfe_workspace.cloudflare.id
+}
+
 resource "tfe_variable" "cloudflare_apikey" {
   key          = "CLOUDFLARE_APIKEY"
   value        = var.CLOUDFLARE_APIKEY
