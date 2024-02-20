@@ -1,0 +1,53 @@
+name: Helm Linter
+
+on:
+  workflow_dispatch:
+  push:
+
+jobs:
+  helmLinter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+#      # Find the PR associated with this push, if there is one.
+#      - uses: jwalton/gh-find-current-pr@v1
+#        id: findPr
+#        with:
+#          # Can be "open", "closed", or "all".  Defaults to "open".
+#          state: open
+#      # This will echo "Your PR is 7", or be skipped if there is no current PR.
+#      - run: echo "Your PR is ${PR}"
+#        if: success() && steps.findPr.outputs.number
+#        env:
+#          PR: ${{ steps.findPr.outputs.pr }}
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v35
+        with:
+          files: |
+            cluster/**
+            **.yaml
+
+      - name: List all changed files
+        run: |
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "$file was changed"
+          done
+
+#      - name: Install helm
+#        if: steps.changed-files.outputs.any_changed == 'true'
+#        uses: azure/setup-helm@v3.5
+#        with:
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#
+#      - name: Install helm kubeval plugin
+#        if: steps.changed-files.outputs.any_changed == 'true'
+#        run: helm plugin install https://github.com/instrumenta/helm-kubeval
+#
+#      - name: Lint Helm chart
+#        if: steps.changed-files.outputs.any_changed == 'true'
+#        run: helm kubeval ci/helm-chart
