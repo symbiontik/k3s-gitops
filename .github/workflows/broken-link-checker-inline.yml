@@ -1,15 +1,29 @@
 name: Broken Link Check
 
 on:
-  workflow_run:
-    workflows: ["Helm Linter"]
-    types:
-      - completed
+  workflow_dispatch:
+  push:
+
+permissions:
+  pull-requests: write
+  checks: read
+  contents: read
 
 jobs:
   linkChecker:
+    name: Link Checker
     runs-on: ubuntu-latest
     steps:
+
+      - name: Wait for Helm Linter workflow to succeed
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.ref }}
+          #ref: ${{ github.event.pull_request.head.sha }}
+          check-name: helmLinter
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10
+
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -45,15 +59,47 @@ jobs:
         id: lychee
         uses: lycheeverse/lychee-action@v1.6.1
         with:
-          args: ${{ steps.changed-files.outputs.all_changed_files }} --base https://tutorials-git-${{ steps.findPr.outputs.pr }}-hashicorp.vercel.app/ --exclude-all-private --exclude '\.(svg|gif|jpg|png)' --exclude 'manage\.auth0\.com' --max-concurrency=24 --no-progress --verbose
-          # Fail GitHub action when broken links are found?
-          fail: true
+          args: ${{ steps.changed-files.outputs.all_changed_files }} --base https://developer.hashicorp.com/ --exclude-all-private --exclude '\.(svg|gif|jpg|png)' --exclude 'manage\.auth0\.com' --max-concurrency=24 --no-progress --verbose
+          jobSummary: true
+          # Fail GitHub action at this step when broken links are found?
+          fail: false
         env:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Comment on PR with lychee output
+#      - name: Troubleshoot Append text to beginning of Lychee output file
+#        if: env.lychee_exit_code != 0
+#        run: |
+#          ls
+#          cat lychee/out.md
+
+      - name: Append text to beginning of Lychee output file if broken links found
+        # Append lychee output file under any lychee condition
+        if: env.lychee_exit_code != 0
+        run: |
+          sed -i '1s/^/The GitHub action "Broken Link Check" has completed running on all content within the scope of this PR.\n/' ./lychee/out.md
+
+      # Comment on PR with lychee output; subsequent runs will modify existing content with latest results
+      - name: Comment on PR with lychee output if broken links found
         if: env.lychee_exit_code != 0
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: Link Checker Report
-          content-filepath: ./lychee/out.md
+          number: ${{ steps.findPr.outputs.pr }}
+          path: ./lychee/out.md
+          recreate: true
+
+      # Fail github action if lychee exit code is anything other than the success code (0)
+      - name: lychee exit code check
+        if: env.lychee_exit_code != 0
+        uses: actions/github-script@v3
+        with:
+          script: |
+              core.setFailed('lychee failed with exit code ${{env.lychee_exit_code}}')
+
+      # If all previous Github actions run (indicating success), this one will run and clean up PR comments
+      - name: Clean up PR comments if all previous steps succeed
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: Link Checker Report
+          number: ${{ steps.findPr.outputs.pr }}
+          delete: true
